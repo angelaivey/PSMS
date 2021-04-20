@@ -1,17 +1,24 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ola_energy/screens/DashBoard.dart';
 import 'package:ola_energy/screens/HomePage.dart';
 import 'package:ola_energy/screens/registration.dart';
 import 'package:ola_energy/widgets/bezierContainer.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final usersRef = Firestore.instance.collection('users');
-
+final _formKey = GlobalKey<FormState>();
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+DatabaseReference dbRef = FirebaseDatabase.instance.reference().child("Users");
 mixin Firestore {
   static var instance;
 }
+
 final DateTime timestamp = DateTime.now();
 
 class LoginPage extends StatefulWidget {
@@ -29,6 +36,11 @@ class _LoginPageState extends State<LoginPage> {
   PageController pageController;
   int pageIndex = 0;
 
+  void storedData(name, email) async {
+    final SharedPreferences _sp = await SharedPreferences.getInstance();
+    _sp.setString("username", name.toString());
+    _sp.setString("email", email.toString());
+  }
 
   @override
   void initState() {
@@ -36,11 +48,10 @@ class _LoginPageState extends State<LoginPage> {
     pageController = PageController();
     //detects when user signed in
     googleSignIn.onCurrentUserChanged.listen((account) {
-    handleSignIn(account);
-    },
-        onError: (err){
-          print('Error signing in: $err');
-        });
+      handleSignIn(account);
+    }, onError: (err) {
+      print('Error signing in: $err');
+    });
     //Reauthenticate user when app is opened
     // googleSignIn.signInSilently(suppressErrors: false)
     //   .then((account) {
@@ -49,43 +60,43 @@ class _LoginPageState extends State<LoginPage> {
     //   print('Error signing in: $err');
     // });
   }
-  handleSignIn(GoogleSignInAccount account){
-    if (account != null){
 
+  handleSignIn(GoogleSignInAccount account) {
+    if (account != null) {
       print("User signed in!: $account");
       setState(() {
         isAuth = true;
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => HomePage()));
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => HomePage()));
       });
-    }else{
+    } else {
       setState(() {
         isAuth = false;
       });
     }
   }
 
-  createUserInFirestore() async {
-    //check if user exists in uses collection(according to their id)
-    final GoogleSignInAccount user = googleSignIn.currentUser;
-    final DocumentSnapshot doc = await usersRef.document(user.id).get();
-
-    if(!doc.exists){
-      //if user doesn't exist, take them to signup page
-      final username = await Navigator.push(context, MaterialPageRoute(builder: (context)=> SignUpPage()));
-
-      //get username from create account, use it to make new user document
-      usersRef.document(user.id).setData({
-        "id": user.id,
-        "username": username,
-        "photoUrl": user.photoUrl,
-        "email": user.email,
-        "displayName": user.displayName,
-        "bio": "",
-        "timestamp": timestamp
-      });
-    }
-  }
+  // createUserInFirestore() async {
+  //   //check if user exists in uses collection(according to their id)
+  //   final GoogleSignInAccount user = googleSignIn.currentUser;
+  //   final DocumentSnapshot doc = await usersRef.document(user.id).get();
+  //
+  //   if(!doc.exists){
+  //     //if user doesn't exist, take them to signup page
+  //     final username = await Navigator.push(context, MaterialPageRoute(builder: (context)=> SignUpPage()));
+  //
+  //     //get username from create account, use it to make new user document
+  //     usersRef.document(user.id).setData({
+  //       "id": user.id,
+  //       "username": username,
+  //       "photoUrl": user.photoUrl,
+  //       "email": user.email,
+  //       "displayName": user.displayName,
+  //       "bio": "",
+  //       "timestamp": timestamp
+  //     });
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -93,25 +104,29 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  signIn(){
+  signIn() {
     googleSignIn.signIn();
   }
-  logout(){
+
+  logout() {
     googleSignIn.signOut();
   }
 
-  onPageChanged(int pageIndex){
+  onPageChanged(int pageIndex) {
     setState(() {
       this.pageIndex = pageIndex;
     });
   }
 
-  onTap(int pageIndex){
-    pageController.animateToPage(pageIndex, duration: Duration(milliseconds: 300), curve: Curves.easeInOut,
+  onTap(int pageIndex) {
+    pageController.animateToPage(
+      pageIndex,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
     );
   }
 
-  buildAuthScreen(){
+  buildAuthScreen() {
     return HomePage();
   }
 
@@ -136,7 +151,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _entryField(String title, {bool isPassword = false}) {
+  Widget _entryField(String title, TextEditingController controller,
+      {bool isPassword = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -150,6 +166,7 @@ class _LoginPageState extends State<LoginPage> {
             height: 10,
           ),
           TextField(
+              controller: controller,
               obscureText: isPassword,
               decoration: InputDecoration(
                   border: InputBorder.none,
@@ -163,33 +180,38 @@ class _LoginPageState extends State<LoginPage> {
   Widget _submitButton() {
     return InkWell(
         onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) {
-            return HomePage();
-          }));
+          if (_formKey.currentState.validate()) {
+            logInToFb();
+          }
         },
-    child: Container(
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(vertical: 15),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.grey.shade200,
-                offset: Offset(2, 4),
-                blurRadius: 5,
-                spreadRadius: 2)
-          ],
-          gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [Color(0xff07239d), Color(0xfff7892b)])),
-      child: Text(
-        'Login',
-        style: TextStyle(fontSize: 20, color: Colors.white),
-      ),
-    ));
+        // onTap: () {
+        //   Navigator.push(
+        //       context, MaterialPageRoute(builder: (context) {
+        //     return HomePage();
+        //   }));
+        // },
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.symmetric(vertical: 15),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                    color: Colors.grey.shade200,
+                    offset: Offset(2, 4),
+                    blurRadius: 5,
+                    spreadRadius: 2)
+              ],
+              gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [Color(0xff07239d), Color(0xfff7892b)])),
+          child: Text(
+            'Login',
+            style: TextStyle(fontSize: 20, color: Colors.white),
+          ),
+        ));
   }
 
   Widget _divider() {
@@ -226,56 +248,58 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _facebookButton() {
-    return isAuth ? buildAuthScreen() : GestureDetector(
-      onTap: (){
-        signIn();
-      },
-      child: Container(
-        height: 50,
-        margin: EdgeInsets.symmetric(vertical: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Color(0xff1959a9),
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(5),
-                      topLeft: Radius.circular(5)),
-                ),
-                alignment: Alignment.center,
-                child: Text('G',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.w400)),
+    return isAuth
+        ? buildAuthScreen()
+        : GestureDetector(
+            onTap: () {
+              signIn();
+            },
+            child: Container(
+              height: 50,
+              margin: EdgeInsets.symmetric(vertical: 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color(0xff1959a9),
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(5),
+                            topLeft: Radius.circular(5)),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text('G',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.w400)),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 5,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color(0xff2872ba),
+                        borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(5),
+                            topRight: Radius.circular(5)),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text('Sign in with Google',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400)),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Expanded(
-              flex: 5,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Color(0xff2872ba),
-                  borderRadius: BorderRadius.only(
-                      bottomRight: Radius.circular(5),
-                      topRight: Radius.circular(5)),
-                ),
-                alignment: Alignment.center,
-                child: Text('Sign in with Google',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Widget _label() {
@@ -355,17 +379,19 @@ class _LoginPageState extends State<LoginPage> {
               text: 'ENERGY',
               style: TextStyle(color: Color(0XFF07239D), fontSize: 30),
             ),
-
           ]),
     );
   }
 
   Widget _emailPasswordWidget() {
-    return Column(
-      children: <Widget>[
-        _entryField("Email id"),
-        _entryField("Password", isPassword: true),
-      ],
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          _entryField("Email id", emailController),
+          _entryField("Password", passwordController, isPassword: true),
+        ],
+      ),
     );
   }
 
@@ -374,44 +400,82 @@ class _LoginPageState extends State<LoginPage> {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
         body: Container(
-          height: height,
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                  top: -height * .15,
-                  right: -MediaQuery.of(context).size.width * .4,
-                  child: BezierContainer()),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: height * .2),
-                      _title(),
-                      SizedBox(height: 50),
-                      _emailPasswordWidget(),
-                      SizedBox(height: 20),
-                      _submitButton(),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        alignment: Alignment.centerRight,
-                        child: Text('Forgot Password ?',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500)),
-                      ),
-                      _divider(),
-                      _facebookButton(),
-                      SizedBox(height: height * .055),
-                      _createAccountLabel(),
-                    ],
+      height: height,
+      child: Stack(
+        children: <Widget>[
+          Positioned(
+              top: -height * .15,
+              right: -MediaQuery.of(context).size.width * .4,
+              child: BezierContainer()),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(height: height * .2),
+                  _title(),
+                  SizedBox(height: 50),
+                  _emailPasswordWidget(),
+                  SizedBox(height: 20),
+                  _submitButton(),
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    alignment: Alignment.centerRight,
+                    child: Text('Forgot Password ?',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500)),
                   ),
-                ),
+                  _divider(),
+                  _facebookButton(),
+                  SizedBox(height: height * .055),
+                  _createAccountLabel(),
+                ],
               ),
-              Positioned(top: 40, left: 0, child: _backButton()),
-            ],
+            ),
           ),
-        ));
+          Positioned(top: 40, left: 0, child: _backButton()),
+        ],
+      ),
+    ));
+  }
+
+  void logInToFb() {
+    firebaseAuth
+        .signInWithEmailAndPassword(
+            email: emailController.text, password: passwordController.text)
+        .then((result) {
+      dbRef.once().then((DataSnapshot value) {
+        print("Data Chunk ${value.key}");
+        print("Data Chunk ${value.value[firebaseAuth.currentUser.uid]}");
+        final String userName = value.value[firebaseAuth.currentUser.uid]["name"];
+        final String userEmail =  value.value[firebaseAuth.currentUser.uid]["email"];
+        print ( "User data : $userName $userEmail");
+        storedData(userName, userEmail);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => DashBoard()),
+        );
+      });
+    }).catchError((err) {
+      print(err.message);
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Error"),
+              content: Text(err.message),
+              actions: [
+                TextButton(
+                  child: Text("Ok"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+    });
   }
 }

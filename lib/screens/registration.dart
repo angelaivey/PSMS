@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -5,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ola_energy/screens/DashBoard.dart';
 import 'package:ola_energy/screens/HomePage.dart';
 import 'package:ola_energy/widgets/bezierContainer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'login.dart';
 
 final _formKey = GlobalKey<FormState>();
@@ -47,7 +50,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _entryField(String title, {bool isPassword = false}) {
+  Widget _entryField(String title,TextEditingController controller, {bool isPassword = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -61,7 +64,7 @@ class _SignUpPageState extends State<SignUpPage> {
             height: 10,
           ),
           TextField(
-            controller: passwordController,
+            controller: controller,
               obscureText: isPassword,
               decoration: InputDecoration(
                   border: InputBorder.none,
@@ -167,9 +170,9 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget _emailPasswordWidget() {
     return Column(
       children: <Widget>[
-        _entryField("Username"),
-        _entryField("Email id"),
-        _entryField("Password", isPassword: true),
+        _entryField("Username",nameController),
+        _entryField("Email id",emailController),
+        _entryField("Password",passwordController, isPassword: true),
       ],
     );
   }
@@ -219,6 +222,12 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
+ void storedData(name,email)async{
+    final SharedPreferences _sp = await SharedPreferences.getInstance();
+    _sp.setString("username", name.toString());
+    _sp.setString("email", email.toString());
+  }
+
 
   void registerToFb() {
     firebaseAuth.createUserWithEmailAndPassword(email: emailController.text, password: passwordController.text)
@@ -228,9 +237,27 @@ class _SignUpPageState extends State<SignUpPage> {
             'name': nameController.text,
             'email': emailController.text,
           }).then((res) {
+            storedData(nameController.text, emailController.text);
             Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context)=>DashBoard(uid: result.user.uid)),
+              MaterialPageRoute(builder: (context)=>DashBoard()),
             );
+          }).catchError((e){
+            showDialog(
+                context: context,
+                builder: (BuildContext context){
+                  return AlertDialog(
+                    title: Text('Error'),
+                    content: Text(e.message),
+                    actions: [
+                      TextButton(
+                        child: Text('OK'),
+                        onPressed: (){
+                          Navigator.of(context).pop();
+                        },
+                      )
+                    ],
+                  );
+                });
           });
     }).catchError((err){
       showDialog(
@@ -252,4 +279,3 @@ class _SignUpPageState extends State<SignUpPage> {
       });
   }
 }
-S
