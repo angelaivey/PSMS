@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "178603756584",
+    "project_id": "ola-energy-6e327",
+    "storage_bucket": "ola-energy-6e327.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178603756584:android:cd4a7011b51d279701b91d",
+        "android_client_info": {
+          "package_name": "com.angelaivey.ola_energy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "178603756584-e6k6t9t6qsso508cmac3j4k6rcksd9he.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.angelaivey.ola_energy",
+            "certificate_hash": "3e622e846b60900eb5e018706de91d85d9c755db"
+          }
+        },
+        {
+          "client_id": "178603756584-9g9l2rb6ofkfikg4m462qkbmh277aq2r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAD0cVkROBPeeFAAI5ftSi4_thW2rhMLkE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "178603756584-9g9l2rb6ofkfikg4m462qkbmh277aq2r.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "178603756584-cs0e6k326jn05mqi53qo4ca8aoab623u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.angelaivy.olaenergy"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
