@@ -1,44 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:web_scraper/web_scraper.dart';
 
-class ListPrices {
-  final name;
-  final price;
-
-  ListPrices(this.name, this.price);
+class MarketPrices extends StatefulWidget {
+  @override
+  _MarketPricesState createState() => _MarketPricesState();
 }
 
-// ignore: must_be_immutable
-class MarketPrices extends StatelessWidget {
-  List listPrices = [
-    ListPrices(
-        'Diesel',
-        'KSH 103.3'
-    ),
-    ListPrices(
-        'Unleaded premium',
-        'KSH 110.3'
-    ),
-    ListPrices(
-        'Kerosene',
-        'KSH 64.3'
-    ),
-    ListPrices(
-        'Engine oil',
-        'KSH 560.3'
-    ),
-    ListPrices(
-        'Lubricants',
-        'KSH 400.3'
-    ),
-    ListPrices(
-        'Gas Cylinders',
-        'KSH 2000'
-    ),
-    ListPrices(
-        'Gas refill',
-        'KSH 1300'
-    ),
-  ];
+class _MarketPricesState extends State<MarketPrices> {
+  WebScraper webScraper;
+  bool loaded = false;
+  String marketPrice;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _getData();
+  }
+
+  _getData() async {
+    webScraper = WebScraper('https://www.epra.go.ke/services/petroleum/petroleum-prices/');
+    if(await webScraper.loadWebPage('/')){
+      List<Map<String, dynamic>> results =
+      webScraper.getElement('div.wpdt-c',
+        ['title']);
+      setState(() {
+        loaded = true;
+        marketPrice = results[0]['title'];
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,54 +48,42 @@ class MarketPrices extends StatelessWidget {
         title: Text('Market Prices'),
       ),
       body: Container(
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(1)),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                  color: Colors.grey.shade200,
-                  offset: Offset(2, 4),
-                  blurRadius: 5, //
-                  spreadRadius: 2)
-            ],
-            gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.topLeft,
-                colors: [Color(0xffe46b10), Color(0xff07239d)]
-            ),
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(1)),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+                color: Colors.grey.shade200,
+                offset: Offset(2, 4),
+                blurRadius: 5, //
+                spreadRadius: 2)
+          ],
+          gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.topLeft,
+              colors: [Color(0xffe46b10), Color(0xff07239d)]
           ),
-        child: ListView(
-          children: <Widget>[
-            Column(
-                children: listPrices
-                    .map(
-                      (e) => Container(
-                    margin:
-                    EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: ListTile(
-                      title: Text(
-                        e.name,
-                        style: TextStyle(fontSize: 25),
-                      ),
-                      subtitle: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(e.price.toString()),
-                          SizedBox(height: 10),
-                        ],
-                      ),
+        ),
+         child:
+            ListTile(
+              title: Text("Retail Petroleum Prices", style: TextStyle(
+                fontSize: 30.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white
+              ),),
+              subtitle: (loaded)? ListView(
+                children: [
+                  Text(marketPrice,
+                  style: TextStyle(
+                    color: Colors.white,
                     ),
                   ),
-                )
-                    .toList())
-          ],
+                ]
+              )
+                  : CircularProgressIndicator(),
+            ),
         ),
-      ),
     );
   }
 }
+

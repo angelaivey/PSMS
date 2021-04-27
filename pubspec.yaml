@@ -30,6 +30,16 @@ dependencies:
   fluttertoast: ^7.0.1+1
   #lit_firebase_auth: ^0.3.0
   image_picker: ^0.6.7+22
+  cached_network_image: ^2.5.1
+  path_provider: ^1.6.28
+  firebase_storage: ^7.0.0
+  geolocator: ^6.2.1
+  geocoding: ^1.0.5
+  web_scraper: ^0.0.6
+
+  syncfusion_flutter_xlsio: ^18.4.49-beta
+  open_file: ^3.0.3
+  syncfusion_officechart: ^18.4.49-beta
 
 
   flutter:

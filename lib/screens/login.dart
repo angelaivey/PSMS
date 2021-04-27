@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ola_energy/screens/DashBoard.dart';
@@ -6,18 +7,18 @@ import 'package:ola_energy/screens/HomePage.dart';
 import 'package:ola_energy/screens/registration.dart';
 import 'package:ola_energy/widgets/bezierContainer.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
-final usersRef = Firestore.instance.collection('users');
+final usersRef = FirebaseFirestore.instance.collection('users');
+final postsRef = FirebaseFirestore.instance.collection('posts');
+final storageRef = FirebaseStorage.instance.ref();
 final _formKey = GlobalKey<FormState>();
 TextEditingController emailController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
 DatabaseReference dbRef = FirebaseDatabase.instance.reference().child("Users");
-mixin Firestore {
-  static var instance;
-}
+
 
 final DateTime timestamp = DateTime.now();
 
@@ -53,12 +54,12 @@ class _LoginPageState extends State<LoginPage> {
       print('Error signing in: $err');
     });
     //Reauthenticate user when app is opened
-    // googleSignIn.signInSilently(suppressErrors: false)
-    //   .then((account) {
-    //     handleSignIn(account);
-    // }).catchError((err){
-    //   print('Error signing in: $err');
-    // });
+    googleSignIn.signInSilently(suppressErrors: false)
+      .then((account) {
+        handleSignIn(account);
+    }).catchError((err){
+      print('Error signing in: $err');
+    });
   }
 
   handleSignIn(GoogleSignInAccount account) {
@@ -75,28 +76,6 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
   }
-
-  // createUserInFirestore() async {
-  //   //check if user exists in uses collection(according to their id)
-  //   final GoogleSignInAccount user = googleSignIn.currentUser;
-  //   final DocumentSnapshot doc = await usersRef.document(user.id).get();
-  //
-  //   if(!doc.exists){
-  //     //if user doesn't exist, take them to signup page
-  //     final username = await Navigator.push(context, MaterialPageRoute(builder: (context)=> SignUpPage()));
-  //
-  //     //get username from create account, use it to make new user document
-  //     usersRef.document(user.id).setData({
-  //       "id": user.id,
-  //       "username": username,
-  //       "photoUrl": user.photoUrl,
-  //       "email": user.email,
-  //       "displayName": user.displayName,
-  //       "bio": "",
-  //       "timestamp": timestamp
-  //     });
-  //   }
-  // }
 
   @override
   void dispose() {

@@ -1,92 +1,83 @@
-import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:ola_energy/screens/login.dart';
+import 'package:ola_energy/widgets/posts.dart';
+import 'package:ola_energy/widgets/progress.dart';
+import 'station.dart';
 
-class Upload extends StatefulWidget {
+class Updates extends StatefulWidget {
+  final FirebaseFirestore fb = FirebaseFirestore.instance;
+
   @override
-  _UploadState createState() => _UploadState();
+  _UpdatesState createState() => _UpdatesState();
 }
 
-class _UploadState extends State<Upload> {
-  File file;
+class _UpdatesState extends State<Updates> {
 
-  handleTakePhoto() async {
-    Navigator.pop(context);
-    File file = await ImagePicker.pickImage(
-      source: ImageSource.camera,
-      maxHeight: 675,
-      maxWidth: 960,
+  bool isLoading = false;
+  int postCount = 0;
+  List<Post> posts = [];
+
+
+  @override
+  void initState() {
+    super.initState();
+    getProfilePosts();
+  }
+
+  getProfilePosts() async {
+    setState(() {
+      isLoading = true;
+    });
+    QuerySnapshot snapshot = await postsRef.doc()
+        .collection('posts')
+        .orderBy('timeStamp', descending: true)
+        .get();
+    setState(() {
+      isLoading = false;
+      postCount = snapshot.docs.length;
+      posts = snapshot.docs.map((doc) => Post.fromDocument(doc))
+          .toList();
+    });
+  }
+
+  buildProfilePosts(){
+    //displaying posts after fetching them
+    if(isLoading){
+      return circularProgress();
+    }
+    return Column(
+      children: posts,
     );
-    setState(() {
-      this.file = file;
-    });
   }
 
-  handleChooseFromGallery() async {
-    Navigator.pop(context);
-    File file = await ImagePicker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      this.file = file;
-    });
-  }
+  // Container buildSplashScreen() {
+  //   return Container(
+  //     child: Scaffold(
+  //       floatingActionButton: FloatingActionButton(
+  //         onPressed: (){
+  //           //selectImage(context);
+  //         },
+  //       ),
+  //       body: Container(
+  //         //padding: ,
+  //       ),
+  //     ),
+  //   );
+  //
+  // }
 
-  selectImage(parentContext) {
-    return showDialog(
-        context: parentContext,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text("Create Post"),
-            children: <Widget>[
-              SimpleDialogOption(
-                  child: Text("Photo with Camera"), onPressed: handleTakePhoto),
-              SimpleDialogOption(
-                  child: Text("Image from Gallery"),
-                  onPressed: handleChooseFromGallery),
-              SimpleDialogOption(
-                child: Text("Cancel"),
-                onPressed: () => Navigator.pop(context),
-              )
-            ],
-          );
-        });
-  }
-
-  Container buildSplashScreen() {
-    return Container(
-      //color: Theme.of(context).primaryColor.withOpacity(1.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          SvgPicture.asset('assets/images/upload.svg', height:  260.0),
-          Padding(
-            padding: EdgeInsets.only(top: 20.0),
-            child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Text(
-                  "Upload Image",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22.0,
-                  ),
-                ),
-                color: Color(0xff07239d),
-                onPressed: () => selectImage(context)),
-          ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Updates page'),
+      ),
+      body: ListView(
+        children: [
+          buildProfilePosts(),
         ],
       ),
     );
   }
 
-  buildUploadForm() {
-    return Text("File loaded");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return file == null ? buildSplashScreen() : buildUploadForm();
-  }
 }

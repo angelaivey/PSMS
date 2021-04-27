@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -27,12 +28,12 @@ class _SettingsPageState extends State<SettingsPage> {
           print('Error signing in: $err');
         });
     //Reauthenticate user when app is opened
-    // googleSignIn.signInSilently(suppressErrors: false)
-    //     .then((account) {
-    //   handleSignIn(account);
-    // }).catchError((err){
-    //   print('Error signing in: $err');
-    // });
+    googleSignIn.signInSilently(suppressErrors: false)
+        .then((account) {
+      handleSignIn(account);
+    }).catchError((err){
+      print('Error signing in: $err');
+    });
   }
   handleSignIn(GoogleSignInAccount account){
     if (account != null){
@@ -49,6 +50,9 @@ class _SettingsPageState extends State<SettingsPage> {
   }
   logout(){
     googleSignIn.signOut();
+  }
+  signOut() async {
+    await FirebaseAuth.instance.signOut();
   }
 
   @override
@@ -142,6 +146,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     borderRadius: BorderRadius.circular(20)),
                 onPressed: () {
                   logout();
+                  signOut();
                   Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
                 },
                 child: Text("SIGN OUT",

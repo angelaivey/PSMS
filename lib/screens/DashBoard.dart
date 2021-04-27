@@ -7,6 +7,7 @@ import 'package:ola_energy/screens/EditProfile.dart';
 import 'package:ola_energy/screens/reportGeneration.dart';
 import 'package:ola_energy/screens/settings.dart';
 import 'package:ola_energy/screens/station.dart';
+import 'package:ola_energy/screens/upload.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'AnalyticsPage.dart';
 import 'HomePage.dart';
@@ -22,6 +23,7 @@ class DashBoard extends StatefulWidget {
 class _DashBoardState extends State<DashBoard> {
   String userName;
   String userEmail;
+  String userLocation;
 
   Future storedData() async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
@@ -29,6 +31,7 @@ class _DashBoardState extends State<DashBoard> {
     setState(() {
       userName =  _sp.getString("username");
       userEmail = _sp.getString("email");
+      userLocation = _sp.getString("location");
       print("Fetched from shared p ${_sp.getString("username")}");
     });
   }
@@ -191,7 +194,7 @@ class _DashBoardState extends State<DashBoard> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => StationsList()));
+                                    builder: (context) => Upload()));
                           },
                           child: Card(
                             shape: RoundedRectangleBorder(
@@ -204,7 +207,7 @@ class _DashBoardState extends State<DashBoard> {
                                   'assets/images/gasoline-pump.svg',
                                   height: 128,
                                 ),
-                                Text('Choose station')
+                                Text('Updates')
                               ],
                             ),
                           ),

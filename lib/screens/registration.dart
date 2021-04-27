@@ -1,6 +1,6 @@
-import 'dart:ffi';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,10 +12,15 @@ import 'login.dart';
 
 final _formKey = GlobalKey<FormState>();
 FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+final databaseReference = FirebaseFirestore.instance;
+
+final storageRef = FirebaseStorage.instance.ref();
 DatabaseReference dbRef = FirebaseDatabase.instance.reference().child("Users");
 TextEditingController nameController = TextEditingController();
 TextEditingController emailController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
+TextEditingController locationController = TextEditingController();
 
 
 class SignUpPage extends StatefulWidget {
@@ -75,19 +80,28 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  Future<void> createRecord()async {
+
+    return users
+        .add({
+      'username': nameController.text,
+      'email': emailController.text,
+      'location': locationController.text,
+    }).then((value) => print('user added'))
+        .catchError((error)=> print('failed to add user: $error'));
+  }
+
   Widget _submitButton() {
     return InkWell(
-      onTap: (){
+      onTap: () async {
+
         if(_formKey.currentState.validate()){
           registerToFb();
         }
+        createRecord();
       },
-        // onTap: () {
-        //   Navigator.push(
-        //       context, MaterialPageRoute(builder: (context) {
-        //     return DashBoard();
-        //   }));
-        // },
     child: Container(
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.symmetric(vertical: 15),
@@ -171,6 +185,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Column(
       children: <Widget>[
         _entryField("Username",nameController),
+        _entryField("Station Name",locationController),
         _entryField("Email id",emailController),
         _entryField("Password",passwordController, isPassword: true),
       ],
@@ -222,10 +237,11 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
- void storedData(name,email)async{
+ void storedData(name,email,location)async{
     final SharedPreferences _sp = await SharedPreferences.getInstance();
     _sp.setString("username", name.toString());
     _sp.setString("email", email.toString());
+    _sp.setString("location", location.toString());
   }
 
 
@@ -236,8 +252,10 @@ class _SignUpPageState extends State<SignUpPage> {
             'uid': result.user.uid,
             'name': nameController.text,
             'email': emailController.text,
+            'location': emailController.text,
+            //'photoUrl': user.photoUrl,
           }).then((res) {
-            storedData(nameController.text, emailController.text);
+            storedData(nameController.text, emailController.text, locationController.text);
             Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context)=>DashBoard()),
             );

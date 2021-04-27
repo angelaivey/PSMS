@@ -31,6 +31,7 @@ class _EditProfileState extends State<EditProfile> {
   bool showPassword = false;
   String userName;
   String userEmail;
+  String userLocation;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -45,6 +46,7 @@ class _EditProfileState extends State<EditProfile> {
     setState(() {
       userName = _sp.getString("username");
       userEmail = _sp.getString("email");
+      userLocation = _sp.getString("location");
       print("Fetched from shared p ${_sp.getString("username")}");
     });
   }
@@ -61,6 +63,7 @@ class _EditProfileState extends State<EditProfile> {
     setState(() {
       emailController.text = userEmail;
       nameController.text = userName;
+      locationController.text = userLocation;
     });
   }
 
@@ -158,8 +161,7 @@ class _EditProfileState extends State<EditProfile> {
               buildTextField("Full Name", userName, nameController, false),
               buildTextField("E-mail", userEmail, emailController, false),
               // buildTextField("Password", "********", true),
-              buildTextField(
-                  "Station", "Bellevue, Kenya", locationController, false),
+              buildTextField("Station", userLocation, locationController, false),
               SizedBox(
                 height: 35,
               ),
@@ -170,7 +172,9 @@ class _EditProfileState extends State<EditProfile> {
                     padding: EdgeInsets.symmetric(horizontal: 50),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     child: Text("CANCEL",
                         style: TextStyle(
                             fontSize: 14,
