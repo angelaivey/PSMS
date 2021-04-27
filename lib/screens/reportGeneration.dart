@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:syncfusion_officechart/officechart.dart';
+import 'package:excel/excel.dart';
 
 class GenerateReport extends StatefulWidget {
   @override
@@ -11,6 +12,11 @@ class GenerateReport extends StatefulWidget {
 }
 
 class _GenerateReportState extends State<GenerateReport> {
+
+  //var file = '';
+  var excel = Excel.createExcel();
+
+ // var bytes = File(file).readAsBytesSync();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,38 +52,40 @@ class _GenerateReportState extends State<GenerateReport> {
 
   Future<void> generateExcel() async
   {
-    //Create a Excel document.
-    //Creating a workbook.
-    final Workbook workbook = Workbook();
-    //Accessing via index.
-    final Worksheet sheet = workbook.worksheets[0];
-    // Set the text value.
-    //sheet.getRangeByName('A1').setText('Hello!!');
-    //Save and launch the excel.
-    final List<int> bytes = workbook.saveAsStream();
-    sheet.enableSheetCalculations();
-
-    //Adding the chart
-    final ChartCollection charts = ChartCollection(sheet);
-    final Chart chart = charts.add();   //add the chart
-    chart.chartType = ExcelChartType.bar;
-    chart.chartType = ExcelChartType.pie;
-    chart.chartType = ExcelChartType.line;
-    sheet.charts = charts;
-
-    //Dispose the document.
-    workbook.dispose();
-
-    //Get the storage folder location using path_provider package.
-    final Directory directory = await getExternalStorageDirectory();
-    //Get directory path
-    final String path = directory.path;
-    //Create an empty file to write Excel data
-    final File file = File('$path/output.xlsx, ');
-    //Write Excel data
-    await file.writeAsBytes(bytes, flush: true);
-    //Launch the file (used open_file package)
-    await OpenFile.open('$path/output.xlsx');
+    var excel = Excel.createExcel();
+    Sheet sheetObject = excel['SheetName'];
+    // //Create a Excel document.
+    // //Creating a workbook.
+    // final Workbook workbook = Workbook();
+    // //Accessing via index.
+    // final Worksheet sheet = workbook.worksheets[0];
+    // // Set the text value.
+    // //sheet.getRangeByName('A1').setText('Hello!!');
+    // //Save and launch the excel.
+    // final List<int> bytes = workbook.saveAsStream();
+    // sheet.enableSheetCalculations();
+    //
+    // //Adding the chart
+    // final ChartCollection charts = ChartCollection(sheet);
+    // final Chart chart = charts.add();   //add the chart
+    // chart.chartType = ExcelChartType.bar;
+    // chart.chartType = ExcelChartType.pie;
+    // chart.chartType = ExcelChartType.line;
+    // sheet.charts = charts;
+    //
+    // //Dispose the document.
+    // workbook.dispose();
+    //
+    // //Get the storage folder location using path_provider package.
+    // final Directory directory = await getExternalStorageDirectory();
+    // //Get directory path
+    // final String path = directory.path;
+    // //Create an empty file to write Excel data
+    // final File file = File('$path/output.xlsx, ');
+    // //Write Excel data
+    // await file.writeAsBytes(bytes, flush: true);
+    // //Launch the file (used open_file package)
+    // await OpenFile.open('$path/output.xlsx');
   }
 }
 

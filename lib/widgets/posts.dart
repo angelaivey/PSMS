@@ -23,24 +23,14 @@ class Post extends StatefulWidget {
     this.mediaUrl,
     this.likes,
 });
-  factory Post.fromDocument(DocumentSnapshot doc){
-    return Post(
-      postId: doc['postId'],
-      ownerId: doc['ownerId'],
-      username: doc['username'],
-      location: doc['location'],
-      description: doc['description'],
-      mediaUrl: doc['mediaUrl'],
-      likes: doc['likes'],
-    );
-  }
+
   int getLikeCount(likes){
     //if there are no likes, return 0
     if(likes == null){
       return 0;
     }
     int count = 0;
-    likes.valies.forEach((val){
+    likes.values.forEach((val){
       if (val == true){
         count += 1;
       }
@@ -57,7 +47,7 @@ class Post extends StatefulWidget {
     description: this.description,
     mediaUrl: this.mediaUrl,
     likes: this.likes,
-    likeCount: getLikeCount(this.likes),
+    likeCount:getLikeCount(likes),
   );
 }
 
@@ -83,13 +73,7 @@ class _PostState extends State<Post> {
   });
 
   buildPostHeader() {
-    return FutureBuilder(
-      future: usersRef.doc(ownerId).get(),
-      builder: (context, snapshot){
-        if(!snapshot.hasData){
-          return circularProgress();
-        }
-        User user = User.fromDocument(snapshot.data);
+
         return ListTile(
           leading: CircleAvatar(
             backgroundImage: AssetImage('assets/images/m1.jpeg'),
@@ -100,7 +84,7 @@ class _PostState extends State<Post> {
               print('showing profile');
               },
             child: Text(
-              user.username,
+              username,
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -113,8 +97,8 @@ class _PostState extends State<Post> {
             icon: Icon(Icons.more_vert),
           ),
         );
-      },
-    );
+
+
   }
 
   buildPostImage(){
@@ -125,6 +109,7 @@ class _PostState extends State<Post> {
       child: Stack(
         alignment: Alignment.center,
         children: [
+          //(mediaUrl == null) ? Image.asset('assets/images/m1.jpeg') : NetworkImage(mediaUrl)
           Image.network(mediaUrl),
         ],
       ),
@@ -186,7 +171,7 @@ class _PostState extends State<Post> {
                 ),
               ),
             ),
-            Expanded(child: Text(description)),
+            Expanded(child: Text('$description')),
           ],
         ),
       ],

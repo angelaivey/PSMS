@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ola_energy/models/user.dart' as UserModel;
 import 'package:ola_energy/screens/login.dart' as prefix;
 import 'package:ola_energy/screens/newsDetails.dart';
 import 'package:ola_energy/screens/registration.dart';
@@ -124,12 +125,23 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
                 } else if (asyncSnapshot.data == null) {
                   return Text("No Posts!");
                 } else if (asyncSnapshot.hasData) {
+                  print("DATA CHUNK LENGTH ${asyncSnapshot.data.docs.length}");
                   return
                     ListView.builder(
                       itemCount: asyncSnapshot.data.docs.length,
                       itemBuilder: (BuildContext context, int index) {
-                        //return Updates();
-                        return Text(post.toString());
+                        UserModel.User data = UserModel.User.fromDocument(asyncSnapshot.data.docs[index]);
+                        return Post(
+                          postId:asyncSnapshot.data.docs[index].id ,
+                          ownerId: data.uid,
+                          username: data.username,
+                          location: data.location,
+                          description: data.description,
+                          mediaUrl: data.photoUrl,
+                          likes: data.likes,
+                        );
+                          //Text(posts.toString());
+
                       });
                 } else if (!asyncSnapshot.hasData) {
                   return circularProgress();

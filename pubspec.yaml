@@ -40,6 +40,7 @@ dependencies:
   syncfusion_flutter_xlsio: ^18.4.49-beta
   open_file: ^3.0.3
   syncfusion_officechart: ^18.4.49-beta
+  excel: ^1.1.5
 
 
   flutter:
