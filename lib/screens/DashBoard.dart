@@ -3,11 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ola_energy/models/EmptyState.dart';
 import 'package:ola_energy/screens/EditProfile.dart';
 import 'package:ola_energy/screens/reportGeneration.dart';
 import 'package:ola_energy/screens/settings.dart';
 import 'package:ola_energy/screens/station.dart';
 import 'package:ola_energy/screens/upload.dart';
+import 'package:ola_energy/widgets/multi_form_reports.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'AnalyticsPage.dart';
 import 'HomePage.dart';
@@ -217,7 +219,7 @@ class _DashBoardState extends State<DashBoard> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => GenerateReport()));
+                                    builder: (context) => MultiForm()));
                           },
                           child: Card(
                             shape: RoundedRectangleBorder(

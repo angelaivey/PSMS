@@ -1,91 +1,167 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_xlsio/xlsio.dart' hide Column, Alignment;
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:open_file/open_file.dart';
-import 'package:syncfusion_officechart/officechart.dart';
-import 'package:excel/excel.dart';
+import 'package:ola_energy/models/petrol.dart';
+import 'package:ola_energy/widgets/multi_form_reports.dart';
 
-class GenerateReport extends StatefulWidget {
+typedef OnDelete();
+
+class ReportGenerator extends StatefulWidget {
+  final Petrol petrol;
+  final state = _ReportGeneratorState();
+  final OnDelete onDelete;
+  DateTime date;
+  final db = FirebaseFirestore.instance.collection('fuels');
+
+  ReportGenerator({Key key, this.onDelete, this.petrol, this.date});
+
   @override
-  _GenerateReportState createState() => _GenerateReportState();
+  _ReportGeneratorState createState() => _ReportGeneratorState();
+
+  bool isValid() => state.validate();
 }
 
-class _GenerateReportState extends State<GenerateReport> {
+class _ReportGeneratorState extends State<ReportGenerator> {
+  TextEditingController controllerLpg = new TextEditingController();
+  TextEditingController controllerLube = new TextEditingController();
+  TextEditingController controllerFuel = new TextEditingController();
 
-  //var file = '';
-  var excel = Excel.createExcel();
+  final form = GlobalKey<FormState>();
+  DateTime pickedDate;
 
- // var bytes = File(file).readAsBytesSync();
+  String id;
+
+  @override
+  void initState() {
+    super.initState();
+    pickedDate = DateTime.now();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xff07239d),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text('Generate Reports'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children:<Widget>[
-            FlatButton(
-                onPressed: generateExcel,
-                child: Text(
-                  'Generate Excel',
-                  style: TextStyle(color: Colors.white),
+    return Padding(
+      padding: EdgeInsets.all(16.0),
+      child: Material(
+        elevation: 1.0,
+        clipBehavior: Clip.antiAlias,
+        borderRadius: BorderRadius.circular(8.0),
+        child: Form(
+          key: form,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppBar(
+                  leading: Icon(Icons.local_gas_station),
+                  elevation: 0,
+                  backgroundColor: Color(0xff07239d),
+                  actions: [
+                    IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          onDelete();
+                          //deleteData();
+                        }
+                    ),
+                  ],
+                  title: Text('Daily Form'),
                 ),
-              color: Color(0xff07239d),
+                Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(icon: Icon(Icons.keyboard_arrow_down),
+                          onPressed: _pickedDate,
+                      ),
+                      Text(
+                          'Date Today : ${pickedDate.year}, ${pickedDate.month}, ${pickedDate.day}'),
+                    ],
+                  ),
+                ),
+                Padding(
+                    padding: EdgeInsets.only(left: 16, right: 16,),
+                  child: TextFormField(
+                    controller: controllerLube,
+                    //initialValue: widget.petrol.lubes,
+                    decoration: InputDecoration(
+                      labelText: 'LUBE',
+                      hintText: 'Enter lube amount sold',
+                      icon: Icon(Icons.local_gas_station),
+                      isDense: true,
+                    ),
+                    onSaved: (val) => val.length > 0 ? null : 'Enter valid data',
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+                  child: TextFormField(
+                    controller: controllerLpg,
+                    //initialValue: widget.petrol.lpg,
+                    onSaved: (val) => val.length > 0 ? null : 'Enter valid data',
+                    decoration: InputDecoration(
+                      labelText: 'LPG',
+                      hintText: 'Enter LPG amount sold',
+                      icon: Icon(Icons.local_gas_station),
+                      isDense: true,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+                  child: TextFormField(
+                    controller: controllerFuel,
+                   // initialValue: widget.petrol.fuel,
+                    onSaved: (val) => val.length > 0 ? null : 'Enter valid data',
+                    decoration: InputDecoration(
+                      labelText: 'FUEL',
+                      hintText: 'Enter fuel amount sold',
+                      icon: Icon(Icons.local_gas_station),
+                      isDense: true,
+                    ),
+                  ),
+                ),
+                FlatButton(
+                    child: Text('Save', style: TextStyle(color: Colors.black, fontSize: 20.0),),
+                  onPressed: (){
+                      //create collection and save data
+                      Map<String,dynamic> data = {
+                        'lpg' : controllerLpg.text,
+                        'lube' : controllerLube.text,
+                        'fuel' : controllerFuel.text,
+                        'date' : pickedDate,
+                      };
+                      FirebaseFirestore.instance.collection('fuels').add(data);
+                  },
+                ),
+              ],
             ),
-          ]
         ),
       ),
     );
   }
 
-  Future<void> generateExcel() async
-  {
-    var excel = Excel.createExcel();
-    Sheet sheetObject = excel['SheetName'];
-    // //Create a Excel document.
-    // //Creating a workbook.
-    // final Workbook workbook = Workbook();
-    // //Accessing via index.
-    // final Worksheet sheet = workbook.worksheets[0];
-    // // Set the text value.
-    // //sheet.getRangeByName('A1').setText('Hello!!');
-    // //Save and launch the excel.
-    // final List<int> bytes = workbook.saveAsStream();
-    // sheet.enableSheetCalculations();
-    //
-    // //Adding the chart
-    // final ChartCollection charts = ChartCollection(sheet);
-    // final Chart chart = charts.add();   //add the chart
-    // chart.chartType = ExcelChartType.bar;
-    // chart.chartType = ExcelChartType.pie;
-    // chart.chartType = ExcelChartType.line;
-    // sheet.charts = charts;
-    //
-    // //Dispose the document.
-    // workbook.dispose();
-    //
-    // //Get the storage folder location using path_provider package.
-    // final Directory directory = await getExternalStorageDirectory();
-    // //Get directory path
-    // final String path = directory.path;
-    // //Create an empty file to write Excel data
-    // final File file = File('$path/output.xlsx, ');
-    // //Write Excel data
-    // await file.writeAsBytes(bytes, flush: true);
-    // //Launch the file (used open_file package)
-    // await OpenFile.open('$path/output.xlsx');
+  _pickedDate() async {
+    DateTime date = await showDatePicker(
+        context: context,
+        initialDate: pickedDate,
+        firstDate: DateTime(DateTime.now().year-8),
+        lastDate: DateTime(DateTime.now().year+8),
+    );
+    if(date != null){
+      setState(() {
+        //controllerDate = _pickedDate();
+        pickedDate = date;
+      });
+    }
   }
-}
 
+  bool validate() {
+      var valid = form.currentState.validate();
+      if (valid) form.currentState.save();
+      return valid;
+  }
+
+  void onDelete() async{
+    await FirebaseFirestore.instance.collection('fuels').doc(id).delete();
+  }
+
+}

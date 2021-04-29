@@ -107,13 +107,14 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
         child: Scaffold(
             appBar: AppBar(
               title: Text("Updates"),
+              backgroundColor: Color(0xff07239d),
             ),
             floatingActionButton: FloatingActionButton(
               elevation: 1.0,
               onPressed: () {
                 selectImage(context);
               },
-              backgroundColor: Colors.blue,
+              backgroundColor: Color(0xff07239d),
               child: Icon(Icons.add),
             ),
             body: StreamBuilder<QuerySnapshot>(
@@ -227,17 +228,17 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
   Scaffold buildUploadForm() {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white70,
+        backgroundColor: Color(0xff07239d),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: Colors.black,
+            color: Colors.white,
           ),
           onPressed: clearImage,
         ),
         title: Text(
           'Caption Post',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
         actions: [
           FlatButton(
@@ -250,7 +251,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
             child: Text(
               'Post',
               style: TextStyle(
-                  color: Colors.blueAccent,
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0),
             ),
@@ -302,7 +303,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
           ListTile(
             leading: Icon(
               Icons.pin_drop,
-              color: Colors.blueAccent,
+              color: Color(0xff07239d),
               size: 35.0,
             ),
             title: Container(
@@ -329,7 +330,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30.0),
               ),
-              color: Colors.blueAccent,
+              color: Color(0xff07239d),
               icon: Icon(
                 Icons.my_location,
                 color: Colors.white,

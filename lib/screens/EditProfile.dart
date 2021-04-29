@@ -71,12 +71,12 @@ class _EditProfileState extends State<EditProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Color(0xff07239d),
         elevation: 1,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: Color(0xff07239d),
+            color: Colors.white,
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -86,7 +86,7 @@ class _EditProfileState extends State<EditProfile> {
           IconButton(
             icon: Icon(
               Icons.settings,
-              color: Color(0xff07239d),
+              color: Colors.white,
             ),
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
