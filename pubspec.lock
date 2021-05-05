@@ -56,14 +56,14 @@ packages:
       name: charts_common
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.0"
+    version: "0.10.0"
   charts_flutter:
     dependency: "direct main"
     description:
       name: charts_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.0"
+    version: "0.10.0"
   clock:
     dependency: transitive
     description:
@@ -409,7 +409,7 @@ packages:
     source: hosted
     version: "1.1.6"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       url: "https://pub.dartlang.org"

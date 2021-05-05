@@ -253,7 +253,7 @@ class _DashBoardState extends State<DashBoard> {
                               children: <Widget>[
                                 SvgPicture.asset(
                                   'assets/images/analytics.svg',
-                                  height: 128,
+                                  height: 80,
                                 ),
                                 Text('Analysis')
                               ],
@@ -283,27 +283,6 @@ class _DashBoardState extends State<DashBoard> {
                             ),
                           ),
                         ),
-                        // GestureDetector(
-                        //   onTap: (){
-                        //     Navigator.push(context, MaterialPageRoute(builder: (context) => AboutUs()));
-                        //   },
-                        //   child: Card(
-                        //     shape: RoundedRectangleBorder(
-                        //         borderRadius: BorderRadius.circular(10)
-                        //     ),
-                        //     elevation: 4,
-                        //     child: Column(
-                        //       mainAxisAlignment: MainAxisAlignment.center,
-                        //       children: <Widget>[
-                        //         SvgPicture.asset(
-                        //           'assets/images/about.svg',
-                        //           height: 128,
-                        //         ),
-                        //         Text('About Us')
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                       crossAxisCount: 2,
                     ),

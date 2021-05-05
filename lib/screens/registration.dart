@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -80,12 +82,16 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   Future<void> createRecord()async {
+    //create a user with a specific uid
+    //create users with auth
+    String uid = await getCurrentUser();
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
 
-    return users
-        .add({
+    return users.doc(uid)
+        .set({
+      'uid': uid,
       'username': nameController.text,
       'email': emailController.text,
       'location': locationController.text,
@@ -100,7 +106,7 @@ class _SignUpPageState extends State<SignUpPage> {
         if(_formKey.currentState.validate()){
           registerToFb();
         }
-        createRecord();
+        //createRecord();
       },
     child: Container(
       width: MediaQuery.of(context).size.width,
@@ -248,13 +254,7 @@ class _SignUpPageState extends State<SignUpPage> {
   void registerToFb() {
     firebaseAuth.createUserWithEmailAndPassword(email: emailController.text, password: passwordController.text)
         .then((result){
-          dbRef.child(result.user.uid).set({
-            'uid': result.user.uid,
-            'name': nameController.text,
-            'email': emailController.text,
-            'location': emailController.text,
-            //'photoUrl': user.photoUrl,
-          }).then((res) {
+            createRecord();
             storedData(nameController.text, emailController.text, locationController.text);
             Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context)=>DashBoard()),
@@ -277,23 +277,16 @@ class _SignUpPageState extends State<SignUpPage> {
                   );
                 });
           });
-    }).catchError((err){
-      showDialog(
-        context: context,
-        builder: (BuildContext context){
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text(err.message),
-            actions: [
-              TextButton(
-                child: Text('OK'),
-                onPressed: (){
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
-      });
+    }
   }
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
+getCurrentUser() async {
+  final User user = await _auth.currentUser;
+  final uid = user.uid;
+  // Similarly we can get email as well
+  //final uemail = user.email;
+  print(uid);
+  return uid;
+  //print(uemail);
 }

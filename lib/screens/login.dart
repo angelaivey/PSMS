@@ -425,11 +425,12 @@ class _LoginPageState extends State<LoginPage> {
         .signInWithEmailAndPassword(
             email: emailController.text, password: passwordController.text)
         .then((result) {
-      dbRef.once().then((DataSnapshot value) {
-        print("Data Chunk ${value.key}");
-        print("Data Chunk ${value.value[firebaseAuth.currentUser.uid]}");
-        final String userName = value.value[firebaseAuth.currentUser.uid]["name"];
-        final String userEmail =  value.value[firebaseAuth.currentUser.uid]["email"];
+      FirebaseFirestore.instance.collection("users").doc(firebaseAuth.currentUser.uid).get().then((DocumentSnapshot value) {
+        print("Data Chunk ${value}");
+
+
+        final String userName = value["username"];
+        final String userEmail =  value["email"];
         print ( "User data : $userName $userEmail");
         storedData(userName, userEmail);
         Navigator.pushReplacement(

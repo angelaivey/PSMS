@@ -22,11 +22,14 @@ class _MarketPricesState extends State<MarketPrices> {
     webScraper = WebScraper('https://www.epra.go.ke/services/petroleum/petroleum-prices/');
     if(await webScraper.loadWebPage('/')){
       List<Map<String, dynamic>> results =
-      webScraper.getElement('div.wpdt-c',
-        ['title']);
+      webScraper.getElement('div.wpdt-c',        ['title']);
+      List<Map<String, dynamic>> town= webScraper.getElement('tbody',['title']);
+      print(town);
+      //print('/n');
       setState(() {
         loaded = true;
-        marketPrice = results[0]['title'];
+        marketPrice = town[0]['title'];
+        //marketPrice = town[0]['town'];
       });
     }
   }

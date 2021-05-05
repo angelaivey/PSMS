@@ -73,7 +73,6 @@ class _PostState extends State<Post> {
   });
 
   buildPostHeader() {
-
         return ListTile(
           leading: CircleAvatar(
             backgroundImage: AssetImage('assets/images/m1.jpeg'),
@@ -115,7 +114,13 @@ class _PostState extends State<Post> {
       ),
     );
   }
-
+  likePost(isLiked,userId,postId)
+  {
+    if(isLiked=true){
+    //  remove the user id from the liked posts dictionary
+    }
+    bool liked= !isLiked;
+  }
   buildPostFooter(){
     return Column(
       children: [
@@ -125,6 +130,7 @@ class _PostState extends State<Post> {
             Padding(padding: EdgeInsets.only(top: 40.0, left: 20.0)),
             GestureDetector(
               onTap: (){
+
                 print('liking post');
               },
               child: Icon(

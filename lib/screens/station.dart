@@ -89,7 +89,8 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
             title: Text("Create Post"),
             children: <Widget>[
               SimpleDialogOption(
-                  child: Text("Photo with Camera"), onPressed: handleTakePhoto),
+                  child: Text("Photo with Camera"),
+                  onPressed: handleTakePhoto),
               SimpleDialogOption(
                   child: Text("Image from Gallery"),
                   onPressed: handleChooseFromGallery),
@@ -149,7 +150,8 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
                 }
                 return null;
               },
-            )));
+            )
+        ));
   }
 
   clearImage() {
@@ -203,7 +205,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
     });
     Future<String> _username() async {
       final SharedPreferences _sp = await SharedPreferences.getInstance();
-      return _sp.get("name");
+      return _sp.get("username");
     }
 
     ;

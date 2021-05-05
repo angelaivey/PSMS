@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ola_energy/screens/registration.dart';
 import 'package:ola_energy/screens/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,6 +36,7 @@ class _EditProfileState extends State<EditProfile> {
   String userName;
   String userEmail;
   String userLocation;
+  String photoUrl;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -47,6 +52,7 @@ class _EditProfileState extends State<EditProfile> {
       userName = _sp.getString("username");
       userEmail = _sp.getString("email");
       userLocation = _sp.getString("location");
+      photoUrl = _sp.getString("photoUrl");
       print("Fetched from shared p ${_sp.getString("username")}");
     });
   }
@@ -67,8 +73,30 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
+  File _image;
+
   @override
   Widget build(BuildContext context) {
+
+    Future getImage() async {
+      var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        _image = image;
+        print('image path $_image');
+      });
+    }
+
+    // Future uploadPic (BuildContext context) async {
+    //   String fileName = basename(_image.path);
+    //   Reference firebaseStorage = FirebaseStorage.instance.ref().child(fileName);
+    //   UploadTask uploadTask = firebaseStorage.putFile(_image);
+    //   TaskSnapshot  taskSnapshot = await uploadTask.whenComplete(() => null);
+    //   setState(() {
+    //     print('profile photo updated');
+    //     Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile photo uploaded')));
+    //   });
+    // }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xff07239d),
@@ -130,7 +158,9 @@ class _EditProfileState extends State<EditProfile> {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: AssetImage('assets/images/m1.jpeg'),
+                            image: (_image != null)
+                                ? FileImage(File(_image.path),)
+                                : AssetImage('assets/images/m1.jpeg'),
                           )),
                     ),
                     Positioned(
@@ -147,9 +177,11 @@ class _EditProfileState extends State<EditProfile> {
                             ),
                             color: Color(0xff07239d),
                           ),
-                          child: Icon(
-                            Icons.edit,
-                            color: Colors.white,
+                          child: IconButton(
+                              icon: Icon(Icons.edit, color: Colors.white),
+                              onPressed: (){
+                                getImage();
+                              },
                           ),
                         )),
                   ],
@@ -188,6 +220,8 @@ class _EditProfileState extends State<EditProfile> {
                         'location': locationController.text,
                         'name': nameController.text,
                         'email': emailController.text,
+                        //'photoUrl': _image.toString(),
+                        //'photoUrl': uploadPic(_image),
                       });
                     },
                     color: Color(0xff07239d),
