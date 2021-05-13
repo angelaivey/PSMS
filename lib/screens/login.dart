@@ -150,7 +150,8 @@ class _LoginPageState extends State<LoginPage> {
               decoration: InputDecoration(
                   border: InputBorder.none,
                   fillColor: Color(0xfff3f3f4),
-                  filled: true))
+                  filled: true),
+          ),
         ],
       ),
     );

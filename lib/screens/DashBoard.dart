@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ola_energy/models/EmptyState.dart';
 import 'package:ola_energy/screens/EditProfile.dart';
+import 'package:ola_energy/screens/registration.dart';
 import 'package:ola_energy/screens/reportGeneration.dart';
 import 'package:ola_energy/screens/settings.dart';
 import 'package:ola_energy/screens/station.dart';
@@ -38,6 +39,10 @@ class _DashBoardState extends State<DashBoard> {
     });
   }
 
+ Future fetchAvatar() async{
+ //   fetch user id fro
+   //userName
+ }
   @override
   void initState() {
     super.initState();
@@ -85,7 +90,7 @@ class _DashBoardState extends State<DashBoard> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => SettingsPage()));
+                                    builder: (context) => EditProfile()));
                           },
                           child: CircleAvatar(
                             radius: 32,

@@ -75,6 +75,11 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
           appBar: AppBar(
             title: Text('Sales Analysis Graphs'),
             backgroundColor: Color(0xff07239d),
+            leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
             bottom: TabBar(
               indicatorColor: Color(0xff07239d),
               tabs: [
@@ -164,7 +169,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   child: charts.BarChart(_seriesBarData,
                     animate: true,
                     barGroupingType:charts.BarGroupingType.grouped,
-                    animationDuration: Duration(seconds: 5),
+                    animationDuration: Duration(seconds: 2),
                     behaviors: [
                       new charts.DatumLegend(
                       entryTextStyle: charts.TextStyleSpec(

@@ -28,19 +28,19 @@ class Post extends StatefulWidget {
     this.likes,
 });
 
-  int getLikeCount(likes){
-    //if there are no likes, return 0
-    if(likes == null){
-      return 0;
-    }
-    int count = 0;
-    likes.values.forEach((val){
-      if (val == true){
-        count += 1;
-      }
-    });
-    return count;
-  }
+  // int getLikeCount(likes){
+  //   //if there are no likes, return 0
+  //   if(likes == null){
+  //     return 0;
+  //   }
+  //   int count = 0;
+  //   likes.values.forEach((val){
+  //     if (val == true){
+  //       count += 1;
+  //     }
+  //   });
+  //   return count;
+  // }
 
   @override
   _PostState createState() => _PostState(
@@ -51,7 +51,7 @@ class Post extends StatefulWidget {
     description: this.description,
     mediaUrl: this.mediaUrl,
     likes: this.likes,
-    likeCount:getLikeCount(likes),
+    //likeCount:getLikeCount(likes),
   );
 }
 
@@ -162,16 +162,38 @@ class _PostState extends State<Post> {
             Padding(padding: EdgeInsets.only(top: 40.0, left: 20.0)),
             GestureDetector(
               onTap: (){
-
-                print('liking post');
+                print('up-voting post');
+                myVote!=1?
+                vote(postId,1):myVote==1?vote(postId,0):null;
+              //  adds number of likes to the post
+              //  creates a subcollection of human upvoters with the user id
               },
               child: Icon(
-                Icons.thumb_up_alt_outlined,
+                Icons.arrow_circle_up,
                 size: 28.0,
-                color: Colors.blue,
+                color: myVote==1?Colors.blue:Colors.grey,
               ),
             ),
             Padding(padding: EdgeInsets.only(right: 20.0)),
+
+            GestureDetector(
+              onTap: (){
+                print('down-voting post');
+
+                myVote!=2?
+                vote(postId,2):myVote==2?vote(postId,0):null;
+               // checkUpVote(postId);
+                //  adds number of likes to the post
+                //  creates a subcollection of human upvoters with the user id or creates a list of likers with the user ids inside
+              },
+              child: Icon(
+                Icons.arrow_circle_down,
+                size: 28.0,
+                color: myVote==2?Colors.blue:Colors.grey,
+              ),
+            ),
+            Padding(padding: EdgeInsets.only(right: 20.0)),
+
             GestureDetector(
               onTap: (){
                 print('showing comments');
@@ -179,29 +201,56 @@ class _PostState extends State<Post> {
               child: IconButton(
                   icon: Icon(Icons.comment_outlined,
                     size: 28.0,
-                    color: Colors.blue,
+                    color: Colors.grey,
                   ),
                   onPressed: (){
+
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CommentsDisplay()),
+                      MaterialPageRoute(builder: (context) => CommentsDisplay(postId: postId)),
                     );
                   }
               ),
             ),
+          //  add comment count here
+            SizedBox(width:10),
+            Text(commentCount.toString()+' comments'),
           ],
         ),
         Row(
           children: [
             Container(
-              margin: EdgeInsets.only(left: 20.0),
-              child: Text(
-                '$likeCount likes',
-                style: TextStyle(
-                  color: Colors.black, fontWeight: FontWeight.bold
-                ),
-              ),
-            ),
+              // margin: EdgeInsets.only(left: 20.0),
+              child:StreamBuilder<QuerySnapshot>(
+                // <2> Pass `Stream<QuerySnapshot>` to stream
+                  stream: FirebaseFirestore.instance.collection('posts')
+                      .where('postId', isEqualTo: postId)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    Widget mywidget;
+                    if (snapshot.hasData) {
+                      // <3> Retrieve `List<DocumentSnapshot>` from snapshot
+                      final List<DocumentSnapshot> documents = snapshot.data.docs;
+                      mywidget=ListView(
+                          children: documents
+                              .map((doc) => Center(
+                            child: Text(doc['votesCount'].toString() + ' votes'),
+
+                            ),
+                          )
+                              .toList());
+                    } else if (snapshot.hasError) {
+                     mywidget=  Text("It's Error!");
+                      }
+                    return Container(
+                        height:30,
+                        margin: EdgeInsets.only(left:20),
+                        width:50,
+                        child: mywidget);
+                      }
+                      )
+                )
+
           ],
         ),
         Row(
@@ -216,6 +265,7 @@ class _PostState extends State<Post> {
                 ),
               ),
             ),
+            SizedBox(width: 5),
             Expanded(child: Text('$description')),
           ],
         ),
@@ -223,13 +273,31 @@ class _PostState extends State<Post> {
     );
   }
   String pUsername = '';
+  int myVote=0;
+  String voteCount='0';
+  int commentCount=0;
   @override
   void initState()  {
     super.initState();
     // DO YOUR STUFF
     _username();
+
+    checkUpVote(postId);
+
+    getVoteCount(postId);
+    getCommentCount(postId);
+
   }
 
+  getCommentCount(postId) async{
+    FirebaseFirestore.instance.collection('comments')
+        .where('postId', isEqualTo: postId)
+        .get().then((value) {
+          setState(() {
+           commentCount= value.docs.length;
+          });
+  });
+  }
   Future<String> _username() async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
     setState(() {
@@ -238,6 +306,141 @@ class _PostState extends State<Post> {
     return _sp.get("username");
   }
 
+  Future<String>getVoteCount(postId) async {
+   await FirebaseFirestore.instance.collection('posts').doc(postId)
+        .collection('votes')
+    .where('postId', isEqualTo:postId)
+        .get()
+        .then((value){
+      value.docs.forEach((result) {
+        setState(() {
+          voteCount= result.data()['votesCount'];
+        });
+        print('moooooooooo');
+        return result.data()['voteCount'];
+      });
+    });
+  }
+
+ Future<String>countVote(postId) async {
+    FirebaseFirestore.instance.collection('posts').doc(postId)
+    .collection('votes')
+    .get()
+    .then((value){
+      return value.docs.length.toString();
+    });
+  }
+
+ checkUpVote(postId) async{
+   String usid = await getCurrentUser();
+   await FirebaseFirestore.instance.collection("posts").doc(postId)
+       .collection('votes')
+       .where('userId', isEqualTo: usid)
+       .get().then((querySnapshot) {
+     querySnapshot.docs.forEach((result) {
+
+           //fetch the number under 'vote'
+          print('------------------------------------------------------------');
+           print(result.data()['vote']);
+          print('------------------------------------------------------------');
+          setState(() {
+            myVote= result.data()['vote'];
+          });
+
+     });
+   });
+ }
+
+  Future<void> vote(postId, val) async {
+    //check if post has been upvoted before
+
+    setState(() {
+      myVote=val;
+    });
+    String uid = await getCurrentUser();
+    CollectionReference upVotes = FirebaseFirestore.instance.collection('posts').doc(postId).collection('votes');
+    return upVotes.doc(uid)
+        .set({
+      'userId': uid,
+      'vote': myVote
+    })
+        .then((value) {
+      print("Post Upvoted");
+       addVotes(postId, val);
+    } )
+        .catchError((error) => print("Failed to delete upvote: $error"));
+  }
+addVotes(postId,val) async{
+
+    int totalupVotes,totaldownVotes,finalVote;
+    // checkUpVote(postId);
+  FirebaseFirestore.instance.collection('posts').doc(postId)
+      .collection('votes')
+      .where('vote', isEqualTo: 1)
+      .get()
+      .then((upvotes){
+    FirebaseFirestore.instance.collection('posts').doc(postId)
+        .collection('votes')
+        .where('vote', isEqualTo: 2)
+        .get().then((downvotes) {
+          totaldownVotes = downvotes.docs.length;
+          totalupVotes= upvotes.docs.length;
+
+          finalVote= totalupVotes- totaldownVotes;
+          CollectionReference post = FirebaseFirestore.instance.collection('posts');
+          post.doc(postId).update({
+            'votesCount': finalVote
+          });
+
+
+    });
+
+    // print("helooooooooooooooooooooooooooooooo");
+    // print(totalVotes);
+    // if(val==2){
+    // //  if you clicked downvote
+    //   if(myVote==2){
+    //     print("downvotingggggg");
+    //   //  unvote a downvote
+    //     finalVote=totalVotes+1;
+    //   }
+    //   else if(myVote==0){
+    //     print("huh");
+    //     //downvote if no vote is casted
+    //     finalVote=totalVotes-1;
+    //   }
+    //   else if(myVote==1){
+    //     //downvoting if you upvoted
+    //     finalVote=totalVotes-2;
+    //   }
+    // }
+    // else if(val==1){
+    // //  if human upvoted
+    //   if(myVote==2){
+    //     finalVote=totalVotes+2;
+    //   }
+    //   else if(myVote==0){
+    //     finalVote=totalVotes+1;
+    //   }
+    //   else if(myVote==1){
+    //     finalVote=totalVotes-1;
+    //   }
+    // }
+    // else if(val==0){
+    //   if(myVote==2){
+    //     finalVote= totalVotes+1;
+    //   }
+    //   else if(myVote==1){
+    //     finalVote= totalVotes-1;
+    //   }
+    // }
+    // val==2?myVote==2?finalVote=totalVotes + 1:myVote==0?finalVote=totalVotes-1:finalVote=totalVotes-2
+    //       :myVote==1?finalVote=totalVotes - 1:myVote==0?finalVote=totalVotes+1:finalVote=totalVotes+2;
+
+  });
+
+
+}
 
   @override
   Widget build(BuildContext context)  {

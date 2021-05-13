@@ -42,24 +42,6 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
   int postCount = 0;
   List<Post> posts = [];
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   //   getProfilePosts();
-  // }
-
-  // getProfilePosts() async {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //   QuerySnapshot snapshot =
-  //       await postsRef.orderBy('timestamp', descending: true).get();
-  //   setState(() {
-  //     isLoading = false;
-  //     postCount = snapshot.docs.length;
-  //     posts = snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
-  //   });
-  // }
 
   handleTakePhoto() async {
     Navigator.pop(context);
@@ -184,8 +166,8 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
 
   createPostInFirestore(
       {String username, String mediaUrl, String location, String description}) {
-    return postsRef
-        .add({
+    return postsRef.doc(postId)
+        .set({
           'postId': postId,
           'ownerId': firebaseAuth.currentUser.uid,
           'username': username,
@@ -194,6 +176,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
           'location': location,
           'timestamp': timestamp,
           'likes': {},
+          'votesCount':0,
         })
         .then((value) => print('image added'))
         .catchError((error) => print('failed to add user: $error'));
