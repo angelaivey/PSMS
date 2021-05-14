@@ -51,8 +51,7 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController nameController = TextEditingController();
   TextEditingController locationController = TextEditingController();
 
-  CollectionReference dbRef =
-  FirebaseFirestore.instance.collection('users');
+  CollectionReference dbRef = FirebaseFirestore.instance.collection('users');
 
   Future storedData() async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
@@ -80,7 +79,6 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-
     Future getImage() async {
       final picker = ImagePicker();
       var image = await picker.getImage(source: ImageSource.gallery);
@@ -90,18 +88,20 @@ class _EditProfileState extends State<EditProfile> {
       });
     }
 
-    String _photoUrl= '';
+    String _photoUrl = '';
 
     Future<String> uploadImage(imageFile) async {
-      UploadTask uploadTask =
-      storageRef.child('profilepics/$_image').putFile(imageFile);
+      UploadTask uploadTask = storageRef
+          .child('profilepics/${_image.path.split("/").last}')
+          .putFile(imageFile);
       TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
       setState(() {
         _photoUrl = downloadUrl;
       });
-       return downloadUrl;
+      return downloadUrl;
     }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xff07239d),
@@ -136,8 +136,12 @@ class _EditProfileState extends State<EditProfile> {
                           image: DecorationImage(
                             fit: BoxFit.cover,
                             image: (_image != null)
-                                ? FileImage(File(_image.path),)
-                                : _photoUrl==""?AssetImage('assets/images/m1.jpeg'):NetworkImage(_photoUrl),
+                                ? FileImage(
+                                    File(_image.path),
+                                  )
+                                : photoUrl == ""
+                                    ? AssetImage('assets/images/m1.jpeg')
+                                    : NetworkImage(photoUrl),
                           )),
                     ),
                     Positioned(
@@ -155,10 +159,10 @@ class _EditProfileState extends State<EditProfile> {
                             color: Color(0xff07239d),
                           ),
                           child: IconButton(
-                              icon: Icon(Icons.edit, color: Colors.white),
-                              onPressed: (){
-                                getImage();
-                              },
+                            icon: Icon(Icons.edit, color: Colors.white),
+                            onPressed: () {
+                              getImage();
+                            },
                           ),
                         )),
                   ],
@@ -170,23 +174,27 @@ class _EditProfileState extends State<EditProfile> {
               buildTextField("Full Name", userName, nameController, false),
               buildTextField("E-mail", userEmail, emailController, false),
               // buildTextField("Password", "********", true),
-              buildTextField("Station", userLocation, locationController, false),
+              buildTextField(
+                  "Station", userLocation, locationController, false),
               SizedBox(
                 height: 20,
               ),
               GestureDetector(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Change Password'),
-                    Icon( Icons.chevron_right,
-                    ),
-                  ],
-                ),
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ChangePassword()));
-                }
-              ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Change Password'),
+                      Icon(
+                        Icons.chevron_right,
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ChangePassword()));
+                  }),
               SizedBox(
                 height: 35,
               ),
@@ -207,18 +215,25 @@ class _EditProfileState extends State<EditProfile> {
                             color: Colors.black)),
                   ),
                   RaisedButton(
-                    onPressed: () {
-                      uploadImage(_image);
-                      dbRef.doc(firebaseAuth.currentUser.uid)
-                          .update({
+                    onPressed: () async {
+                      String imageUrl = await uploadImage(_image);
+                      dbRef.doc(firebaseAuth.currentUser.uid).update({
                         'uid': firebaseAuth.currentUser.uid,
-                        'location': locationController.text==''?userLocation:locationController.text,
-                        'username': nameController.text == ''? userName: nameController.text,
-                        'email': emailController.text == ''? userEmail: emailController.text,
-                        'photoUrl': _image,
-                      }).then((value) {
+                        'location': locationController.text == ''
+                            ? userLocation
+                            : locationController.text,
+                        'username': nameController.text == ''
+                            ? userName
+                            : nameController.text,
+                        'email': emailController.text == ''
+                            ? userEmail
+                            : emailController.text,
+                        'photoUrl': imageUrl,
+                      }).then((value) async {
                         print('updated');
-
+                        final SharedPreferences _sp =
+                            await SharedPreferences.getInstance();
+                        _sp.setString("photoUrl", imageUrl);
                         Fluttertoast.showToast(
                             msg: 'Profile updated',
                             toastLength: Toast.LENGTH_SHORT,
@@ -227,8 +242,7 @@ class _EditProfileState extends State<EditProfile> {
                             backgroundColor: Color(0xff07239d),
                             textColor: Colors.white,
                             fontSize: 16.0);
-                      }).catchError((onError)
-                      {
+                      }).catchError((onError) {
                         Fluttertoast.showToast(
                             msg: "Error: $onError",
                             toastLength: Toast.LENGTH_SHORT,
@@ -255,7 +269,9 @@ class _EditProfileState extends State<EditProfile> {
                   )
                 ],
               ),
-              SizedBox(height: 30,),
+              SizedBox(
+                height: 30,
+              ),
               Center(
                 child: OutlineButton(
                   color: Color(0xff07239d),
@@ -265,11 +281,16 @@ class _EditProfileState extends State<EditProfile> {
                   onPressed: () {
                     logout();
                     signOut();
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>login.LoginPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => login.LoginPage()));
                   },
                   child: Text("SIGN OUT",
                       style: TextStyle(
-                          fontSize: 16, letterSpacing: 2.2, color: Colors.black)),
+                          fontSize: 16,
+                          letterSpacing: 2.2,
+                          color: Colors.black)),
                 ),
               )
             ],
@@ -289,34 +310,34 @@ class _EditProfileState extends State<EditProfile> {
     //detects when user signed in
     googleSignIn.onCurrentUserChanged.listen((account) {
       handleSignIn(account);
-    },
-        onError: (err){
-          print('Error signing in: $err');
-        });
+    }, onError: (err) {
+      print('Error signing in: $err');
+    });
     //Reauthenticate user when app is opened
-    googleSignIn.signInSilently(suppressErrors: false)
-        .then((account) {
+    googleSignIn.signInSilently(suppressErrors: false).then((account) {
       handleSignIn(account);
-    }).catchError((err){
+    }).catchError((err) {
       print('Error signing in: $err');
     });
   }
-  handleSignIn(GoogleSignInAccount account){
-    if (account != null){
 
+  handleSignIn(GoogleSignInAccount account) {
+    if (account != null) {
       print("User signed in!: $account");
       setState(() {
         isAuth = true;
       });
-    }else{
+    } else {
       setState(() {
         isAuth = false;
       });
     }
   }
-  logout(){
+
+  logout() {
     googleSignIn.signOut();
   }
+
   signOut() async {
     await FirebaseAuth.instance.signOut();
   }
@@ -356,40 +377,37 @@ class _EditProfileState extends State<EditProfile> {
   }
 }
 
-
-
-
 class ChangePassword extends StatefulWidget {
   @override
   _ChangePasswordState createState() => _ChangePasswordState();
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
-
   bool match = true;
-  int errorCode=0;
+  int errorCode = 0;
 
   String userEmail;
-
 
   Future reauth(String oldPassword) async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
     setState(() {
-
       userEmail = _sp.getString("email");
-
     });
     // Prompt the user to enter their email and password
     String email = _sp.getString("email");
     String password = oldPassword;
 
 // Create a credential
-    EmailAuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
+    EmailAuthCredential credential =
+        EmailAuthProvider.credential(email: email, password: password);
 
 // Reauthenticate
-    await FirebaseAuth.instance.currentUser.reauthenticateWithCredential(credential).then((value){
-      _changePassword(newPasswordController.text, confirmPasswordController.text);
-    }).catchError((err){
+    await FirebaseAuth.instance.currentUser
+        .reauthenticateWithCredential(credential)
+        .then((value) {
+      _changePassword(
+          newPasswordController.text, confirmPasswordController.text);
+    }).catchError((err) {
       Fluttertoast.showToast(
           msg: err.message,
           toastLength: Toast.LENGTH_SHORT,
@@ -400,14 +418,15 @@ class _ChangePasswordState extends State<ChangePassword> {
           fontSize: 16.0);
     });
   }
-  void _changePassword(String password, String confirmPassword) async{
-    if(password==confirmPassword){
+
+  void _changePassword(String password, String confirmPassword) async {
+    if (password == confirmPassword) {
       print(password.length);
-      if(password.length>=8){
+      if (password.length >= 8) {
         User user = await FirebaseAuth.instance.currentUser;
 
         //Pass in the password to updatePassword.
-        user.updatePassword(password).then((_){
+        user.updatePassword(password).then((_) {
           Fluttertoast.showToast(
               msg: 'Successfully changed password',
               toastLength: Toast.LENGTH_SHORT,
@@ -418,38 +437,36 @@ class _ChangePasswordState extends State<ChangePassword> {
               fontSize: 16.0);
           print("Successfully changed password");
           Navigator.pop(context);
-        }).catchError((error){
+        }).catchError((error) {
           print("Password can't be changed" + error.toString());
           //This might happen, when the wrong password is in, the user isn't found, or if the user hasn't logged in recently.
         });
-      }
-      else{
+      } else {
         setState(() {
-          errorCode=1;
+          errorCode = 1;
         });
       }
-
     }
     //Create an instance of the current user.
-   else{
-     setState(() {
-       match=false;
-     });
+    else {
+      setState(() {
+        match = false;
+      });
     }
   }
 
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController oldPasswordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xff07239d),
-        title: Text('Change Password'),
-      ),
-      body:Column(
-        children:[
+        appBar: AppBar(
+          backgroundColor: Color(0xff07239d),
+          title: Text('Change Password'),
+        ),
+        body: Column(children: [
           TextField(
             controller: oldPasswordController,
             obscureText: true,
@@ -457,21 +474,19 @@ class _ChangePasswordState extends State<ChangePassword> {
                 border: InputBorder.none,
                 fillColor: Color(0xfff3f3f4),
                 filled: true,
-                hintText: 'Old Password'
-            ),
+                hintText: 'Old Password'),
           ),
           SizedBox(
             height: 25,
           ),
           TextField(
-          controller: newPasswordController,
-          obscureText: true,
-          decoration: InputDecoration(
-              border: InputBorder.none,
-              fillColor: Color(0xfff3f3f4),
-              filled: true,
-            hintText: 'New Password'
-          ),
+            controller: newPasswordController,
+            obscureText: true,
+            decoration: InputDecoration(
+                border: InputBorder.none,
+                fillColor: Color(0xfff3f3f4),
+                filled: true,
+                hintText: 'New Password'),
           ),
           SizedBox(
             height: 25,
@@ -480,29 +495,35 @@ class _ChangePasswordState extends State<ChangePassword> {
             controller: confirmPasswordController,
             obscureText: true,
             decoration: InputDecoration(
-              border: InputBorder.none,
-              fillColor: Color(0xfff3f3f4),
-              filled: true,
-              hintText: 'Confirm Password'
-            ),
+                border: InputBorder.none,
+                fillColor: Color(0xfff3f3f4),
+                filled: true,
+                hintText: 'Confirm Password'),
           ),
           SizedBox(
             height: 35,
           ),
-          match==true?SizedBox(height:0):Text(errorCode==0?'Passwords do not match':'Password too short. Should be more than 8 characters long',style:TextStyle(color: Colors.red)),
-          match==true?SizedBox(height:0):SizedBox(height:35),
+          match == true
+              ? SizedBox(height: 0)
+              : Text(
+                  errorCode == 0
+                      ? 'Passwords do not match'
+                      : 'Password too short. Should be more than 8 characters long',
+                  style: TextStyle(color: Colors.red)),
+          match == true ? SizedBox(height: 0) : SizedBox(height: 35),
           FlatButton(
             color: Color(0xff07239d),
-              textColor: Colors.white,
-              height: 40,
-              minWidth: 120,
-              onPressed: (){
-               reauth(oldPasswordController.text);
-              },
-              child: Text('Change Password', style: TextStyle(fontSize: 15.0),),
+            textColor: Colors.white,
+            height: 40,
+            minWidth: 120,
+            onPressed: () {
+              reauth(oldPasswordController.text);
+            },
+            child: Text(
+              'Change Password',
+              style: TextStyle(fontSize: 15.0),
+            ),
           ),
-        ]
-      )
-    );
+        ]));
   }
 }

@@ -37,10 +37,12 @@ class _LoginPageState extends State<LoginPage> {
   PageController pageController;
   int pageIndex = 0;
 
-  void storedData(name, email) async {
+  void storedData(name, email,photoUrl, uid) async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
     _sp.setString("username", name.toString());
     _sp.setString("email", email.toString());
+    _sp.setString("photoUrl", photoUrl.toString());
+    _sp.setString("uid", uid.toString());
   }
 
   @override
@@ -432,11 +434,14 @@ class _LoginPageState extends State<LoginPage> {
 
         final String userName = value["username"];
         final String userEmail =  value["email"];
+        final String userPhoto =  value["photoUrl"];
+        final String uid =  value["uid"];
         print ( "User data : $userName $userEmail");
-        storedData(userName, userEmail);
-        Navigator.pushReplacement(
+        storedData(userName, userEmail, uid, userPhoto!=null?'assets/images/user.png':userPhoto);
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => DashBoard()),
+          ModalRoute.withName('/'),
         );
       });
     }).catchError((err) {

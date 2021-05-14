@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ola_energy/models/petrol.dart';
 import 'package:ola_energy/widgets/multi_form_reports.dart';
+import 'package:random_string/random_string.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 typedef OnDelete();
 
@@ -29,6 +32,8 @@ class ReportGenerator extends StatefulWidget {
 }
 
 class _ReportGeneratorState extends State<ReportGenerator> {
+  String fuelId;
+
   TextEditingController controllerLpg = new TextEditingController();
   TextEditingController controllerLube = new TextEditingController();
   TextEditingController controllerFuel = new TextEditingController();
@@ -41,6 +46,7 @@ class _ReportGeneratorState extends State<ReportGenerator> {
   @override
   void initState() {
     super.initState();
+    _userId();
 
     if (widget.update) {
       controllerFuel.text = widget.petrol.fuel;
@@ -51,7 +57,21 @@ class _ReportGeneratorState extends State<ReportGenerator> {
       pickedDate = DateTime.now();
     }
   }
+  String uid;
+  Future<String> _userId() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
 
+
+      final User user = auth.currentUser;
+
+      // here you write the codes to input the data into firestore
+
+    setState(() {
+      uid= user.uid;
+    });
+    return  user.uid;
+
+  }
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -148,6 +168,7 @@ class _ReportGeneratorState extends State<ReportGenerator> {
                 onPressed: () {
                   if (widget.update) {
                     Map<String, dynamic> data = {
+                      // 'fuelId': widget.docsId,
                       'lpg': int.parse(controllerLpg.text),
                       'lube': int.parse(controllerLube.text),
                       'fuel': int.parse(controllerFuel.text),
@@ -155,18 +176,22 @@ class _ReportGeneratorState extends State<ReportGenerator> {
                     };
                     FirebaseFirestore.instance
                         .collection('fuels')
+
                         .doc(widget.docsId)
                         .update(data);
                     Navigator.pop(context);
                   } else {
                     //create collection and save data
+                    String randomId=randomAlphaNumeric(32);
                     Map<String, dynamic> data = {
+                      'fuelId':randomId,
+                      'userId': uid,
                       'lpg': int.parse(controllerLpg.text),
                       'lube': int.parse(controllerLube.text),
                       'fuel': int.parse(controllerFuel.text),
                       'date': pickedDate,
                     };
-                    FirebaseFirestore.instance.collection('fuels').add(data);
+                    FirebaseFirestore.instance.collection('fuels').doc(randomId).set(data);
                     Navigator.pop(context);
                   }
                 },

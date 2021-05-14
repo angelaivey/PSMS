@@ -174,12 +174,28 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
           'mediaUrl': mediaUrl,
           'description': description,
           'location': location,
-          'timestamp': timestamp,
+          'timestamp': DateTime.now(),
           'likes': {},
           'votesCount':0,
         })
         .then((value) => print('image added'))
         .catchError((error) => print('failed to add user: $error'));
+  }
+  String photoUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProfilePicture();
+  }
+
+  Future fetchProfilePicture() async {
+    final SharedPreferences _sp = await SharedPreferences.getInstance();
+    print("Fetched from shared p ${_sp.getString("username")}");
+    setState(() {
+      photoUrl = _sp.getString("photoUrl");
+      print("Fetched from shared p ${_sp.getString("username")}");
+    });
   }
 
   handleSubmit() async {
@@ -268,7 +284,10 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
           ),
           ListTile(
             leading: CircleAvatar(
-              backgroundImage: AssetImage('assets/images/m1.jpeg'),
+              radius: 32,
+              backgroundImage: photoUrl!='' || photoUrl!= null?
+              NetworkImage(photoUrl):
+              AssetImage('assets/images/user.png'),
               // CachedNetworkImageProvider(
               //   widget.currentUser.photoURL
               // ),

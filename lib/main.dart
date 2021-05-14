@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         ),
         debugShowCheckedModeBanner: false,
         home:
-            FirebaseAuth.instance.currentUser.uid != null? DashBoard():
+            FirebaseAuth.instance.currentUser?.uid != null? DashBoard():
 
         WelcomePage(),
       )

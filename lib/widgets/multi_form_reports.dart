@@ -1,18 +1,47 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:ola_energy/models/EmptyState.dart';
 import 'package:ola_energy/models/petrol.dart';
+import 'package:ola_energy/screens/registration.dart';
 import 'package:ola_energy/screens/reportGeneration.dart';
 import 'package:ola_energy/widgets/progress.dart';
 
 class MultiForm extends StatefulWidget {
+
   @override
   _MultiFormState createState() => _MultiFormState();
+
 }
+
 
 class _MultiFormState extends State<MultiForm> {
   List<ReportGenerator> petrol = [];
+  String uid;
+  Future<String> _userId() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+
+
+    final User user = auth.currentUser;
+
+    // here you write the codes to input the data into firestore
+
+    setState(() {
+      uid= user.uid;
+    });
+    return  user.uid;
+
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+   _userId();
+    // _checkFuelExistence(widget.);
+
+  }
 
 //  final form = GlobalKey<FormState>();
   @override
@@ -26,18 +55,14 @@ class _MultiFormState extends State<MultiForm> {
               Navigator.pop(context);
             }),
         title: Text('Daily Sales Forms'),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Save All'),
-            textColor: Colors.white,
-            onPressed: () {},
-          )
-        ],
       ),
+
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection("fuels")
             .orderBy("date", descending: true)
+        //
+        .where('userId', isEqualTo: uid)
             .snapshots(),
         builder: (context, asyncSnapshot) {
           if (asyncSnapshot.hasError) {
@@ -48,126 +73,15 @@ class _MultiFormState extends State<MultiForm> {
               itemCount: asyncSnapshot.data.docs.length,
               itemBuilder: (BuildContext context, int index) => Padding(
                 padding: EdgeInsets.all(8.0),
-                child: Material(
-                  elevation: 1.0,
-                  clipBehavior: Clip.antiAlias,
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Form(
-                    //  key: form,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AppBar(
-                          leading: Icon(Icons.local_gas_station),
-                          elevation: 0,
-                          backgroundColor: Color(0xff07239d),
-                          actions: [
-                            IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () {
-                                  // onDelete();
-                                  //deleteData();
-                                }),
-                          ],
-                          title: Text('Daily Form'),
-                        ),
-                        Padding(
-                          padding:
-                              EdgeInsets.only(left: 16, right: 16, top: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              // IconButton(icon: Icon(Icons.keyboard_arrow_down),
-                              //   onPressed: _pickedDate,
-                              // ),
-                              Text(
-                                  'Date Today : ${DateFormat().add_yMMMEd().format(asyncSnapshot.data.docs[index].data()["date"].toDate())}'),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                            padding: EdgeInsets.only(
-                              left: 16,
-                              right: 16,
-                            ),
-                            child: Row(
-                              children: [
-                                Text('Lube: '),
-                                SizedBox(width: 10.0,),
-                                Text(asyncSnapshot.data.docs[index]
-                                    .data()["lube"]
-                                    .toString()),
-                              ],
-                            )
-                            ),
-                        Padding(
-                            padding:
-                                EdgeInsets.only(left: 16, right: 16, top: 16),
-                            child: Row(
-                              children: [
-                                Text('LPG: '),
-                                SizedBox(width: 10.0,),
-                                Text(asyncSnapshot.data.docs[index]
-                                    .data()["lpg"]
-                                    .toString()),
-                              ],
-                            )
-                            ),
-                        Padding(
-                            padding:
-                                EdgeInsets.only(left: 16, right: 16, top: 16),
-                            child: Row(
-                              children: [
-                                Text('Fuel: '),
-                                SizedBox(width: 10.0,),
-                                Text(asyncSnapshot.data.docs[index]
-                                    .data()["fuel"]
-                                    .toString()),
-                              ],
-                            )
-                            ),
-                        Center(
-                          child: FlatButton(
-                            child: Text(
-                              'Update',
-                              style: TextStyle(
-                                  color: Colors.black, fontSize: 20.0),
-                            ),
-                            onPressed: () {
-                              _dialog(
-                                  update: true,
-                                  docsId: asyncSnapshot.data.docs[index].id,
-                                  petrol: Petrol(
-                                    lubes: asyncSnapshot.data.docs[index]
-                                        .data()["lube"]
-                                        .toString(),
-                                    fuel: asyncSnapshot.data.docs[index]
-                                        .data()["fuel"]
-                                        .toString(),
-                                    date: asyncSnapshot.data.docs[index]
-                                        .data()["date"],
-                                    lpg: asyncSnapshot.data.docs[index]
-                                        .data()["lpg"]
-                                        .toString(),
-                                  ));
-                              //create collection and save data
-                              Map<String, dynamic> data = {
-                                // 'lpg' : int.parse(controllerLpg.text),
-                                // 'lube' : int.parse(controllerLube.text),
-                                // 'fuel' : int.parse(controllerFuel.text),
-                                // 'date' : pickedDate,
-                              };
-                              // FirebaseFirestore.instance.collection('fuels').add(data);
-                              // Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      ],
+                child:fuelWidget(
+                  DateFormat().add_yMMMEd().format(asyncSnapshot.data.docs[index].data()["date"].toDate()),
+                  asyncSnapshot.data.docs[index].data()["fuel"],
+                  asyncSnapshot.data.docs[index].data()["fuelId"],
+                  asyncSnapshot.data.docs[index].data()["lpg"],
+                  asyncSnapshot.data.docs[index].data()["lube"],
+                  asyncSnapshot.data.docs[index].data()["userId"],
+
                     ),
-                  ),
-                ),
               ),
             );
           } else if (asyncSnapshot.hasData &&
@@ -190,7 +104,122 @@ class _MultiFormState extends State<MultiForm> {
       ),
     );
   }
+   fuelWidget(date, fuel, fuelId, lpg, lube, userId){
+   return Material(
+      elevation: 1.0,
+      clipBehavior: Clip.antiAlias,
+      borderRadius: BorderRadius.circular(8.0),
+      child: Form(
+        //  key: form,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppBar(
+              leading: Icon(Icons.local_gas_station),
+              elevation: 0,
+              backgroundColor: Color(0xff07239d),
+              actions: [
+                IconButton(
+                  onPressed: (){
+                    deleteForm(fuelId);
+                  },
+                  icon: Icon(Icons.delete),
+                ),
+              ],
+              title: Text('Daily Form'),
+            ),
+            Padding(
+              padding:
+              EdgeInsets.only(left: 16, right: 16, top: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // IconButton(icon: Icon(Icons.keyboard_arrow_down),
+                  //   onPressed: _pickedDate,
+                  // ),
+                  Text(
+                      'Date Today : '+date),
+                ],
+              ),
+            ),
+            Padding(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                ),
+                child: Row(
+                  children: [
+                    Text('Lube: '),
+                    SizedBox(width: 10.0,),
+                    Text(lube
+                        .toString()),
+                  ],
+                )
+            ),
+            Padding(
+                padding:
+                EdgeInsets.only(left: 16, right: 16, top: 16),
+                child: Row(
+                  children: [
+                    Text('LPG: '),
+                    SizedBox(width: 10.0,),
+                    Text(lpg
+                        .toString()),
+                  ],
+                )
+            ),
+            Padding(
+                padding:
+                EdgeInsets.only(left: 16, right: 16, top: 16),
+                child: Row(
+                  children: [
+                    Text('Fuel: '),
+                    SizedBox(width: 10.0,),
+                    Text(fuel
+                        .toString()),
+                  ],
+                )
+            ),
+            Center(
+              child: FlatButton(
+                child: Text(
+                  'Update',
+                  style: TextStyle(
+                      color: Colors.black, fontSize: 20.0),
+                ),
+                onPressed: () {
+                  _dialog(
+                      update: true,
+                      docsId: fuelId,
+                      petrol: Petrol(
+                        lubes: lube
+                            .toString(),
+                        fuel: fuel
+                            .toString(),
+                        date: date,
+                        lpg: lpg
+                            .toString(),
+                      ));
+                  //create collection and save data
+                  Map<String, dynamic> data = {
+                    // 'lpg' : int.parse(controllerLpg.text),
+                    // 'lube' : int.parse(controllerLube.text),
+                    // 'fuel' : int.parse(controllerFuel.text),
+                    // 'date' : pickedDate,
+                  };
+                  // FirebaseFirestore.instance.collection('fuels').add(data);
+                  // Navigator.pop(context);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
 
+  }
   _dialog({bool update, docsId, petrol}) {
     return showDialog(
         context: context,
@@ -202,56 +231,53 @@ class _MultiFormState extends State<MultiForm> {
             ));
   }
 
-  ///on form user deleted
-// void onDelete(Petrol _petrol) {
-//   setState(() {
-//     var find = petrol.firstWhere(
-//           (it) => it.petrol == _petrol,
-//       orElse: () => null,
-//     );
-//     if (find != null) petrol.removeAt(petrol.indexOf(find));
-//   });
-// }
+  CollectionReference fuels = FirebaseFirestore.instance.collection('fuels');
 
-  ///on add form
-// void onAddForm() {
-//   setState(() {
-//     var _petrol = Petrol();
-//     petrol.add(
-//        ));
-//   });
-//}
+  Future<void> deleteForm(fuelId) {
+    return fuels
+        .doc(fuelId.toString())
+        .delete()
+        .then((value) {
+      Fluttertoast.showToast(
+          msg: 'Form Deleted',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Color(0xff07239d),
+          textColor: Colors.white,
+          fontSize: 16.0);
+    })
+        .catchError((error) {
+          Fluttertoast.showToast(
+              msg: "Error: $error",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+      print(error.toString());
+    });
+  }
+  bool inExistence=true;
+  _checkFuelExistence(fuelId) async{
+    //instead of refreshing page when post is deleted, it MAY check if post still exists in firebase
+    //and if not the will not be displayed
+    await FirebaseFirestore.instance.collection('fuels')
+        .where('fuelId', isEqualTo:fuelId)
+        .get()
+        .then((value){
+      value.docs.forEach((result) {
+        setState(() {
+          inExistence=true;
+        });
 
-  ///on save forms
-// void onSave() {
-//   if (petrol.length > 0) {
-//     var allValid = true;
-//     petrol.forEach((form) => allValid = allValid && form.isValid());
-//     if (allValid) {
-//       var data = petrol.map((it) => it.petrol).toList();
-//       Navigator.push(
-//         context,
-//         MaterialPageRoute(
-//           fullscreenDialog: true,
-//           builder: (_) => Scaffold(
-//             appBar: AppBar(
-//               title: Text('List of Reports'),
-//             ),
-//             body: ListView.builder(
-//               itemCount: data.length,
-//               itemBuilder: (_, i) => ListTile(
-//                 leading: Icon(Icons.local_gas_station),
-//                 title: Text(data[i].lpg),
-//                 subtitle: Text(data[i].lubes),
-//                 trailing: Text(data[i].fuel),
-//                 // title: Text(data[i].fullName),
-//                 // subtitle: Text(data[i].email),
-//               ),
-//             ),
-//           ),
-//         ),
-//       );
-//     }
-//   }
-// }
+      });
+    }).catchError((err){
+      print(err.message);
+      setState(() {
+        inExistence=false;
+      });
+    });
+  }
 }

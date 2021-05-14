@@ -19,6 +19,7 @@ import 'MarketPrices.dart';
 class DashBoard extends StatefulWidget {
   static Route<Object> route;
 
+
   @override
   _DashBoardState createState() => _DashBoardState();
 }
@@ -27,6 +28,7 @@ class _DashBoardState extends State<DashBoard> {
   String userName;
   String userEmail;
   String userLocation;
+  String photoUrl;
 
   Future storedData() async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
@@ -35,6 +37,7 @@ class _DashBoardState extends State<DashBoard> {
       userName =  _sp.getString("username");
       userEmail = _sp.getString("email");
       userLocation = _sp.getString("location");
+      photoUrl = _sp.getString("photoUrl");
       print("Fetched from shared p ${_sp.getString("username")}");
     });
   }
@@ -94,8 +97,8 @@ class _DashBoardState extends State<DashBoard> {
                           },
                           child: CircleAvatar(
                             radius: 32,
-                            backgroundImage:
-                                AssetImage('assets/images/m1.jpeg'),
+                            backgroundImage:NetworkImage(photoUrl??""),
+                             //   AssetImage('assets/images/m1.jpeg'),
                           ),
                         ),
                         SizedBox(

@@ -28,20 +28,6 @@ class Post extends StatefulWidget {
     this.likes,
 });
 
-  // int getLikeCount(likes){
-  //   //if there are no likes, return 0
-  //   if(likes == null){
-  //     return 0;
-  //   }
-  //   int count = 0;
-  //   likes.values.forEach((val){
-  //     if (val == true){
-  //       count += 1;
-  //     }
-  //   });
-  //   return count;
-  // }
-
   @override
   _PostState createState() => _PostState(
     postId: this.postId,
@@ -76,13 +62,39 @@ class _PostState extends State<Post> {
     this.likeCount,
   });
 
+  String postPhotoUrl;
+  Future fetchProfilePicture(owid) async {
+    //fetch userid of the peson who posted it
+    //find the profile photo of the person
+
+    await FirebaseFirestore.instance.collection('users')
+        .where('uid', isEqualTo:owid)
+        .get()
+        .then((value){
+      value.docs.forEach((result) {
+        setState(() {
+          postPhotoUrl= result.data()['photoUrl'];
+        });
+
+
+      });
+    });
+
+  }
 
   buildPostHeader(currentUsername) {
     // String userId = getCurrentUser();
         return ListTile(
           leading: CircleAvatar(
-            backgroundImage: AssetImage('assets/images/m1.jpeg'),
-            backgroundColor: Colors.grey,
+            radius: 20,
+            backgroundColor: Colors.transparent,
+            backgroundImage:
+             postPhotoUrl!='' || postPhotoUrl!= null?
+            NetworkImage(postPhotoUrl??"")
+             :AssetImage('assets/images/user.png'),
+            // CachedNetworkImageProvider(
+            //   widget.currentUser.photoURL
+            // ),
           ),
           title: GestureDetector(
             onTap: (){
@@ -102,15 +114,7 @@ class _PostState extends State<Post> {
           username==currentUsername?
           IconButton(
             onPressed: (){
-              print("meeehhhehehehheheheh");
               deletePost(postId);
-              // unafaa kurefresh
-              // Navigator.push(context, MaterialPageRoute(builder: (context)=>Post(postId: postId,ownerId: ownerId,username:username,location:location,description: description,likes:likes)));
-              Navigator.push(context, MaterialPageRoute(builder: (context) => page2())).then((value) {
-                setState(() {
-                  // refresh state
-                });
-              });
             },
             icon: Icon(Icons.delete),
           ): null ,
@@ -141,7 +145,6 @@ class _PostState extends State<Post> {
     bool liked= !isLiked;
   }
 
-  //deletePost(postId){
     CollectionReference users = FirebaseFirestore.instance.collection('posts');
 
     Future<void> deletePost(postId) {
@@ -276,19 +279,38 @@ class _PostState extends State<Post> {
   int myVote=0;
   String voteCount='0';
   int commentCount=0;
+  bool inExistence=true;
   @override
   void initState()  {
     super.initState();
-    // DO YOUR STUFF
     _username();
-
+    checkPostExistence(postId);
+    fetchProfilePicture(ownerId);
     checkUpVote(postId);
-
     getVoteCount(postId);
     getCommentCount(postId);
 
   }
+  checkPostExistence(pid) async{
+    //instead of refreshing page when post is deleted, it MAY check if post still exists in firebase
+    //and if not the will not be displayed
+    await FirebaseFirestore.instance.collection('posts')
+        .where('postId', isEqualTo:pid)
+        .get()
+        .then((value){
+      value.docs.forEach((result) {
+        setState(() {
+          inExistence=true;
+        });
 
+      });
+    }).catchError((err){
+      print(err.message);
+      setState(() {
+        inExistence=false;
+      });
+    });
+  }
   getCommentCount(postId) async{
     FirebaseFirestore.instance.collection('comments')
         .where('postId', isEqualTo: postId)
@@ -316,7 +338,7 @@ class _PostState extends State<Post> {
         setState(() {
           voteCount= result.data()['votesCount'];
         });
-        print('moooooooooo');
+
         return result.data()['voteCount'];
       });
     });
@@ -394,49 +416,6 @@ addVotes(postId,val) async{
 
 
     });
-
-    // print("helooooooooooooooooooooooooooooooo");
-    // print(totalVotes);
-    // if(val==2){
-    // //  if you clicked downvote
-    //   if(myVote==2){
-    //     print("downvotingggggg");
-    //   //  unvote a downvote
-    //     finalVote=totalVotes+1;
-    //   }
-    //   else if(myVote==0){
-    //     print("huh");
-    //     //downvote if no vote is casted
-    //     finalVote=totalVotes-1;
-    //   }
-    //   else if(myVote==1){
-    //     //downvoting if you upvoted
-    //     finalVote=totalVotes-2;
-    //   }
-    // }
-    // else if(val==1){
-    // //  if human upvoted
-    //   if(myVote==2){
-    //     finalVote=totalVotes+2;
-    //   }
-    //   else if(myVote==0){
-    //     finalVote=totalVotes+1;
-    //   }
-    //   else if(myVote==1){
-    //     finalVote=totalVotes-1;
-    //   }
-    // }
-    // else if(val==0){
-    //   if(myVote==2){
-    //     finalVote= totalVotes+1;
-    //   }
-    //   else if(myVote==1){
-    //     finalVote= totalVotes-1;
-    //   }
-    // }
-    // val==2?myVote==2?finalVote=totalVotes + 1:myVote==0?finalVote=totalVotes-1:finalVote=totalVotes-2
-    //       :myVote==1?finalVote=totalVotes - 1:myVote==0?finalVote=totalVotes+1:finalVote=totalVotes+2;
-
   });
 
 
@@ -446,29 +425,14 @@ addVotes(postId,val) async{
   Widget build(BuildContext context)  {
     return pUsername==''?
         Center(child:CircularProgressIndicator())
-        :Column(
+        :inExistence==true?Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         buildPostHeader(pUsername),
         buildPostImage(),
         buildPostFooter(),
       ],
-    );
+    ):SizedBox(height:0);
   }
-}
-class page2 extends StatefulWidget {
-  
-  @override
-  _page2State createState() => _page2State();
 }
 
-class _page2State extends State<page2> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Text('Nothing to see here'),
-      ),
-    );
-  }
-}
