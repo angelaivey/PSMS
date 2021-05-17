@@ -161,7 +161,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                 }),
             actions: [
               IconButton(
-                  icon: Icon(Icons.filter),
+                  icon: Icon(Icons.date_range_outlined),
                   onPressed: () => _pickDateRange(context)),
               IconButton(
                   icon: Icon(Icons.download_outlined),
@@ -318,10 +318,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         child: Center(
           child: Column(
             children: <Widget>[
-              Text(
-                'Sales from the past month',
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-              ),
               Expanded(
                 child: charts.BarChart(
                   _seriesBarData,

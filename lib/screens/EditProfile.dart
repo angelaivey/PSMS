@@ -104,9 +104,15 @@ class _EditProfileState extends State<EditProfile> {
 
     return Scaffold(
       appBar: AppBar(
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.pop(context);
+        //     }),
         backgroundColor: Color(0xff07239d),
         title: Text('Edit Profile'),
       ),
+
       body: Container(
         padding: EdgeInsets.only(left: 16, top: 25, right: 16),
         child: GestureDetector(
@@ -140,7 +146,7 @@ class _EditProfileState extends State<EditProfile> {
                                     File(_image.path),
                                   )
                                 : photoUrl == ""
-                                    ? AssetImage('assets/images/m1.jpeg')
+                                    ? Icon(Icons.person)
                                     : NetworkImage(photoUrl),
                           )),
                     ),
@@ -183,7 +189,10 @@ class _EditProfileState extends State<EditProfile> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Change Password'),
+                      Text('Change Password',
+                      style: TextStyle(
+                        fontSize: 17.0
+                      ),),
                       Icon(
                         Icons.chevron_right,
                       ),

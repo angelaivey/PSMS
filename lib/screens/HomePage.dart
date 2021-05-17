@@ -55,16 +55,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     return Scaffold(
       body: Scaffold(
         appBar: AppBar(
-          title: Text('Home Page'),
+          title: Text('About Us'),
           backgroundColor: Color(0xff07239d),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+          // leading: IconButton(
+          //   icon: Icon(
+          //     Icons.arrow_back,
+          //   ),
+          //   onPressed: () {
+          //     Navigator.pop(context);
+          //   },
+          // ),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),
@@ -82,13 +82,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   child: Container(
                     child: Column(
                       children: [
-                        Text(
-                          'About us',
-                          style: TextStyle(
-                            fontSize: 30.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                         Text(
                           'OLA Energy’s core values are firmly rooted in Africa. Our presence in 17 African countries makes us a prominent member of the communities where we operate, contributing to their economic and social development, and therefore to that of the continent as a whole. Loyal to our African origins, OLA Energy strives to be a responsible African Group, operating in accordance with key African ethical values; integrity; honesty and equity.'
                           'Over the years, OLA Energy became a major player in Africa employing over 1,500 diverse employees, generating an estimate of 20,000 indirect jobs in the countries of operations and visited by up to 250,000 customers per day. With over 1,200 service stations, 8 blending plants over 60 fuel terminals and presence in over 50 Airports across Africa, we are proud to maintain and to expand our reach in the African Continent.',

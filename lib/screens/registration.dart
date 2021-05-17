@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ola_energy/screens/DashBoard.dart';
 import 'package:ola_energy/screens/HomePage.dart';
+import 'package:ola_energy/screens/HomeState.dart';
 import 'package:ola_energy/widgets/bezierContainer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login.dart';
@@ -112,7 +113,6 @@ class _SignUpPageState extends State<SignUpPage> {
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.symmetric(vertical: 15),
       alignment: Alignment.center,
-
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(5)),
           boxShadow: <BoxShadow>[

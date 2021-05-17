@@ -37,48 +37,48 @@ class _MarketPricesState extends State<MarketPrices> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white70,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Color(0xff07239d),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        // leading: IconButton(
+        //   icon: Icon(
+        //     Icons.arrow_back,
+        //   ),
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //   },
+        // ),
         title: Text('Market Prices'),
       ),
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.grey.shade200,
-                offset: Offset(2, 4),
-                blurRadius: 5, //
-                spreadRadius: 2)
-          ],
-          gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.topLeft,
-              colors: [Color(0xffe46b10), Color(0xff07239d)]
-          ),
-        ),
+        // height: MediaQuery.of(context).size.height,
+        // decoration: BoxDecoration(
+        //   borderRadius: BorderRadius.all(Radius.circular(1)),
+        //   boxShadow: <BoxShadow>[
+        //     BoxShadow(
+        //         color: Colors.grey.shade200,
+        //         offset: Offset(2, 4),
+        //         blurRadius: 5, //
+        //         spreadRadius: 2)
+        //   ],
+        //   gradient: LinearGradient(
+        //       begin: Alignment.topRight,
+        //       end: Alignment.topLeft,
+        //       colors: [Color(0xffe46b10), Color(0xff07239d)]
+        //   ),
+        // ),
          child:
             ListTile(
               title: Text("Retail Petroleum Prices", style: TextStyle(
                 fontSize: 30.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.white
+                color: Colors.black
               ),),
               subtitle: (loaded)? ListView(
                 children: [
                   Text(marketPrice,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     ),
                   ),
                 ]

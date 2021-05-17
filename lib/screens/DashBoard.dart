@@ -10,6 +10,7 @@ import 'package:ola_energy/screens/reportGeneration.dart';
 import 'package:ola_energy/screens/settings.dart';
 import 'package:ola_energy/screens/station.dart';
 import 'package:ola_energy/screens/upload.dart';
+import 'package:ola_energy/widgets/bezierContainer.dart';
 import 'package:ola_energy/widgets/multi_form_reports.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'AnalyticsPage.dart';
@@ -42,10 +43,6 @@ class _DashBoardState extends State<DashBoard> {
     });
   }
 
- Future fetchAvatar() async{
- //   fetch user id fro
-   //userName
- }
   @override
   void initState() {
     super.initState();
@@ -59,22 +56,29 @@ class _DashBoardState extends State<DashBoard> {
     return Scaffold(
       body: Stack(
         children: <Widget>[
+          Positioned(
+            top: -MediaQuery.of(context).size.height * .15,
+            right: -MediaQuery.of(context).size.width * .2,
+            bottom: -MediaQuery.of(context).size.height * .12,
+            left: -MediaQuery.of(context).size.width * .3,
+            child: BezierContainer(),
+          ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            height: MediaQuery.of(context).size.height,
+            // padding: EdgeInsets.symmetric(horizontal: 20),
+            // height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(5)),
               boxShadow: <BoxShadow>[
-                BoxShadow(
-                    color: Colors.grey.shade200,
-                    offset: Offset(2, 4),
-                    blurRadius: 5, //
-                    spreadRadius: 2)
+                // BoxShadow(
+                //     color: Colors.grey.shade200,
+                //     offset: Offset(2, 4),
+                //     blurRadius: 5, //
+                //     spreadRadius: 2)
               ],
-              gradient: LinearGradient(
-                  begin: Alignment.topRight,
-                  end: Alignment.topLeft,
-                  colors: [Color(0xffe46b10), Color(0xff07239d)]),
+              // gradient: LinearGradient(
+              //     begin: Alignment.topRight,
+              //     end: Alignment.topLeft,
+              //     colors: [Color(0xffe46b10), Color(0xff07239d)]),
             ),
           ),
           SafeArea(
@@ -109,23 +113,23 @@ class _DashBoardState extends State<DashBoard> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              userName ?? "",
+                              'Welcome $userName' ?? "",
                               style: GoogleFonts.portLligatSans(
                                 textStyle: Theme.of(context).textTheme.display1,
                                 fontSize: 30,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                                color: Colors.black,
                               ),
                             ),
-                            Text(
-                              userEmail ?? "",
-                              style: GoogleFonts.portLligatSans(
-                                textStyle: Theme.of(context).textTheme.display1,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.white,
-                              ),
-                            ),
+                            // Text(
+                            //   'Email: $userEmail' ?? "",
+                            //   style: GoogleFonts.portLligatSans(
+                            //     textStyle: Theme.of(context).textTheme.display1,
+                            //     fontSize: 20,
+                            //     fontWeight: FontWeight.w300,
+                            //     color: Colors.black,
+                            //   ),
+                            // ),
                           ],
                         ),
                       ],
@@ -142,7 +146,7 @@ class _DashBoardState extends State<DashBoard> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => HomePage()));
+                                    builder: (context) => Upload()));
                           },
                           child: Card(
                             shape: RoundedRectangleBorder(
@@ -152,10 +156,10 @@ class _DashBoardState extends State<DashBoard> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 SvgPicture.asset(
-                                  'assets/images/home.svg',
+                                  'assets/images/update.svg',
                                   height: 128,
                                 ),
-                                Text('Home')
+                                Text('Updates')
                               ],
                             ),
                           ),
@@ -175,49 +179,10 @@ class _DashBoardState extends State<DashBoard> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 SvgPicture.asset(
-                                  'assets/images/oil-market.svg',
+                                  'assets/images/stocks.svg',
                                   height: 128,
                                 ),
                                 Text('Market Prices')
-                              ],
-                            ),
-                          ),
-                        ),
-                        // Card(
-                        //   shape: RoundedRectangleBorder(
-                        //       borderRadius: BorderRadius.circular(10)
-                        //   ),
-                        //   elevation: 4,
-                        //   child: Column(
-                        //     mainAxisAlignment: MainAxisAlignment.center,
-                        //     children: <Widget>[
-                        //       SvgPicture.asset(
-                        //         'assets/images/stocks.svg',
-                        //         height: 128,
-                        //       ),
-                        //       Text('Stocks')
-                        //     ],
-                        //   ),
-                        // ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Upload()));
-                          },
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            elevation: 4,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                SvgPicture.asset(
-                                  'assets/images/gasoline-pump.svg',
-                                  height: 128,
-                                ),
-                                Text('Updates')
                               ],
                             ),
                           ),
@@ -237,7 +202,7 @@ class _DashBoardState extends State<DashBoard> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 SvgPicture.asset(
-                                  'assets/images/paper.svg',
+                                  'assets/images/report.svg',
                                   height: 128,
                                 ),
                                 Text('Generate Reports')
@@ -260,10 +225,33 @@ class _DashBoardState extends State<DashBoard> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 SvgPicture.asset(
-                                  'assets/images/analytics.svg',
-                                  height: 80,
+                                  'assets/images/oil-market.svg',
+                                  height: 128,
                                 ),
                                 Text('Analysis')
+                              ],
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomePage()));
+                          },
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            elevation: 4,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                SvgPicture.asset(
+                                  'assets/images/about.svg',
+                                  height: 128,
+                                ),
+                                Text('About Us')
                               ],
                             ),
                           ),

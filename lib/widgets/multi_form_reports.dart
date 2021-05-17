@@ -13,9 +13,7 @@ class MultiForm extends StatefulWidget {
 
   @override
   _MultiFormState createState() => _MultiFormState();
-
 }
-
 
 class _MultiFormState extends State<MultiForm> {
   List<ReportGenerator> petrol = [];
@@ -23,10 +21,7 @@ class _MultiFormState extends State<MultiForm> {
   Future<String> _userId() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
 
-
     final User user = auth.currentUser;
-
-    // here you write the codes to input the data into firestore
 
     setState(() {
       uid= user.uid;
@@ -39,21 +34,18 @@ class _MultiFormState extends State<MultiForm> {
     // TODO: implement initState
     super.initState();
    _userId();
-    // _checkFuelExistence(widget.);
-
   }
 
-//  final form = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xff07239d),
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.pop(context);
+        //     }),
         title: Text('Daily Sales Forms'),
       ),
 

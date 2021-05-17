@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ola_energy/screens/DashBoard.dart';
 import 'package:ola_energy/screens/HomePage.dart';
+import 'package:ola_energy/screens/HomeState.dart';
 import 'package:ola_energy/screens/registration.dart';
 import 'package:ola_energy/widgets/bezierContainer.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -188,7 +189,9 @@ class _LoginPageState extends State<LoginPage> {
               gradient: LinearGradient(
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
-                  colors: [Color(0xff07239d), Color(0xfff7892b)])),
+                  colors: [Color(0xff07239d), Color(0xfff7892b)],
+              ),
+          ),
           child: Text(
             'Login',
             style: TextStyle(fontSize: 20, color: Colors.white),
@@ -284,33 +287,33 @@ class _LoginPageState extends State<LoginPage> {
           );
   }
 
-  Widget _label() {
-    return Container(
-        margin: EdgeInsets.only(top: 40, bottom: 20),
-        child: Column(
-          children: <Widget>[
-            Text(
-              'Quick login with Touch ID',
-              style: TextStyle(color: Colors.white, fontSize: 17),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Icon(Icons.fingerprint, size: 90, color: Colors.white),
-            SizedBox(
-              height: 20,
-            ),
-            Text(
-              'Touch ID',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                decoration: TextDecoration.underline,
-              ),
-            ),
-          ],
-        ));
-  }
+  // Widget _label() {
+  //   return Container(
+  //       margin: EdgeInsets.only(top: 40, bottom: 20),
+  //       child: Column(
+  //         children: <Widget>[
+  //           Text(
+  //             'Quick login with Touch ID',
+  //             style: TextStyle(color: Colors.white, fontSize: 17),
+  //           ),
+  //           SizedBox(
+  //             height: 20,
+  //           ),
+  //           Icon(Icons.fingerprint, size: 90, color: Colors.white),
+  //           SizedBox(
+  //             height: 20,
+  //           ),
+  //           Text(
+  //             'Touch ID',
+  //             style: TextStyle(
+  //               color: Colors.white,
+  //               fontSize: 15,
+  //               decoration: TextDecoration.underline,
+  //             ),
+  //           ),
+  //         ],
+  //       ));
+  // }
 
   Widget _createAccountLabel() {
     return InkWell(
