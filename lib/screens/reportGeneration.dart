@@ -60,18 +60,14 @@ class _ReportGeneratorState extends State<ReportGenerator> {
   String uid;
   Future<String> _userId() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
-
-
       final User user = auth.currentUser;
-
-      // here you write the codes to input the data into firestore
 
     setState(() {
       uid= user.uid;
     });
     return  user.uid;
-
   }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -90,13 +86,13 @@ class _ReportGeneratorState extends State<ReportGenerator> {
               AppBar(
                 leading: Icon(Icons.local_gas_station),
                 elevation: 0,
-                backgroundColor: Color(0xff07239d),
+                backgroundColor: Color(0xff322C40),
                 actions: [
                   IconButton(
                       icon: Icon(Icons.delete),
                       onPressed: () {
                         onDelete();
-                        //deleteData();
+                        Navigator.pop(context);
                       }),
                 ],
                 title: Text('Daily Form'),
@@ -176,11 +172,11 @@ class _ReportGeneratorState extends State<ReportGenerator> {
                     };
                     FirebaseFirestore.instance
                         .collection('fuels')
-
                         .doc(widget.docsId)
                         .update(data);
                     Navigator.pop(context);
-                  } else {
+                  }
+                  else {
                     //create collection and save data
                     String randomId=randomAlphaNumeric(32);
                     Map<String, dynamic> data = {
@@ -192,7 +188,7 @@ class _ReportGeneratorState extends State<ReportGenerator> {
                       'date': pickedDate,
                     };
                     FirebaseFirestore.instance.collection('fuels').doc(randomId).set(data);
-                    Navigator.pop(context);
+                     Navigator.pop(context);
                   }
                 },
               ),

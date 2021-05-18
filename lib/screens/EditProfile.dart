@@ -109,7 +109,7 @@ class _EditProfileState extends State<EditProfile> {
         //     onPressed: () {
         //       Navigator.pop(context);
         //     }),
-        backgroundColor: Color(0xff07239d),
+        backgroundColor: Color(0xff322C40),
         title: Text('Edit Profile'),
       ),
 
@@ -162,7 +162,7 @@ class _EditProfileState extends State<EditProfile> {
                               width: 4,
                               color: Theme.of(context).scaffoldBackgroundColor,
                             ),
-                            color: Color(0xff07239d),
+                            color: Color(0xff322C40),
                           ),
                           child: IconButton(
                             icon: Icon(Icons.edit, color: Colors.white),
@@ -180,8 +180,7 @@ class _EditProfileState extends State<EditProfile> {
               buildTextField("Full Name", userName, nameController, false),
               buildTextField("E-mail", userEmail, emailController, false),
               // buildTextField("Password", "********", true),
-              buildTextField(
-                  "Station", userLocation, locationController, false),
+              buildTextField("Station", userLocation, locationController, false),
               SizedBox(
                 height: 20,
               ),
@@ -248,7 +247,7 @@ class _EditProfileState extends State<EditProfile> {
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.CENTER,
                             timeInSecForIosWeb: 1,
-                            backgroundColor: Color(0xff07239d),
+                            backgroundColor: Color(0xff322C40),
                             textColor: Colors.white,
                             fontSize: 16.0);
                       }).catchError((onError) {
@@ -263,7 +262,7 @@ class _EditProfileState extends State<EditProfile> {
                         print(onError.toString());
                       });
                     },
-                    color: Color(0xff07239d),
+                    color: Color(0xff322C40),
                     padding: EdgeInsets.symmetric(horizontal: 50),
                     elevation: 2,
                     shape: RoundedRectangleBorder(
@@ -283,7 +282,7 @@ class _EditProfileState extends State<EditProfile> {
               ),
               Center(
                 child: OutlineButton(
-                  color: Color(0xff07239d),
+                  color: Color(0xff322C40),
                   padding: EdgeInsets.symmetric(horizontal: 40),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
@@ -441,7 +440,7 @@ class _ChangePasswordState extends State<ChangePassword> {
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.CENTER,
               timeInSecForIosWeb: 1,
-              backgroundColor: Color(0xff07239d),
+              backgroundColor: Color(0xff322C40),
               textColor: Colors.white,
               fontSize: 16.0);
           print("Successfully changed password");
@@ -472,7 +471,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0xff07239d),
+          backgroundColor: Color(0xff322C40),
           title: Text('Change Password'),
         ),
         body: Column(children: [
@@ -521,7 +520,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                   style: TextStyle(color: Colors.red)),
           match == true ? SizedBox(height: 0) : SizedBox(height: 35),
           FlatButton(
-            color: Color(0xff07239d),
+            color: Color(0xff322C40),
             textColor: Colors.white,
             height: 40,
             minWidth: 120,

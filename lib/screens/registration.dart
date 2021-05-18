@@ -125,7 +125,7 @@ class _SignUpPageState extends State<SignUpPage> {
           gradient: LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
-              colors: [Color(0xff07239d), Color(0xfff7892b)])),
+              colors: [Color(0xff322C40), Color(0xff322C40)])),
       child: Text(
         'Register Now',
         style: TextStyle(fontSize: 20, color: Colors.white),
@@ -134,12 +134,14 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _loginAccountLabel() {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LoginPage()));
-      },
-      child: Container(
+    // return InkWell(
+    //   onTap: () {
+    //     Navigator.push(
+    //         context, MaterialPageRoute(builder: (context) => LoginPage()
+    //     ));
+    //   },
+      child:
+      return Container(
         margin: EdgeInsets.symmetric(vertical: 20),
         padding: EdgeInsets.all(15),
         alignment: Alignment.bottomCenter,
@@ -153,16 +155,22 @@ class _SignUpPageState extends State<SignUpPage> {
             SizedBox(
               width: 10,
             ),
-            Text(
-              'Login',
-              style: TextStyle(
-                  color: Color(0xfff79c4f),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600),
+            GestureDetector(
+              onTap: (){
+                Navigator.pushAndRemoveUntil(
+                    context, MaterialPageRoute(builder: (context) => LoginPage()),(route)=>false);
+                },
+              child: Text(
+                'Login',
+                style: TextStyle(
+                    color: Color(0xffC6BB72),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         ),
-      ),
+     // ),
     );
   }
 
@@ -175,12 +183,12 @@ class _SignUpPageState extends State<SignUpPage> {
             textStyle: Theme.of(context).textTheme.display1,
             fontSize: 30,
             fontWeight: FontWeight.w700,
-            color: Color(0xffe46b10),
+            color: Color(0xff322C40),
           ),
           children: [
             TextSpan(
               text: 'ENERGY',
-              style: TextStyle(color: Color(0XFF07239D), fontSize: 30),
+              style: TextStyle(color: Color(0xff7A7974), fontSize: 30),
             ),
 
           ]),

@@ -40,7 +40,7 @@ class _MultiFormState extends State<MultiForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xff07239d),
+        backgroundColor: Color(0xff322C40),
         // leading: IconButton(
         //     icon: Icon(Icons.arrow_back),
         //     onPressed: () {
@@ -66,7 +66,8 @@ class _MultiFormState extends State<MultiForm> {
               itemBuilder: (BuildContext context, int index) => Padding(
                 padding: EdgeInsets.all(8.0),
                 child:fuelWidget(
-                  DateFormat().add_yMMMEd().format(asyncSnapshot.data.docs[index].data()["date"].toDate()),
+                  // DateFormat().add_yMMMEd().format(asyncSnapshot.data.docs[index].data()["date"].toDate()),
+                  asyncSnapshot.data.docs[index].data()["date"],
                   asyncSnapshot.data.docs[index].data()["fuel"],
                   asyncSnapshot.data.docs[index].data()["fuelId"],
                   asyncSnapshot.data.docs[index].data()["lpg"],
@@ -87,7 +88,7 @@ class _MultiFormState extends State<MultiForm> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xff07239d),
+        backgroundColor: Color(0xff322C40),
         child: Icon(Icons.add),
         onPressed: () {
           _dialog(update:false);
@@ -111,7 +112,7 @@ class _MultiFormState extends State<MultiForm> {
             AppBar(
               leading: Icon(Icons.local_gas_station),
               elevation: 0,
-              backgroundColor: Color(0xff07239d),
+              backgroundColor: Color(0xff322C40),
               actions: [
                 IconButton(
                   onPressed: (){
@@ -132,7 +133,7 @@ class _MultiFormState extends State<MultiForm> {
                   //   onPressed: _pickedDate,
                   // ),
                   Text(
-                      'Date Today : '+date),
+                      'Date Today : '+DateFormat().add_yMMMEd().format(date.toDate()).toString()),
                 ],
               ),
             ),
@@ -219,7 +220,6 @@ class _MultiFormState extends State<MultiForm> {
               petrol: petrol,
               docsId: docsId,
               update: update,
-              // onDelete: () => onDelete(_petrol),
             ));
   }
 
@@ -235,7 +235,7 @@ class _MultiFormState extends State<MultiForm> {
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
-          backgroundColor: Color(0xff07239d),
+          backgroundColor: Color(0xff322C40),
           textColor: Colors.white,
           fontSize: 16.0);
     })

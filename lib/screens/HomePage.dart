@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       body: Scaffold(
         appBar: AppBar(
           title: Text('About Us'),
-          backgroundColor: Color(0xff07239d),
+          backgroundColor: Color(0xff322C40),
           // leading: IconButton(
           //   icon: Icon(
           //     Icons.arrow_back,

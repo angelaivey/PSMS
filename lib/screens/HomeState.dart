@@ -87,7 +87,7 @@ class _HomeStateState extends State<HomeState> {
       items: const<BottomNavigationBarItem> [
         BottomNavigationBarItem(
           icon: Icon(Icons.home_outlined),
-          backgroundColor: Color(0xff07239d),
+          backgroundColor: Color(0xffffac69),
           label: 'Home',
         ),
         BottomNavigationBarItem(

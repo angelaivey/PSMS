@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ola_energy/screens/login.dart';
 import 'package:ola_energy/screens/registration.dart';
+import 'package:ola_energy/widgets/bezierContainer.dart';
 
 
 class WelcomePage extends StatefulWidget {
@@ -41,15 +42,16 @@ class _WelcomePageState extends State<WelcomePage> {
         padding: EdgeInsets.symmetric(vertical: 13),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(5)),
+            borderRadius: BorderRadius.all(Radius.circular(5),),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                  color: Color(0xffdf8e33).withAlpha(100),
-                  offset: Offset(2, 4),
-                  blurRadius: 8,
-                  spreadRadius: 2)
+                  color: Colors.black.withAlpha(100),
+                  offset: Offset(1, 3),
+                  blurRadius: 3,
+                  spreadRadius: 1)
             ],
-            color: Colors.white),
+            color: Colors.white
+        ),
         child: Text(
           'Login',
           style: TextStyle(fontSize: 20, color: Color(0xfff7892b)),
@@ -73,7 +75,15 @@ class _WelcomePageState extends State<WelcomePage> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(5)),
-          border: Border.all(color: Colors.white, width: 2),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+                color: Colors.black.withAlpha(100),
+                offset: Offset(1, 3),
+                blurRadius: 3,
+                spreadRadius: 1)
+          ],
+          // border: Border.all(color: Color(0xff4d94ff), width: 2),
+            color: Color(0xff4d94ff)
         ),
         child: Text(
           'Register now',
@@ -128,7 +138,7 @@ class _WelcomePageState extends State<WelcomePage> {
           children: [
             TextSpan(
               text: 'ENERGY',
-              style: TextStyle(color: Color(0XFF07239D), fontSize: 30),
+              style: TextStyle(color: Color(0xff4d94ff), fontSize: 30),
             ),
           ]),
     );
@@ -137,60 +147,71 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          height: MediaQuery
-              .of(context)
-              .size
-              .height,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(5)),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                    color: Colors.grey.shade200,
-                    offset: Offset(2, 4),
-                    blurRadius: 5, //
-                    spreadRadius: 2)
-              ],
-              gradient: LinearGradient(
-                  begin: Alignment.topRight,
-                  end: Alignment.topLeft,
-                  colors: [Color(0xffe46b10), Color(0xff07239d)])),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'WELCOME',
-                style: TextStyle(color: Colors.white, fontSize: 30),
-              ),
-              SizedBox(
+      body: Stack(
+        children: [
+          Positioned(
+            top: -MediaQuery.of(context).size.height * .15,
+            right: -MediaQuery.of(context).size.width * .2,
+            bottom: -MediaQuery.of(context).size.height * .12,
+            left: -MediaQuery.of(context).size.width * .3,
+            child: BezierContainer(),
+          ),
+          SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            height: MediaQuery
+                .of(context)
+                .size
+                .height,
+            // decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.all(Radius.circular(5)),
+            //     // boxShadow: <BoxShadow>[
+            //     //   BoxShadow(
+            //     //       color: Colors.grey.shade200,
+            //     //       offset: Offset(2, 4),
+            //     //       blurRadius: 5, //
+            //     //       spreadRadius: 2)
+            //     // ],
+            //     // gradient: LinearGradient(
+            //     //     begin: Alignment.topRight,
+            //     //     end: Alignment.topLeft,
+            //     //     colors: [Color(0xffe46b10), Color(0xff4d94ff)])
+            // ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'WELCOME',
+                  style: TextStyle(color: Colors.white, fontSize: 30),
+                ),
+                SizedBox(
+                  height: 40,
+                ),
+                Text(
+                  'TO',
+                  style: TextStyle(color: Colors.white, fontSize: 30),
+                ),
+                SizedBox(
                 height: 40,
               ),
-              Text(
-                'TO',
-                style: TextStyle(color: Colors.white, fontSize: 30),
-              ),
+              _title(),
               SizedBox(
-              height: 40,
+                height: 80,
+              ),
+              _submitButton(),
+              SizedBox(
+                height: 20,
+              ),
+              _signUpButton(),
+              SizedBox(
+                height: 20,
+              ),
+              ],
             ),
-            _title(),
-            SizedBox(
-              height: 80,
-            ),
-            _submitButton(),
-            SizedBox(
-              height: 20,
-            ),
-            _signUpButton(),
-            SizedBox(
-              height: 20,
-            ),
-            ],
           ),
         ),
-      ),
+      ]),
     );
   }
 }

@@ -59,7 +59,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xff07239d),
+        backgroundColor: Color(0xffffac69),
         elevation: 1,
         leading: IconButton(
           onPressed: () {
@@ -83,7 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 Icon(
                   Icons.person,
-                  color: Color(0xff07239d),
+                  color: Color(0xffffac69),
                 ),
                 SizedBox(
                   width: 8,
@@ -112,7 +112,7 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 Icon(
                   Icons.volume_up_outlined,
-                  color: Color(0xff07239d),
+                  color: Color(0xffffac69),
                 ),
                 SizedBox(
                   width: 8,
@@ -138,7 +138,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             Center(
               child: OutlineButton(
-                color: Color(0xff07239d),
+                color: Color(0xffffac69),
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),

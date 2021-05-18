@@ -189,7 +189,7 @@ class _LoginPageState extends State<LoginPage> {
               gradient: LinearGradient(
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
-                  colors: [Color(0xff07239d), Color(0xfff7892b)],
+                  colors: [Color(0xff322C40), Color(0xff322C40)],
               ),
           ),
           child: Text(
@@ -316,12 +316,14 @@ class _LoginPageState extends State<LoginPage> {
   // }
 
   Widget _createAccountLabel() {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => SignUpPage()));
-      },
-      child: Container(
+    return
+      // InkWell(
+      // onTap: () {
+      //   Navigator.push(
+      //       context, MaterialPageRoute(builder: (context) => SignUpPage()));
+      // },
+      // child:
+      Container(
         margin: EdgeInsets.symmetric(vertical: 20),
         padding: EdgeInsets.all(15),
         alignment: Alignment.bottomCenter,
@@ -335,16 +337,22 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               width: 10,
             ),
-            Text(
-              'Register',
-              style: TextStyle(
-                  color: Color(0xfff79c4f),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushAndRemoveUntil(
+                    context, MaterialPageRoute(builder: (context) => SignUpPage()),(route)=>false);
+              },
+              child: Text(
+                'Register',
+                style: TextStyle(
+                    color: Color(0xffC6BB72),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         ),
-      ),
+      //),
     );
   }
 
@@ -357,12 +365,12 @@ class _LoginPageState extends State<LoginPage> {
             textStyle: Theme.of(context).textTheme.display1,
             fontSize: 30,
             fontWeight: FontWeight.w700,
-            color: Color(0xffe46b10),
+            color: Color(0xff322C40),
           ),
           children: [
             TextSpan(
               text: 'ENERGY',
-              style: TextStyle(color: Color(0XFF07239D), fontSize: 30),
+              style: TextStyle(color: Color(0xff7A7974), fontSize: 30),
             ),
           ]),
     );
@@ -405,13 +413,13 @@ class _LoginPageState extends State<LoginPage> {
                   _emailPasswordWidget(),
                   SizedBox(height: 20),
                   _submitButton(),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    alignment: Alignment.centerRight,
-                    child: Text('Forgot Password ?',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w500)),
-                  ),
+                  // Container(
+                  //   padding: EdgeInsets.symmetric(vertical: 10),
+                  //   alignment: Alignment.centerRight,
+                  //   child: Text('Forgot Password ?',
+                  //       style: TextStyle(
+                  //           fontSize: 14, fontWeight: FontWeight.w500)),
+                  // ),
                   _divider(),
                   _facebookButton(),
                   SizedBox(height: height * .055),

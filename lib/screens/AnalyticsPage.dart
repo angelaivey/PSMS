@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:excel/excel.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:fluttertoast/fluttertoast.dart';
@@ -28,6 +29,12 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   List<charts.Series<Sales, int>> _seriesLineData;
   List<Sales> myData = [];
   final pdf = pw.Document();
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUserId();
+  }
 
   _generateData(myData) {
     _seriesBarData = List<charts.Series<Sales, String>>();
@@ -131,20 +138,17 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     });
   }
 
-  // _pickedDate() async {
-  //   DateTime date = await showDatePicker(
-  //     context: context,
-  //     initialDate: pickedDate,
-  //     firstDate: DateTime(DateTime.now().year - 8),
-  //     lastDate: DateTime(DateTime.now().year + 8),
-  //   );
-  //   if (date != null) {
-  //     setState(() {
-  //       //controllerDate = _pickedDate();
-  //       pickedDate = date;
-  //     });
-  //   }
-  // }
+  String uid;
+  Future<String> _currentUserId() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User user = auth.currentUser;
+
+    setState(() {
+      uid= user.uid;
+    });
+    return  user.uid;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -152,8 +156,8 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Sales Analysis Graphs'),
-            backgroundColor: Color(0xff07239d),
+            title: Text('Sales Analysis Reports'),
+            backgroundColor: Color(0xff322C40),
             leading: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () {
@@ -176,13 +180,13 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                                   'LPG',
                                   'FUEL',
                                   'LUBE',
-                                  'DateTime',
+                                  'Date',
                                 ],
                                 ...myData.map((msg) => [
                                       msg.lpg.toString(),
                                       msg.fuel.toString(),
                                       msg.lube.toString(),
-                                      msg.date.toString()
+                                      msg.date.toString(),
                                     ])
                               ]),
                         ],
@@ -199,7 +203,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   }),
             ],
             bottom: TabBar(
-              indicatorColor: Color(0xff07239d),
+              indicatorColor: Color(0xff322C40),
               tabs: [
                 Tab(
                   icon: Icon(FontAwesomeIcons.solidChartBar),
@@ -220,14 +224,20 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   }
 
   Widget _buildBody(context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: (end != null && start != null)
-          ? FirebaseFirestore.instance
+    return
+    StreamBuilder<QuerySnapshot>(
+      stream:
+      (end != null && start != null)
+          ?
+      FirebaseFirestore.instance
               .collection('fuels')
+              .where('userId', isEqualTo: uid)
               .where("date", isGreaterThanOrEqualTo: start)
               .where("date", isLessThanOrEqualTo: end)
+
               .snapshots()
-          : FirebaseFirestore.instance.collection('fuels').snapshots(),
+         : FirebaseFirestore.instance.collection('fuels') .where('userId', isEqualTo: uid)
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return LinearProgressIndicator();
@@ -240,17 +250,26 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         }
       },
     );
+        // : Center(
+        // child:Column(
+        //   children: [
+        //     Text('Please Select ')
+        //   ],
+    //));
   }
 
   Widget _buildLineBody(context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: (end != null && start != null)
-          ? FirebaseFirestore.instance
+    stream:   (end != null && start != null)
+          ?
+      FirebaseFirestore.instance
               .collection('fuels')
+              .where("userId", isEqualTo: uid)
               .where("date", isGreaterThanOrEqualTo: start)
               .where("date", isLessThanOrEqualTo: end)
+
               .snapshots()
-          : FirebaseFirestore.instance.collection('fuels').snapshots(),
+           : FirebaseFirestore.instance.collection('fuels').where("userId", isEqualTo: uid).snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return LinearProgressIndicator();
@@ -368,6 +387,8 @@ class _SelectDatesState extends State<SelectDates> {
       pickedDateRange = newDateRange as DateTime;
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {

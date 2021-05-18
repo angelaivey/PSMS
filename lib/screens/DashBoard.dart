@@ -78,7 +78,7 @@ class _DashBoardState extends State<DashBoard> {
               // gradient: LinearGradient(
               //     begin: Alignment.topRight,
               //     end: Alignment.topLeft,
-              //     colors: [Color(0xffe46b10), Color(0xff07239d)]),
+              //     colors: [Color(0xffe46b10), Color(0xffffac69)]),
             ),
           ),
           SafeArea(
@@ -87,10 +87,15 @@ class _DashBoardState extends State<DashBoard> {
               child: Column(
                 children: <Widget>[
                   Container(
-                    height: 64,
+                    height: 124,
+
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(  color: Color(0xff322C40),
+                      borderRadius: BorderRadius.circular(10)
+                    ),
                     margin: EdgeInsets.only(bottom: 20),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         GestureDetector(
                           onTap: () {
@@ -101,7 +106,7 @@ class _DashBoardState extends State<DashBoard> {
                           },
                           child: CircleAvatar(
                             radius: 32,
-                            backgroundImage:NetworkImage(photoUrl??""),
+                            backgroundImage:photoUrl!=null?NetworkImage(photoUrl): Image.asset("assets/images/user.png"),
                              //   AssetImage('assets/images/m1.jpeg'),
                           ),
                         ),
@@ -113,23 +118,22 @@ class _DashBoardState extends State<DashBoard> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              'Welcome $userName' ?? "",
-                              style: GoogleFonts.portLligatSans(
-                                textStyle: Theme.of(context).textTheme.display1,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black,
+                              'Welcome',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w200,
+                                color: Color(0xffF2F2BA),
                               ),
                             ),
-                            // Text(
-                            //   'Email: $userEmail' ?? "",
-                            //   style: GoogleFonts.portLligatSans(
-                            //     textStyle: Theme.of(context).textTheme.display1,
-                            //     fontSize: 20,
-                            //     fontWeight: FontWeight.w300,
-                            //     color: Colors.black,
-                            //   ),
-                            // ),
+                            Text(
+                              '$userName' ?? "",
+                              style: TextStyle(
+
+                                fontSize: 30,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xffF2F2BA),
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -137,10 +141,11 @@ class _DashBoardState extends State<DashBoard> {
                   ),
                   Expanded(
                     child: GridView.count(
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 20,
+                      crossAxisSpacing: 20,
                       primary: false,
                       children: <Widget>[
+
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -157,8 +162,10 @@ class _DashBoardState extends State<DashBoard> {
                               children: <Widget>[
                                 SvgPicture.asset(
                                   'assets/images/update.svg',
-                                  height: 128,
+                                  height: 58,
+                                  color: Color(0xff322C40),
                                 ),
+                                SizedBox(height:20),
                                 Text('Updates')
                               ],
                             ),
@@ -180,8 +187,10 @@ class _DashBoardState extends State<DashBoard> {
                               children: <Widget>[
                                 SvgPicture.asset(
                                   'assets/images/stocks.svg',
-                                  height: 128,
+                                  height: 58,
+                                  color:Color(0xff322C40)
                                 ),
+                                SizedBox(height:20),
                                 Text('Market Prices')
                               ],
                             ),
@@ -203,8 +212,10 @@ class _DashBoardState extends State<DashBoard> {
                               children: <Widget>[
                                 SvgPicture.asset(
                                   'assets/images/report.svg',
-                                  height: 128,
+                                  height: 58,
+                                    color: Color(0xff322C40)
                                 ),
+                                SizedBox(height:20),
                                 Text('Generate Reports')
                               ],
                             ),
@@ -226,8 +237,10 @@ class _DashBoardState extends State<DashBoard> {
                               children: <Widget>[
                                 SvgPicture.asset(
                                   'assets/images/oil-market.svg',
-                                  height: 128,
+                                  height: 58,
+                                  color: Color(0xff322C40)
                                 ),
+                                SizedBox(height:20),
                                 Text('Analysis')
                               ],
                             ),
@@ -249,8 +262,10 @@ class _DashBoardState extends State<DashBoard> {
                               children: <Widget>[
                                 SvgPicture.asset(
                                   'assets/images/about.svg',
-                                  height: 128,
+                                  height: 58,
+                                    color: Color(0xff322C40)
                                 ),
+                                SizedBox(height:20),
                                 Text('About Us')
                               ],
                             ),
@@ -272,8 +287,10 @@ class _DashBoardState extends State<DashBoard> {
                               children: <Widget>[
                                 SvgPicture.asset(
                                   'assets/images/settings.svg',
-                                  height: 128,
+                                  height: 58,
+                                    color: Color(0xff322C40)
                                 ),
+                                SizedBox(height:20),
                                 Text('Settings')
                               ],
                             ),

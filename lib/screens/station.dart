@@ -90,14 +90,14 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
         child: Scaffold(
             appBar: AppBar(
               title: Text("Updates"),
-              backgroundColor: Color(0xff07239d),
+              backgroundColor: Color(0xff322C40),
             ),
             floatingActionButton: FloatingActionButton(
               elevation: 1.0,
               onPressed: () {
                 selectImage(context);
               },
-              backgroundColor: Color(0xff07239d),
+              backgroundColor: Color(0xff322C40),
               child: Icon(Icons.add),
             ),
             body: StreamBuilder<QuerySnapshot>(
@@ -229,7 +229,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
   Scaffold buildUploadForm() {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xff07239d),
+        backgroundColor: Color(0xff322C40),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
@@ -307,7 +307,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
           ListTile(
             leading: Icon(
               Icons.pin_drop,
-              color: Color(0xff07239d),
+              color: Color(0xff322C40),
               size: 35.0,
             ),
             title: Container(
@@ -334,7 +334,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30.0),
               ),
-              color: Color(0xff07239d),
+              color: Color(0xff322C40),
               icon: Icon(
                 Icons.my_location,
                 color: Colors.white,

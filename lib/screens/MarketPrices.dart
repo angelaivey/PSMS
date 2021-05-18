@@ -39,7 +39,7 @@ class _MarketPricesState extends State<MarketPrices> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Color(0xff07239d),
+        backgroundColor: Color(0xff322C40),
         // leading: IconButton(
         //   icon: Icon(
         //     Icons.arrow_back,
@@ -49,6 +49,12 @@ class _MarketPricesState extends State<MarketPrices> {
         //   },
         // ),
         title: Text('Market Prices'),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.search_outlined, color: Colors.white,),
+              onPressed: null
+          ),
+        ],
       ),
       body: Container(
         // height: MediaQuery.of(context).size.height,
@@ -64,7 +70,7 @@ class _MarketPricesState extends State<MarketPrices> {
         //   gradient: LinearGradient(
         //       begin: Alignment.topRight,
         //       end: Alignment.topLeft,
-        //       colors: [Color(0xffe46b10), Color(0xff07239d)]
+        //       colors: [Color(0xffe46b10), Color(0xff322C40)]
         //   ),
         // ),
          child:
