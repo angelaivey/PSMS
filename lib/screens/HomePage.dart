@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ola_energy/screens/newsDetails.dart';
 import 'package:ola_energy/screens/station.dart';
 import 'package:ola_energy/widgets/listItem.dart';
 import 'package:lipsum/lipsum.dart' as lipsum;

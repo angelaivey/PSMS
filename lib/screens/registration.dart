@@ -100,6 +100,7 @@ class _SignUpPageState extends State<SignUpPage> {
         .catchError((error)=> print('failed to add user: $error'));
   }
 
+
   Widget _submitButton() {
     return InkWell(
       onTap: () async {
@@ -260,7 +261,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
 
   void registerToFb() {
-    firebaseAuth.createUserWithEmailAndPassword(email: emailController.text, password: passwordController.text)
+    firebaseAuth.createUserWithEmailAndPassword(email: emailController.text,
+        password: passwordController.text)
         .then((result){
             createRecord();
             storedData(nameController.text, emailController.text, locationController.text);

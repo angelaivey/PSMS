@@ -12,6 +12,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:ola_energy/screens/login.dart' as login;
 import 'package:ola_energy/screens/registration.dart';
 import 'package:ola_energy/screens/settings.dart';
+import 'package:ola_energy/widgets/progress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -44,14 +45,32 @@ class _EditProfileState extends State<EditProfile> {
   bool showPassword = false;
   String userName;
   String userEmail;
-  String userLocation;
-  String photoUrl;
+  String userLocation='';
+  String photoUrl='';
 
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController locationController = TextEditingController();
 
   CollectionReference dbRef = FirebaseFirestore.instance.collection('users');
+  @override
+  void initState() {
+    super.initState();
+    storedData();
+
+    //detects when user signed in
+    googleSignIn.onCurrentUserChanged.listen((account) {
+      handleSignIn(account);
+    }, onError: (err) {
+      print('Error signing in: $err');
+    });
+    //Reauthenticate user when app is opened
+    googleSignIn.signInSilently(suppressErrors: false).then((account) {
+      handleSignIn(account);
+    }).catchError((err) {
+      print('Error signing in: $err');
+    });
+  }
 
   Future storedData() async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
@@ -59,12 +78,48 @@ class _EditProfileState extends State<EditProfile> {
     setState(() {
       userName = _sp.getString("username");
       userEmail = _sp.getString("email");
-      userLocation = _sp.getString("location");
-      photoUrl = _sp.getString("photoUrl");
+      // userLocation = _sp.getString("location");
+      _fetchProfilePicture(_sp.getString("username"));
+      _fetchUserLocation(_sp.getString("username"));
       print("Fetched from shared p ${_sp.getString("username")}");
     });
   }
+  _fetchUserLocation(userName) async{
+    //instead of refreshing page when post is deleted, it MAY check if post still exists in firebase
+    //and if not the will not be displayed
+    await FirebaseFirestore.instance.collection('users')
+        .where('username', isEqualTo:userName)
+        .get()
+        .then((value){
+      value.docs.forEach((result) {
+        setState(() {
+          userLocation=result.data()['location'];
+        });
 
+      });
+    }).catchError((err){
+      print(err.message);
+
+    });
+  }
+  _fetchProfilePicture(userName) async{
+    //instead of refreshing page when post is deleted, it MAY check if post still exists in firebase
+    //and if not the will not be displayed
+    await FirebaseFirestore.instance.collection('users')
+        .where('username', isEqualTo:userName)
+        .get()
+        .then((value){
+      value.docs.forEach((result) {
+        setState(() {
+          photoUrl=result.data()['photoUrl'];
+        });
+
+      });
+    }).catchError((err){
+      print(err.message);
+
+    });
+  }
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -113,7 +168,8 @@ class _EditProfileState extends State<EditProfile> {
         title: Text('Edit Profile'),
       ),
 
-      body: Container(
+      body: photoUrl!=""?
+      Container(
         padding: EdgeInsets.only(left: 16, top: 25, right: 16),
         child: GestureDetector(
           onTap: () {
@@ -145,8 +201,8 @@ class _EditProfileState extends State<EditProfile> {
                                 ? FileImage(
                                     File(_image.path),
                                   )
-                                : photoUrl == ""
-                                    ? Icon(Icons.person)
+                                : photoUrl == "" || photoUrl == null
+                                    ? AssetImage('assets/images/user.png')
                                     : NetworkImage(photoUrl),
                           )),
                     ),
@@ -304,30 +360,23 @@ class _EditProfileState extends State<EditProfile> {
             ],
           ),
         ),
+      ):
+      Center(
+        child: Container(
+          height: 15,
+            width:15,
+          child: CircularProgressIndicator(
+           strokeWidth: 3,
+            backgroundColor: Color(0xff9E2B25),
+
+          )
+        )
       ),
     );
   }
 
   bool isAuth = false;
 
-  @override
-  void initState() {
-    super.initState();
-    storedData();
-
-    //detects when user signed in
-    googleSignIn.onCurrentUserChanged.listen((account) {
-      handleSignIn(account);
-    }, onError: (err) {
-      print('Error signing in: $err');
-    });
-    //Reauthenticate user when app is opened
-    googleSignIn.signInSilently(suppressErrors: false).then((account) {
-      handleSignIn(account);
-    }).catchError((err) {
-      print('Error signing in: $err');
-    });
-  }
 
   handleSignIn(GoogleSignInAccount account) {
     if (account != null) {

@@ -49,30 +49,14 @@ class _MarketPricesState extends State<MarketPrices> {
         //   },
         // ),
         title: Text('Market Prices'),
-        actions: [
-          IconButton(
-              icon: Icon(Icons.search_outlined, color: Colors.white,),
-              onPressed: null
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //       icon: Icon(Icons.search_outlined, color: Colors.white,),
+        //       onPressed: null
+        //   ),
+        // ],
       ),
       body: Container(
-        // height: MediaQuery.of(context).size.height,
-        // decoration: BoxDecoration(
-        //   borderRadius: BorderRadius.all(Radius.circular(1)),
-        //   boxShadow: <BoxShadow>[
-        //     BoxShadow(
-        //         color: Colors.grey.shade200,
-        //         offset: Offset(2, 4),
-        //         blurRadius: 5, //
-        //         spreadRadius: 2)
-        //   ],
-        //   gradient: LinearGradient(
-        //       begin: Alignment.topRight,
-        //       end: Alignment.topLeft,
-        //       colors: [Color(0xffe46b10), Color(0xff322C40)]
-        //   ),
-        // ),
          child:
             ListTile(
               title: Text("Retail Petroleum Prices", style: TextStyle(

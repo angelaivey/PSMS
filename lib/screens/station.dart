@@ -6,7 +6,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ola_energy/models/user.dart' as UserModel;
 import 'package:ola_energy/screens/login.dart' as prefix;
-import 'package:ola_energy/screens/newsDetails.dart';
 import 'package:ola_energy/screens/registration.dart';
 import 'package:ola_energy/widgets/posts.dart';
 import 'package:ola_energy/widgets/progress.dart';
@@ -101,8 +100,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
               child: Icon(Icons.add),
             ),
             body: StreamBuilder<QuerySnapshot>(
-              stream:
-                  postsRef.orderBy('timestamp', descending: true).snapshots(),
+              stream: postsRef.orderBy('timestamp', descending: true).snapshots(),
               builder: (context, asyncSnapshot) {
                 if (asyncSnapshot.hasError) {
                   return Text("Error!");
@@ -124,15 +122,12 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin {
                           mediaUrl: data.photoUrl,
                           likes: data.likes,
                         );
-                          //Text(posts.toString());
-
                       });
                 } else if (!asyncSnapshot.hasData) {
                   return circularProgress();
                 }
                 return null;
-              },
-            )
+              },)
         ));
   }
 

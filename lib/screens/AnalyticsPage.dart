@@ -43,46 +43,40 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     _seriesBarData.add(
       charts.Series(
         domainFn: (Sales sales, _) =>
-            DateFormat().add_yMd().format(sales.date.toDate()).toString(),
-        //x-axis
-        measureFn: (Sales sales, _) => sales.lpg,
-        //y-axis
+            DateFormat().add_yMd().format(sales.date.toDate()).toString(), //x-axis
+        measureFn: (Sales sales, _) => sales.lpg, //y-axis
         id: 'Lpg',
         data: myData,
         labelAccessorFn: (Sales row, _) => "Sales Weekly",
-        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff109618)),
+        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff517664)),
       ),
     );
     _seriesBarData.add(
       charts.Series(
         domainFn: (Sales sales, _) =>
-            DateFormat().add_yMd().format(sales.date.toDate()).toString(),
-        //x-axis
-        measureFn: (Sales sales, _) => sales.lube,
-        //y-axis
+            DateFormat().add_yMd().format(sales.date.toDate()).toString(), //x-axis
+        measureFn: (Sales sales, _) => sales.lube, //y-axis
         id: 'Lube',
         data: myData,
         labelAccessorFn: (Sales row, _) => "Sales Weekly",
-        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xffff9900)),
+        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xffE6D517)),
       ),
     );
     _seriesBarData.add(
       charts.Series(
         domainFn: (Sales sales, _) =>
-            DateFormat().add_yMd().format(sales.date.toDate()).toString(),
-        //x-axis
-        measureFn: (Sales sales, _) => sales.fuel,
-        //y-axis
+            DateFormat().add_yMd().format(sales.date.toDate()).toString(), //x-axis
+        measureFn: (Sales sales, _) => sales.fuel, //y-axis
         id: 'Fuel',
         data: myData,
         labelAccessorFn: (Sales row, _) => "Sales Weekly",
-        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff990099)),
+        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff9E2B25)),
       ),
     );
 
     _seriesLineData.add(
       charts.Series(
-        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff990099)),
+        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff9E2B25)),
         id: 'Lube',
         data: myData,
         domainFn: (Sales sales, _) => int.parse(
@@ -92,7 +86,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     );
     _seriesLineData.add(
       charts.Series(
-        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff109618)),
+        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff517664)),
         id: 'Lpg',
         data: myData,
         domainFn: (Sales sales, _) => int.parse(
@@ -102,7 +96,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     );
     _seriesLineData.add(
       charts.Series(
-        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xffff9900)),
+        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xffE6D517)),
         id: 'Fuel',
         data: myData,
         domainFn: (Sales sales, _) => int.parse(
@@ -250,12 +244,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         }
       },
     );
-        // : Center(
-        // child:Column(
-        //   children: [
-        //     Text('Please Select ')
-        //   ],
-    //));
+
   }
 
   Widget _buildLineBody(context) {

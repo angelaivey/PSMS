@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +19,7 @@ import 'HomePage.dart';
 import 'MarketPrices.dart';
 
 class DashBoard extends StatefulWidget {
-  static Route<Object> route;
-
-
+  // static Route<Object> route;
   @override
   _DashBoardState createState() => _DashBoardState();
 }
@@ -29,32 +28,53 @@ class _DashBoardState extends State<DashBoard> {
   String userName;
   String userEmail;
   String userLocation;
-  String photoUrl;
+  String _photoUrl="";
 
-  Future storedData() async {
+  @override
+  void initState() {
+    super.initState();
+     _fetchStoredData();
+    print('hellooooooo');
+  }
+
+  Future _fetchStoredData() async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
     print("Fetched from shared p ${_sp.getString("username")}");
     setState(() {
       userName =  _sp.getString("username");
       userEmail = _sp.getString("email");
       userLocation = _sp.getString("location");
-      photoUrl = _sp.getString("photoUrl");
+     _fetchProfilePicture( _sp.getString("username"));
       print("Fetched from shared p ${_sp.getString("username")}");
     });
   }
+  _fetchProfilePicture(userName) async{
 
-  @override
-  void initState() {
-    super.initState();
-    storedData();
+    //instead of refreshing page when post is deleted, it MAY check if post still exists in firebase
+    //and if not the will not be displayed
+    await FirebaseFirestore.instance.collection('users')
+        .where('username', isEqualTo:userName)
+        .get()
+        .then((value){
+      value.docs.forEach((result) {
+        setState(() {
+          _photoUrl=result.data()['photoUrl'];
+        });
+
+      });
+    }).catchError((err){
+      print(err.message);
+
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size; //to get size
-
     return Scaffold(
-      body: Stack(
+      body: _photoUrl!=""
+          ?
+      Stack(
         children: <Widget>[
           Positioned(
             top: -MediaQuery.of(context).size.height * .15,
@@ -104,9 +124,14 @@ class _DashBoardState extends State<DashBoard> {
                                 MaterialPageRoute(
                                     builder: (context) => EditProfile()));
                           },
-                          child: CircleAvatar(
-                            radius: 32,
-                            backgroundImage:photoUrl!=null?NetworkImage(photoUrl): Image.asset("assets/images/user.png"),
+                          child: ClipRRect(
+
+                            borderRadius: BorderRadius.circular(72),
+                            child:Image(
+                                height:65,
+                                width:65,
+                              image:_photoUrl=="" || _photoUrl==null ?AssetImage("assets/images/user.png"):NetworkImage(_photoUrl)
+                            ),
                              //   AssetImage('assets/images/m1.jpeg'),
                           ),
                         ),
@@ -305,6 +330,13 @@ class _DashBoardState extends State<DashBoard> {
             ),
           )
         ],
+      )
+      :Center(
+        child: Container(
+          height: 20,
+          width: 20,
+          child:CircularProgressIndicator(),
+        )
       ),
     );
   }

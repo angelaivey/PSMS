@@ -53,8 +53,7 @@ class _MultiFormState extends State<MultiForm> {
         stream: FirebaseFirestore.instance
             .collection("fuels")
             .orderBy("date", descending: true)
-        //
-        .where('userId', isEqualTo: uid)
+            .where('userId', isEqualTo: uid)
             .snapshots(),
         builder: (context, asyncSnapshot) {
           if (asyncSnapshot.hasError) {
@@ -66,14 +65,12 @@ class _MultiFormState extends State<MultiForm> {
               itemBuilder: (BuildContext context, int index) => Padding(
                 padding: EdgeInsets.all(8.0),
                 child:fuelWidget(
-                  // DateFormat().add_yMMMEd().format(asyncSnapshot.data.docs[index].data()["date"].toDate()),
                   asyncSnapshot.data.docs[index].data()["date"],
                   asyncSnapshot.data.docs[index].data()["fuel"],
                   asyncSnapshot.data.docs[index].data()["fuelId"],
                   asyncSnapshot.data.docs[index].data()["lpg"],
                   asyncSnapshot.data.docs[index].data()["lube"],
                   asyncSnapshot.data.docs[index].data()["userId"],
-
                     ),
               ),
             );
