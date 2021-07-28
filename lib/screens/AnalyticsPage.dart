@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:excel/excel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
@@ -9,8 +8,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:ola_energy/models/sales.dart';
-import 'package:date_range_picker/date_range_picker.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import 'package:path_provider/path_provider.dart';
@@ -167,20 +164,21 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     pdf.addPage(
                       pw.MultiPage(
                         build: (context) => [
+                          pw.Text("Monthly Data"),
                           pw.Table.fromTextArray(
                               context: context,
                               data: <List<String>>[
                                 <String>[
-                                  'LPG',
-                                  'FUEL',
-                                  'LUBE',
-                                  'Date',
+                                  'LPG (litres)',
+                                  'FUEL (litres)',
+                                  'LUBE (liters)',
+                                  'Date This Month',
                                 ],
                                 ...myData.map((msg) => [
                                       msg.lpg.toString(),
                                       msg.fuel.toString(),
                                       msg.lube.toString(),
-                                      msg.date.toString(),
+                                      msg.date.toDate().day.toString(),
                                     ])
                               ]),
                         ],
@@ -188,7 +186,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     );
                     final outPut = await getExternalStorageDirectory();
 
-                    String path = outPut.path + '/example.pdf';
+                    String path = outPut.path + '/montly report.pdf';
                     final file = File(path);
                     file.writeAsBytesSync(pdf.save());
 
@@ -304,10 +302,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           behaviorPosition: charts.BehaviorPosition.start,
                           titleOutsideJustification:
                               charts.OutsideJustification.middleDrawArea),
-                      // new charts.ChartTitle('Departments',
-                      //   behaviorPosition: charts.BehaviorPosition.end,
-                      //   titleOutsideJustification:charts.OutsideJustification.middleDrawArea,
-                      // )
                     ]),
               ),
             ],
@@ -338,7 +332,15 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                           color: charts.MaterialPalette.purple.shadeDefault,
                           fontFamily: 'Georgia',
                           fontSize: 18),
-                    )
+                    ),
+                    new charts.ChartTitle('Date',
+                        behaviorPosition: charts.BehaviorPosition.bottom,
+                        titleOutsideJustification:
+                        charts.OutsideJustification.middleDrawArea),
+                    new charts.ChartTitle('Products(litres)',
+                        behaviorPosition: charts.BehaviorPosition.start,
+                        titleOutsideJustification:
+                        charts.OutsideJustification.middleDrawArea),
                   ],
                 ),
               ),

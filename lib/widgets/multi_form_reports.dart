@@ -141,7 +141,7 @@ class _MultiFormState extends State<MultiForm> {
                 ),
                 child: Row(
                   children: [
-                    Text('Lube: '),
+                    Text('Lube (lts): '),
                     SizedBox(width: 10.0,),
                     Text(lube
                         .toString()),
@@ -153,7 +153,7 @@ class _MultiFormState extends State<MultiForm> {
                 EdgeInsets.only(left: 16, right: 16, top: 16),
                 child: Row(
                   children: [
-                    Text('LPG: '),
+                    Text('LPG (lts): '),
                     SizedBox(width: 10.0,),
                     Text(lpg
                         .toString()),
@@ -165,7 +165,7 @@ class _MultiFormState extends State<MultiForm> {
                 EdgeInsets.only(left: 16, right: 16, top: 16),
                 child: Row(
                   children: [
-                    Text('Fuel: '),
+                    Text('Fuel (lts): '),
                     SizedBox(width: 10.0,),
                     Text(fuel
                         .toString()),
