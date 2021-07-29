@@ -186,7 +186,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     );
                     final outPut = await getExternalStorageDirectory();
 
-                    String path = outPut.path + '/montly report.pdf';
+                    String path = outPut.path + '/monthly report.pdf';
                     final file = File(path);
                     // I changed here
                     //file.writeAsBytesSync(pdf.save());

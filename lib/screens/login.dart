@@ -37,12 +37,14 @@ class _LoginPageState extends State<LoginPage> {
   PageController pageController;
   int pageIndex = 0;
 
-  void storedData(name, email, photoUrl, uid) async {
+  void storedData(name, email, photoUrl, uid, accType, stationId) async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
     _sp.setString("employeeId", name.toString());
     _sp.setString("email", email.toString());
     _sp.setString("photoUrl", photoUrl.toString());
     _sp.setString("uid", uid.toString());
+    _sp.setString("stationId", stationId);
+    _sp.setString("accType", accType);
   }
 
   @override
@@ -131,8 +133,10 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _entryField(String title, TextEditingController controller,
-     ) {
+  Widget _entryField(
+    String title,
+    TextEditingController controller,
+  ) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -160,12 +164,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget _submitButton() {
     return InkWell(
         onTap: () {
-         
-            checkEmpty(emailController.text, passwordController.text);
-            if (emailError == false && passwordError == false) {
-              logInToFb();
-            }
-          
+          checkEmpty(emailController.text, passwordController.text);
+          if (emailError == false && passwordError == false) {
+            logInToFb();
+          }
         },
         // onTap: () {
         //   Navigator.push(
@@ -287,43 +289,8 @@ class _LoginPageState extends State<LoginPage> {
           );
   }
 
-  // Widget _label() {
-  //   return Container(
-  //       margin: EdgeInsets.only(top: 40, bottom: 20),
-  //       child: Column(
-  //         children: <Widget>[
-  //           Text(
-  //             'Quick login with Touch ID',
-  //             style: TextStyle(color: Colors.white, fontSize: 17),
-  //           ),
-  //           SizedBox(
-  //             height: 20,
-  //           ),
-  //           Icon(Icons.fingerprint, size: 90, color: Colors.white),
-  //           SizedBox(
-  //             height: 20,
-  //           ),
-  //           Text(
-  //             'Touch ID',
-  //             style: TextStyle(
-  //               color: Colors.white,
-  //               fontSize: 15,
-  //               decoration: TextDecoration.underline,
-  //             ),
-  //           ),
-  //         ],
-  //       ));
-  // }
-
   Widget _createAccountLabel() {
-    return
-        // InkWell(
-        // onTap: () {
-        //   Navigator.push(
-        //       context, MaterialPageRoute(builder: (context) => SignUpPage()));
-        // },
-        // child:
-        Container(
+    return Container(
       margin: EdgeInsets.symmetric(vertical: 20),
       padding: EdgeInsets.all(15),
       alignment: Alignment.bottomCenter,
@@ -377,8 +344,6 @@ class _LoginPageState extends State<LoginPage> {
           ]),
     );
   }
-
-  
 
   bool obsecureText = true;
   @override
@@ -524,10 +489,13 @@ class _LoginPageState extends State<LoginPage> {
 
         final String employeeId = value["employeeId"];
         final String userEmail = value["email"];
+        final String accType = value["accountType"];
+        final String stationId = value["stationId"];
         // final String userPhoto =  value["photoUrl"]!=null?null:value['photoUrl'];
         final String uid = value["uid"];
         print("User data : $employeeId $userEmail");
-        storedData(employeeId, userEmail, uid, 'assets/images/user.png');
+        storedData(employeeId, userEmail, uid, 'assets/images/user.png',
+            accType, stationId);
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => DashBoard()),

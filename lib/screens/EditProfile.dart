@@ -43,14 +43,14 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   bool showPassword = false;
-  String userName;
+  String employeeId;
   String userEmail;
-  String userLocation='';
+  String stationId='';
   String photoUrl='';
 
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
-  TextEditingController locationController = TextEditingController();
+  TextEditingController stationIdController = TextEditingController();
 
   CollectionReference dbRef = FirebaseFirestore.instance.collection('users');
   @override
@@ -74,26 +74,26 @@ class _EditProfileState extends State<EditProfile> {
 
   Future storedData() async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
-    print("Fetched from shared p ${_sp.getString("username")}");
+    print("Fetched from shared p ${_sp.getString("employeeId")}");
     setState(() {
-      userName = _sp.getString("username");
+      employeeId = _sp.getString("employeeId");
       userEmail = _sp.getString("email");
-      // userLocation = _sp.getString("location");
-      _fetchProfilePicture(_sp.getString("username"));
-      _fetchUserLocation(_sp.getString("username"));
-      print("Fetched from shared p ${_sp.getString("username")}");
+      // stationId = _sp.getString("stationId");
+      _fetchProfilePicture(_sp.getString("employeeId"));
+      _fetchstationId(_sp.getString("employeeId"));
+      print("Fetched from shared p ${_sp.getString("employeeId")}");
     });
   }
-  _fetchUserLocation(userName) async{
+  _fetchstationId(employeeId) async{
     //instead of refreshing page when post is deleted, it MAY check if post still exists in firebase
     //and if not the will not be displayed
     await FirebaseFirestore.instance.collection('users')
-        .where('username', isEqualTo:userName)
+        .where('employeeId', isEqualTo:employeeId)
         .get()
         .then((value){
       value.docs.forEach((result) {
         setState(() {
-          userLocation=result.data()['location'];
+          stationId=result.data()['stationId'];
         });
 
       });
@@ -102,11 +102,11 @@ class _EditProfileState extends State<EditProfile> {
 
     });
   }
-  _fetchProfilePicture(userName) async{
+  _fetchProfilePicture(employeeId) async{
     //instead of refreshing page when post is deleted, it MAY check if post still exists in firebase
     //and if not the will not be displayed
     await FirebaseFirestore.instance.collection('users')
-        .where('username', isEqualTo:userName)
+        .where('employeeId', isEqualTo:employeeId)
         .get()
         .then((value){
       value.docs.forEach((result) {
@@ -125,8 +125,8 @@ class _EditProfileState extends State<EditProfile> {
     super.didChangeDependencies();
     setState(() {
       emailController.text = userEmail;
-      nameController.text = userName;
-      locationController.text = userLocation;
+      nameController.text = employeeId;
+      stationIdController.text = stationId;
     });
   }
 
@@ -233,10 +233,10 @@ class _EditProfileState extends State<EditProfile> {
               SizedBox(
                 height: 35,
               ),
-              buildTextField("Full Name", userName, nameController, false),
-              buildTextField("E-mail", userEmail, emailController, false),
+              buildTextField("Employee Id", employeeId, nameController, false),
+              buildTextField("work E-mail", userEmail, emailController, false),
               // buildTextField("Password", "********", true),
-              buildTextField("Station", userLocation, locationController, false),
+              buildTextField("Station", stationId, stationIdController, false),
               SizedBox(
                 height: 20,
               ),
@@ -283,11 +283,11 @@ class _EditProfileState extends State<EditProfile> {
                       String imageUrl = await uploadImage(_image);
                       dbRef.doc(firebaseAuth.currentUser.uid).update({
                         'uid': firebaseAuth.currentUser.uid,
-                        'location': locationController.text == ''
-                            ? userLocation
-                            : locationController.text,
-                        'username': nameController.text == ''
-                            ? userName
+                        'stationId': stationIdController.text == ''
+                            ? stationId
+                            : stationIdController.text,
+                        'employeeId': nameController.text == ''
+                            ? employeeId
                             : nameController.text,
                         'email': emailController.text == ''
                             ? userEmail
@@ -333,31 +333,7 @@ class _EditProfileState extends State<EditProfile> {
                   )
                 ],
               ),
-              SizedBox(
-                height: 30,
-              ),
-              Center(
-                child: OutlineButton(
-                  color: Color(0xff322C40),
-                  padding: EdgeInsets.symmetric(horizontal: 40),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  onPressed: () {
-                    logout();
-                    signOut();
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => login.LoginPage()));
-                  },
-                  child: Text("SIGN OUT",
-                      style: TextStyle(
-                          fontSize: 16,
-                          letterSpacing: 2.2,
-                          color: Colors.black)),
-                ),
-              )
-            ],
+             ],
           ),
         ),
       ):

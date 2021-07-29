@@ -21,8 +21,7 @@ class _MarketPricesState extends State<MarketPrices> {
   _getData() async {
     webScraper = WebScraper('https://www.epra.go.ke/services/petroleum/petroleum-prices/');
     if(await webScraper.loadWebPage('/')){
-      List<Map<String, dynamic>> results =
-      webScraper.getElement('div.wpdt-c',        ['title']);
+      List<Map<String, dynamic>> results =   webScraper.getElement('div.wpdt-c',        ['title']);
       List<Map<String, dynamic>> town= webScraper.getElement('tbody',['title']);
       print(town);
       //print('/n');

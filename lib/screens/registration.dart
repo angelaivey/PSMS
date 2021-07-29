@@ -124,7 +124,7 @@ class _SignUpPageState extends State<SignUpPage> {
       'accountType': _accType
     }).then((value) {
       storedData(_accType, employeeIdController.text, _stationId,
-          emailController.text);
+          emailController.text, uid);
       setState(() {
         loading = false;
       });
@@ -1383,12 +1383,13 @@ class _SignUpPageState extends State<SignUpPage> {
           );
   }
 
-  void storedData(acctype, employeeId, stationId, email) async {
+  void storedData(acctype, employeeId, stationId, email,uid) async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
     _sp.setString("stationId", stationId.toString());
     _sp.setString("employeeId", employeeId.toString());
     _sp.setString("accType", acctype.toString());
     _sp.setString("email", email.toString());
+    _sp.setString("uid", uid.toString());
   }
 
   bool accTypeError = false;
