@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ola_energy/widgets/palette.dart';
+import '../widgets/palette.dart';
 
 InputDecoration registerInputDecoration({String hintText}) {
   return InputDecoration(

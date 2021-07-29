@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ola_energy/models/user.dart';
-import 'package:ola_energy/screens/HomePage.dart';
-import 'package:ola_energy/screens/comments.dart';
-import 'package:ola_energy/screens/login.dart';
-import 'package:ola_energy/screens/registration.dart';
-import 'package:ola_energy/widgets/progress.dart';
+import '../models/user.dart';
+import '../screens/HomePage.dart';
+import '../screens/comments.dart';
+import '../screens/login.dart';
+import '../screens/registration.dart';
+import '../widgets/progress.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Post extends StatefulWidget {

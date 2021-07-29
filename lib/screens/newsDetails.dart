@@ -1,9 +1,9 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
-// import 'package:ola_energy/screens/login.dart';
-// import 'package:ola_energy/widgets/posts.dart';
-// import 'package:ola_energy/widgets/progress.dart';
+// import '../screens/login.dart';
+// import '../widgets/posts.dart';
+// import '../widgets/progress.dart';
 // import 'station.dart';
 //
 // class Updates extends StatefulWidget {

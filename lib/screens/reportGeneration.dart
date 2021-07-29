@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ola_energy/models/petrol.dart';
-import 'package:ola_energy/widgets/multi_form_reports.dart';
+import '../models/petrol.dart';
+import '../widgets/multi_form_reports.dart';
 import 'package:random_string/random_string.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

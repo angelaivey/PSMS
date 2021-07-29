@@ -1,8 +1,8 @@
 // import 'package:flutter/material.dart';
-// import 'package:ola_energy/utils/decoration_functions.dart';
-// import 'package:ola_energy/widgets/palette.dart';
-// import 'package:ola_energy/utils/sign_in_up_bar.dart';
-// import 'package:ola_energy/utils/title.dart';
+// import '../utils/decoration_functions.dart';
+// import '../widgets/palette.dart';
+// import '../utils/sign_in_up_bar.dart';
+// import '../utils/title.dart';
 // import 'package:lit_firebase_auth/lit_firebase_auth.dart';
 //
 // class SignIn extends StatelessWidget {

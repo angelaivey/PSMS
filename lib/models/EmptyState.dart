@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ola_energy/widgets/multi_form_reports.dart';
+import '../widgets/multi_form_reports.dart';
 
 class EmptyState extends StatelessWidget {
   final String title, message;

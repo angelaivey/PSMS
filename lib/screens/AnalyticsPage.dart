@@ -7,7 +7,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:ola_energy/models/sales.dart';
+import '../models/sales.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import 'package:path_provider/path_provider.dart';
@@ -188,7 +188,8 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
                     String path = outPut.path + '/montly report.pdf';
                     final file = File(path);
-                    file.writeAsBytesSync(pdf.save());
+                    // I changed here
+                    //file.writeAsBytesSync(pdf.save());
 
                     print(outPut.path);
                     Fluttertoast.showToast(msg: "Download Complete");

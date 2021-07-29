@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ola_energy/screens/station.dart';
-import 'package:ola_energy/widgets/listItem.dart';
+import '../screens/station.dart';
+import '../widgets/listItem.dart';
 import 'package:lipsum/lipsum.dart' as lipsum;
-import 'package:ola_energy/widgets/listWidget.dart';
-import 'package:ola_energy/widgets/visionCards.dart';
+import '../widgets/listWidget.dart';
+import '../widgets/visionCards.dart';
 import 'package:web_scraper/web_scraper.dart';
 
 import 'login.dart';

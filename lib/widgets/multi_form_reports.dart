@@ -3,11 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:ola_energy/models/EmptyState.dart';
-import 'package:ola_energy/models/petrol.dart';
-import 'package:ola_energy/screens/registration.dart';
-import 'package:ola_energy/screens/reportGeneration.dart';
-import 'package:ola_energy/widgets/progress.dart';
+import '../models/EmptyState.dart';
+import '../models/petrol.dart';
+import '../screens/registration.dart';
+import '../screens/reportGeneration.dart';
+import '../widgets/progress.dart';
 
 class MultiForm extends StatefulWidget {
 

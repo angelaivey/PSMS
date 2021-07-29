@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:ola_energy/screens/WelcomePage.dart';
-import 'package:ola_energy/screens/login.dart';
-import 'package:ola_energy/screens/registration.dart';
+import '../screens/WelcomePage.dart';
+import '../screens/login.dart';
+import '../screens/registration.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 

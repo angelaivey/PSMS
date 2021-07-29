@@ -1,13 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ola_energy/screens/AnalyticsPage.dart';
-import 'package:ola_energy/screens/EditProfile.dart';
-import 'package:ola_energy/screens/HomePage.dart';
-import 'package:ola_energy/screens/MarketPrices.dart';
-import 'package:ola_energy/screens/login.dart';
-import 'package:ola_energy/screens/reportGeneration.dart';
-import 'package:ola_energy/widgets/multi_form_reports.dart';
-import 'package:ola_energy/widgets/posts.dart';
+import '../screens/AnalyticsPage.dart';
+import '../screens/EditProfile.dart';
+import '../screens/HomePage.dart';
+import '../screens/MarketPrices.dart';
+import '../screens/login.dart';
+import '../screens/reportGeneration.dart';
+import '../widgets/multi_form_reports.dart';
+import '../widgets/posts.dart';
 
 class HomeState extends StatefulWidget {
   final String postId;
@@ -122,12 +122,12 @@ class _HomeStateState extends State<HomeState> {
 }
 
 // import 'package:flutter/material.dart';
-// import 'package:ola_energy/screens/AnalyticsPage.dart';
-// import 'package:ola_energy/screens/EditProfile.dart';
-// import 'package:ola_energy/screens/HomePage.dart';
-// import 'package:ola_energy/screens/MarketPrices.dart';
-// import 'package:ola_energy/widgets/multi_form_reports.dart';
-// import 'package:ola_energy/widgets/posts.dart';
+// import '../screens/AnalyticsPage.dart';
+// import '../screens/EditProfile.dart';
+// import '../screens/HomePage.dart';
+// import '../screens/MarketPrices.dart';
+// import '../widgets/multi_form_reports.dart';
+// import '../widgets/posts.dart';
 //
 // class HomeState extends StatefulWidget {
 //   @override
