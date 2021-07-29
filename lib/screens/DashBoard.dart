@@ -25,7 +25,7 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> {
-  String userName;
+  String employeeId;
   String userEmail;
   String userLocation;
   String _photoUrl="";
@@ -39,21 +39,21 @@ class _DashBoardState extends State<DashBoard> {
 
   Future _fetchStoredData() async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
-    print("Fetched from shared p ${_sp.getString("username")}");
+    print("Fetched from shared p ${_sp.getString("employeeId")}");
     setState(() {
-      userName =  _sp.getString("username");
+      employeeId =  _sp.getString("employeeId");
       userEmail = _sp.getString("email");
-      userLocation = _sp.getString("location");
-     _fetchProfilePicture( _sp.getString("username"));
-      print("Fetched from shared p ${_sp.getString("username")}");
+      //userLocation = _sp.getString("location");
+     _fetchProfilePicture( _sp.getString("employeeId"));
+      print("Fetched from shared p ${_sp.getString("employeeId")}");
     });
   }
-  _fetchProfilePicture(userName) async{
+  _fetchProfilePicture(employeeId) async{
 
     //instead of refreshing page when post is deleted, it MAY check if post still exists in firebase
     //and if not the will not be displayed
     await FirebaseFirestore.instance.collection('users')
-        .where('username', isEqualTo:userName)
+        .where('employeeId', isEqualTo:employeeId)
         .get()
         .then((value){
       value.docs.forEach((result) {
@@ -71,6 +71,7 @@ class _DashBoardState extends State<DashBoard> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size; //to get size
+    var screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       body: _photoUrl!=""
           ?
@@ -83,33 +84,16 @@ class _DashBoardState extends State<DashBoard> {
             left: -MediaQuery.of(context).size.width * .3,
             child: BezierContainer(),
           ),
-          Container(
-            // padding: EdgeInsets.symmetric(horizontal: 20),
-            // height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(5)),
-              boxShadow: <BoxShadow>[
-                // BoxShadow(
-                //     color: Colors.grey.shade200,
-                //     offset: Offset(2, 4),
-                //     blurRadius: 5, //
-                //     spreadRadius: 2)
-              ],
-              // gradient: LinearGradient(
-              //     begin: Alignment.topRight,
-              //     end: Alignment.topLeft,
-              //     colors: [Color(0xffe46b10), Color(0xffffac69)]),
-            ),
-          ),
+          
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: <Widget>[
                   Container(
-                    height: 124,
+                    height: screenHeight * 0.1,
 
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(screenHeight * 0.02),
                     decoration: BoxDecoration(  color: Color(0xff322C40),
                       borderRadius: BorderRadius.circular(10)
                     ),
@@ -128,8 +112,8 @@ class _DashBoardState extends State<DashBoard> {
 
                             borderRadius: BorderRadius.circular(72),
                             child:Image(
-                                height:65,
-                                width:65,
+                                height:screenHeight * 0.08,
+                                width:screenHeight * 0.08,
                               image:_photoUrl=="" || _photoUrl==null ?AssetImage("assets/images/user.png"):NetworkImage(_photoUrl)
                             ),
                              //   AssetImage('assets/images/m1.jpeg'),
@@ -151,7 +135,7 @@ class _DashBoardState extends State<DashBoard> {
                               ),
                             ),
                             Text(
-                              '$userName' ?? "",
+                              '$employeeId' ?? "",
                               style: TextStyle(
 
                                 fontSize: 30,

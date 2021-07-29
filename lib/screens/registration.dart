@@ -1386,8 +1386,8 @@ class _SignUpPageState extends State<SignUpPage> {
   void storedData(acctype, employeeId, stationId, email) async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
     _sp.setString("stationId", stationId.toString());
-    _sp.setString("employeeNumber", employeeId.toString());
-    _sp.setString("acctype", acctype.toString());
+    _sp.setString("employeeId", employeeId.toString());
+    _sp.setString("accType", acctype.toString());
     _sp.setString("email", email.toString());
   }
 

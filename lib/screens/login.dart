@@ -20,7 +20,6 @@ TextEditingController emailController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
 DatabaseReference dbRef = FirebaseDatabase.instance.reference().child("Users");
 
-
 final DateTime timestamp = DateTime.now();
 
 class LoginPage extends StatefulWidget {
@@ -38,9 +37,9 @@ class _LoginPageState extends State<LoginPage> {
   PageController pageController;
   int pageIndex = 0;
 
-  void storedData(name, email,photoUrl, uid) async {
+  void storedData(name, email, photoUrl, uid) async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
-    _sp.setString("username", name.toString());
+    _sp.setString("employeeId", name.toString());
     _sp.setString("email", email.toString());
     _sp.setString("photoUrl", photoUrl.toString());
     _sp.setString("uid", uid.toString());
@@ -57,10 +56,9 @@ class _LoginPageState extends State<LoginPage> {
       print('Error signing in: $err');
     });
     //Reauthenticate user when app is opened
-    googleSignIn.signInSilently(suppressErrors: false)
-      .then((account) {
-        handleSignIn(account);
-    }).catchError((err){
+    googleSignIn.signInSilently(suppressErrors: false).then((account) {
+      handleSignIn(account);
+    }).catchError((err) {
       print('Error signing in: $err');
     });
   }
@@ -134,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _entryField(String title, TextEditingController controller,
-      {bool isPassword = false}) {
+     ) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -148,12 +146,11 @@ class _LoginPageState extends State<LoginPage> {
             height: 10,
           ),
           TextField(
-              controller: controller,
-              obscureText: isPassword,
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  fillColor: Color(0xfff3f3f4),
-                  filled: true),
+            controller: controller,
+            decoration: InputDecoration(
+                border: InputBorder.none,
+                fillColor: emailError ? Color(0xffFC6161) : Color(0xfff3f3f4),
+                filled: true),
           ),
         ],
       ),
@@ -163,9 +160,12 @@ class _LoginPageState extends State<LoginPage> {
   Widget _submitButton() {
     return InkWell(
         onTap: () {
-          if (_formKey.currentState.validate()) {
-            logInToFb();
-          }
+         
+            checkEmpty(emailController.text, passwordController.text);
+            if (emailError == false && passwordError == false) {
+              logInToFb();
+            }
+          
         },
         // onTap: () {
         //   Navigator.push(
@@ -178,19 +178,19 @@ class _LoginPageState extends State<LoginPage> {
           padding: EdgeInsets.symmetric(vertical: 15),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(5)),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                    color: Colors.grey.shade200,
-                    offset: Offset(2, 4),
-                    blurRadius: 5,
-                    spreadRadius: 2)
-              ],
-              gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [Color(0xff322C40), Color(0xff322C40)],
-              ),
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: Colors.grey.shade200,
+                  offset: Offset(2, 4),
+                  blurRadius: 5,
+                  spreadRadius: 2)
+            ],
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [Color(0xff322C40), Color(0xff322C40)],
+            ),
           ),
           child: Text(
             'Login',
@@ -317,41 +317,43 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _createAccountLabel() {
     return
-      // InkWell(
-      // onTap: () {
-      //   Navigator.push(
-      //       context, MaterialPageRoute(builder: (context) => SignUpPage()));
-      // },
-      // child:
-      Container(
-        margin: EdgeInsets.symmetric(vertical: 20),
-        padding: EdgeInsets.all(15),
-        alignment: Alignment.bottomCenter,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Don\'t have an account ?',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+        // InkWell(
+        // onTap: () {
+        //   Navigator.push(
+        //       context, MaterialPageRoute(builder: (context) => SignUpPage()));
+        // },
+        // child:
+        Container(
+      margin: EdgeInsets.symmetric(vertical: 20),
+      padding: EdgeInsets.all(15),
+      alignment: Alignment.bottomCenter,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            'Don\'t have an account ?',
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignUpPage()),
+                  (route) => false);
+            },
+            child: Text(
+              'Register',
+              style: TextStyle(
+                  color: Color(0xffC6BB72),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600),
             ),
-            SizedBox(
-              width: 10,
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.pushAndRemoveUntil(
-                    context, MaterialPageRoute(builder: (context) => SignUpPage()),(route)=>false);
-              },
-              child: Text(
-                'Register',
-                style: TextStyle(
-                    color: Color(0xffC6BB72),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
+      ),
       //),
     );
   }
@@ -376,18 +378,9 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _emailPasswordWidget() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: <Widget>[
-          _entryField("Email id", emailController),
-          _entryField("Password", passwordController, isPassword: true),
-        ],
-      ),
-    );
-  }
+  
 
+  bool obsecureText = true;
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -410,7 +403,66 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: height * .2),
                   _title(),
                   SizedBox(height: 50),
-                  _emailPasswordWidget(),
+                  _entryField("Email id", emailController),
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Password",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                        SizedBox(
+                          height: height * .015,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: height * 0.0655,
+                                child: TextField(
+                                    controller: passwordController,
+                                    obscureText: obsecureText,
+                                    decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        fillColor: passwordError
+                                            ? Color(0xffFC6161)
+                                            : Color(0xfff3f3f4),
+                                        filled: true)),
+                              ),
+                            ),
+                            Container(
+                              height: height * 0.0655,
+                              color: Color(0xfff3f3f4),
+                              padding: EdgeInsets.only(left: 5, right: 10),
+                              child: GestureDetector(
+                                onTapDown: (param) {
+                                  //param is never used
+                                  setState(() {
+                                    obsecureText = !obsecureText;
+                                  });
+                                },
+                                onTapUp: (param) {
+                                  //param is never used
+                                  setState(() {
+                                    obsecureText = !obsecureText;
+                                  });
+                                },
+                                child: Icon(
+                                  obsecureText
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  size: 30,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
                   SizedBox(height: 20),
                   _submitButton(),
                   // Container(
@@ -434,21 +486,48 @@ class _LoginPageState extends State<LoginPage> {
     ));
   }
 
+  bool passwordError = false;
+  bool emailError = false;
+  void checkEmpty(email, password) {
+    if (password == "" || password == null) {
+      setState(() {
+        passwordError = true;
+      });
+    }
+
+    if (email == "" || email == null) {
+      setState(() {
+        emailError = true;
+      });
+    } else {
+      toTrue();
+    }
+  }
+
+  void toTrue() {
+    passwordError = false;
+    emailError = false;
+    print('should be working on it');
+  }
+
   void logInToFb() {
     firebaseAuth
         .signInWithEmailAndPassword(
             email: emailController.text, password: passwordController.text)
         .then((result) {
-      FirebaseFirestore.instance.collection("users").doc(firebaseAuth.currentUser.uid).get().then((DocumentSnapshot value) {
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(firebaseAuth.currentUser.uid)
+          .get()
+          .then((DocumentSnapshot value) {
         print("Data Chunk ${value}");
 
-
-        final String userName = value["username"];
-        final String userEmail =  value["email"];
-        final String userPhoto =  value["photoUrl"];
-        final String uid =  value["uid"];
-        print ( "User data : $userName $userEmail");
-        storedData(userName, userEmail, uid, userPhoto!=null?'assets/images/user.png':userPhoto);
+        final String employeeId = value["employeeId"];
+        final String userEmail = value["email"];
+        // final String userPhoto =  value["photoUrl"]!=null?null:value['photoUrl'];
+        final String uid = value["uid"];
+        print("User data : $employeeId $userEmail");
+        storedData(employeeId, userEmail, uid, 'assets/images/user.png');
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => DashBoard()),
