@@ -7,6 +7,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/sales.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -31,16 +32,32 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   void initState() {
     super.initState();
     _currentUserId();
+    _fetchStoredData();
+  }
+
+  String employeeId, userEmail, stationId, accType;
+  Future _fetchStoredData() async {
+    final SharedPreferences _sp = await SharedPreferences.getInstance();
+    // print("Fetched from shared p ${_sp.getString("employeeId")}");
+    setState(() {
+      employeeId = _sp.getString("employeeId");
+      userEmail = _sp.getString("email");
+      stationId = _sp.getString("stationId");
+      accType = _sp.getString("accType");
+    });
+    print('----------------------------------------------------------');
+    print(accType);
   }
 
   _generateData(myData) {
-    _seriesBarData = List<charts.Series<Sales, String>>();
-    _seriesLineData = List<charts.Series<Sales, int>>();
-
+    _seriesBarData = [];
+    _seriesLineData = [];
     _seriesBarData.add(
       charts.Series(
-        domainFn: (Sales sales, _) =>
-            DateFormat().add_yMd().format(sales.date.toDate()).toString(), //x-axis
+        domainFn: (Sales sales, _) => DateFormat()
+            .add_yMd()
+            .format(sales.date.toDate())
+            .toString(), //x-axis
         measureFn: (Sales sales, _) => sales.lpg, //y-axis
         id: 'Lpg',
         data: myData,
@@ -50,8 +67,10 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     );
     _seriesBarData.add(
       charts.Series(
-        domainFn: (Sales sales, _) =>
-            DateFormat().add_yMd().format(sales.date.toDate()).toString(), //x-axis
+        domainFn: (Sales sales, _) => DateFormat()
+            .add_yMd()
+            .format(sales.date.toDate())
+            .toString(), //x-axis
         measureFn: (Sales sales, _) => sales.lube, //y-axis
         id: 'Lube',
         data: myData,
@@ -61,8 +80,10 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     );
     _seriesBarData.add(
       charts.Series(
-        domainFn: (Sales sales, _) =>
-            DateFormat().add_yMd().format(sales.date.toDate()).toString(), //x-axis
+        domainFn: (Sales sales, _) => DateFormat()
+            .add_yMd()
+            .format(sales.date.toDate())
+            .toString(), //x-axis
         measureFn: (Sales sales, _) => sales.fuel, //y-axis
         id: 'Fuel',
         data: myData,
@@ -135,9 +156,9 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     final User user = auth.currentUser;
 
     setState(() {
-      uid= user.uid;
+      uid = user.uid;
     });
-    return  user.uid;
+    return user.uid;
   }
 
   @override
@@ -145,92 +166,127 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     return MaterialApp(
       home: DefaultTabController(
         length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text('Sales Analysis Reports'),
-            backgroundColor: Color(0xff322C40),
-            leading: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context);
-                }),
-            actions: [
-              IconButton(
-                  icon: Icon(Icons.date_range_outlined),
-                  onPressed: () => _pickDateRange(context)),
-              IconButton(
-                  icon: Icon(Icons.download_outlined),
-                  onPressed: () async {
-                    pdf.addPage(
-                      pw.MultiPage(
-                        build: (context) => [
-                          pw.Text("Monthly Data"),
-                          pw.Table.fromTextArray(
-                              context: context,
-                              data: <List<String>>[
-                                <String>[
-                                  'LPG (litres)',
-                                  'FUEL (litres)',
-                                  'LUBE (liters)',
-                                  'Date This Month',
-                                ],
-                                ...myData.map((msg) => [
-                                      msg.lpg.toString(),
-                                      msg.fuel.toString(),
-                                      msg.lube.toString(),
-                                      msg.date.toDate().day.toString(),
-                                    ])
-                              ]),
-                        ],
+        child: accType == "Filling Station Attendant #OEEM02C"
+            ? Scaffold(
+                appBar: AppBar(
+                  title: Text('Sales Analysis Reports'),
+                  backgroundColor: Color(0xff322C40),
+                ),
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Text('You do NOT have authorization to view this page',
+                          style: TextStyle(
+                              color: Color(0xff322C40),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold)),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            margin: EdgeInsets.only(
+                                top: MediaQuery.of(context).size.width * 0.1),
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            height: MediaQuery.of(context).size.width * 0.1,
+                            color: Color(0xff322C40),
+                            child: Center(
+                                child: Text(
+                              'Go Back',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ))),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            : Scaffold(
+                appBar: AppBar(
+                  title: Text('Sales Analysis Reports'),
+                  backgroundColor: Color(0xff322C40),
+                  leading: IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
+                  actions: [
+                    IconButton(
+                        icon: Icon(Icons.date_range_outlined),
+                        onPressed: () => _pickDateRange(context)),
+                    IconButton(
+                        icon: Icon(Icons.download_outlined),
+                        onPressed: () async {
+                          pdf.addPage(
+                            pw.MultiPage(
+                              build: (context) => [
+                                pw.Text("Monthly Data"),
+                                pw.Table.fromTextArray(
+                                    context: context,
+                                    data: <List<String>>[
+                                      <String>[
+                                        'LPG (litres)',
+                                        'FUEL (litres)',
+                                        'LUBE (liters)',
+                                        'Date This Month',
+                                      ],
+                                      ...myData.map((msg) => [
+                                            msg.lpg.toString(),
+                                            msg.fuel.toString(),
+                                            msg.lube.toString(),
+                                            msg.date.toDate().day.toString(),
+                                          ])
+                                    ]),
+                              ],
+                            ),
+                          );
+                          final outPut = await getExternalStorageDirectory();
+
+                          String path = outPut.path + '/monthly report.pdf';
+                          final file = File(path);
+                          // I changed here
+                          //file.writeAsBytesSync(pdf.save());
+
+                          print(outPut.path);
+                          Fluttertoast.showToast(msg: "Download Complete");
+                        }),
+                  ],
+                  bottom: TabBar(
+                    indicatorColor: Color(0xff322C40),
+                    tabs: [
+                      Tab(
+                        icon: Icon(FontAwesomeIcons.solidChartBar),
                       ),
-                    );
-                    final outPut = await getExternalStorageDirectory();
-
-                    String path = outPut.path + '/monthly report.pdf';
-                    final file = File(path);
-                    // I changed here
-                    //file.writeAsBytesSync(pdf.save());
-
-                    print(outPut.path);
-                    Fluttertoast.showToast(msg: "Download Complete");
-                  }),
-            ],
-            bottom: TabBar(
-              indicatorColor: Color(0xff322C40),
-              tabs: [
-                Tab(
-                  icon: Icon(FontAwesomeIcons.solidChartBar),
+                      Tab(
+                        icon: Icon(FontAwesomeIcons.chartLine),
+                      ),
+                    ],
+                  ),
                 ),
-                Tab(
-                  icon: Icon(FontAwesomeIcons.chartLine),
-                ),
-              ],
-            ),
-          ),
-          body: TabBarView(children: [
-            _buildBody(context),
-            _buildLineBody(context),
-          ]),
-        ),
+                body: TabBarView(children: [
+                  _buildBody(context),
+                  _buildLineBody(context),
+                ]),
+              ),
       ),
     );
   }
 
   Widget _buildBody(context) {
-    return
-    StreamBuilder<QuerySnapshot>(
-      stream:
-      (end != null && start != null)
-          ?
-      FirebaseFirestore.instance
+    return StreamBuilder<QuerySnapshot>(
+      stream: (end != null && start != null)
+          ? FirebaseFirestore.instance
               .collection('fuels')
-              .where('userId', isEqualTo: uid)
+              .where("stationId", isEqualTo: stationId)
               .where("date", isGreaterThanOrEqualTo: start)
               .where("date", isLessThanOrEqualTo: end)
-
               .snapshots()
-         : FirebaseFirestore.instance.collection('fuels') .where('userId', isEqualTo: uid)
-          .snapshots(),
+          : FirebaseFirestore.instance
+              .collection('fuels')
+              .where("stationId", isEqualTo: stationId)
+              .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return LinearProgressIndicator();
@@ -243,21 +299,21 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
         }
       },
     );
-
   }
 
   Widget _buildLineBody(context) {
     return StreamBuilder<QuerySnapshot>(
-    stream:   (end != null && start != null)
-          ?
-      FirebaseFirestore.instance
+      stream: (end != null && start != null)
+          ? FirebaseFirestore.instance
               .collection('fuels')
               .where("userId", isEqualTo: uid)
               .where("date", isGreaterThanOrEqualTo: start)
               .where("date", isLessThanOrEqualTo: end)
-
               .snapshots()
-           : FirebaseFirestore.instance.collection('fuels').where("userId", isEqualTo: uid).snapshots(),
+          : FirebaseFirestore.instance
+              .collection('fuels')
+              .where("userId", isEqualTo: uid)
+              .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return LinearProgressIndicator();
@@ -337,11 +393,11 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     new charts.ChartTitle('Date',
                         behaviorPosition: charts.BehaviorPosition.bottom,
                         titleOutsideJustification:
-                        charts.OutsideJustification.middleDrawArea),
+                            charts.OutsideJustification.middleDrawArea),
                     new charts.ChartTitle('Products(litres)',
                         behaviorPosition: charts.BehaviorPosition.start,
                         titleOutsideJustification:
-                        charts.OutsideJustification.middleDrawArea),
+                            charts.OutsideJustification.middleDrawArea),
                   ],
                 ),
               ),
@@ -379,8 +435,6 @@ class _SelectDatesState extends State<SelectDates> {
       pickedDateRange = newDateRange as DateTime;
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {

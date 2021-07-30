@@ -138,7 +138,11 @@ class _MultiFormState extends State<MultiForm> {
                 return null;
               },
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: accType != "Filling Station Attendant #OEEM02C"?
+      SizedBox(
+        height: 0,
+      )
+      :FloatingActionButton(
         backgroundColor: Color(0xff322C40),
         child: Icon(Icons.add),
         onPressed: () {
