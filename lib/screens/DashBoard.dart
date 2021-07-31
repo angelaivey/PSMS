@@ -28,14 +28,14 @@ class DashBoard extends StatefulWidget {
 
 class _DashBoardState extends State<DashBoard> {
   String employeeId;
-  String userEmail;
+  String userEmail, accType;
   String userLocation;
-  String _photoUrl="";
+  String _photoUrl = "";
 
   @override
   void initState() {
     super.initState();
-     _fetchStoredData();
+    _fetchStoredData();
     print('hellooooooo');
   }
 
@@ -43,30 +43,30 @@ class _DashBoardState extends State<DashBoard> {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
     print("Fetched from shared p ${_sp.getString("employeeId")}");
     setState(() {
-      employeeId =  _sp.getString("employeeId");
+      employeeId = _sp.getString("employeeId");
       userEmail = _sp.getString("email");
+      accType = _sp.getString("accType");
       //userLocation = _sp.getString("location");
-     _fetchProfilePicture( _sp.getString("employeeId"));
+      _fetchProfilePicture(_sp.getString("employeeId"));
       print("Fetched from shared p ${_sp.getString("employeeId")}");
     });
   }
-  _fetchProfilePicture(employeeId) async{
 
+  _fetchProfilePicture(employeeId) async {
     //instead of refreshing page when post is deleted, it MAY check if post still exists in firebase
     //and if not the will not be displayed
-    await FirebaseFirestore.instance.collection('users')
-        .where('employeeId', isEqualTo:employeeId)
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('employeeId', isEqualTo: employeeId)
         .get()
-        .then((value){
+        .then((value) {
       value.docs.forEach((result) {
         setState(() {
-          _photoUrl=result.data()['photoUrl'];
+          _photoUrl = result.data()['photoUrl'];
         });
-
       });
-    }).catchError((err){
+    }).catchError((err) {
       print(err.message);
-
     });
   }
 
@@ -74,308 +74,300 @@ class _DashBoardState extends State<DashBoard> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size; //to get size
     var screenHeight = MediaQuery.of(context).size.height;
-        var screenWidth = MediaQuery.of(context).size.width;
+    var screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: _photoUrl!=""
-          ?
-      Stack(
-        children: <Widget>[
-          Positioned(
-            top: -MediaQuery.of(context).size.height * .15,
-            right: -MediaQuery.of(context).size.width * .2,
-            bottom: -MediaQuery.of(context).size.height * .12,
-            left: -MediaQuery.of(context).size.width * .3,
-            child: BezierContainer(),
-          ),
-          
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    height: screenHeight * 0.1,
-
-                    padding: EdgeInsets.all(screenHeight * 0.02),
-                    decoration: BoxDecoration(  color: Color(0xff322C40),
-                      borderRadius: BorderRadius.circular(10)
-                    ),
-                    margin: EdgeInsets.only(bottom: 20),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: _photoUrl != ""
+          ? Stack(
+              children: <Widget>[
+                Positioned(
+                  top: -MediaQuery.of(context).size.height * .15,
+                  right: -MediaQuery.of(context).size.width * .2,
+                  bottom: -MediaQuery.of(context).size.height * .12,
+                  left: -MediaQuery.of(context).size.width * .3,
+                  child: BezierContainer(),
+                ),
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
                       children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EditProfile()));
-                          },
-                          child: GestureDetector(
-                          child: Icon(Icons.badge_outlined,
-                          size:screenHeight * 0.04,
-                          color: Color(0xfff3f3f4),
-                                
-                          
-                          )
-                        )
-                        ),
-                       
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              'Welcome',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w200,
-                                color: Color(0xfff3f3f4),
+                        Container(
+                          height: screenHeight * 0.1,
+                          padding: EdgeInsets.all(screenHeight * 0.02),
+                          decoration: BoxDecoration(
+                              color: Color(0xff322C40),
+                              borderRadius: BorderRadius.circular(10)),
+                          margin: EdgeInsets.only(bottom: 20),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditProfile()));
+                                  },
+                                  child: GestureDetector(
+                                      child: Icon(
+                                    Icons.badge_outlined,
+                                    size: screenHeight * 0.04,
+                                    color: Color(0xfff3f3f4),
+                                  ))),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    'Welcome',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w200,
+                                      color: Color(0xfff3f3f4),
+                                    ),
+                                  ),
+                                  Text(
+                                    '$employeeId' ?? "",
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xfff3f3f4),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            Text(
-                              '$employeeId' ?? "",
-                              style: TextStyle(
-
-                                fontSize: 30,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xfff3f3f4),
-                              ),
-                            ),
-                          ],
+                              GestureDetector(
+                                  onTap: () async {
+                                    await FirebaseAuth.instance
+                                        .signOut()
+                                        .then((value) {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  LoginPage()));
+                                    });
+                                  },
+                                  child: Icon(
+                                    Icons.logout_outlined,
+                                    size: screenHeight * 0.04,
+                                    color: Color(0xfff3f3f4),
+                                  ))
+                            ],
+                          ),
                         ),
-                        GestureDetector(
-                          onTap: () async {
-                            
-                            await FirebaseAuth.instance.signOut().then((value) {
-                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()));
-                            });
+                        Expanded(
+                          child: Center(
+                            child: GridView.count(
+                              mainAxisSpacing: 20,
+                              crossAxisSpacing: 20,
+                              primary: false,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Upload()));
+                                  },
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    elevation: 4,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        // SvgPicture.asset(
+                                        //   'assets/images/update.svg',
+                                        //   height: 58,
+                                        //   color: Color(0xff322C40),
+                                        // ),
 
-                           
-                          },
-                          child: Icon(Icons.logout_outlined,
-                          size:screenHeight * 0.04,
-                          color: Color(0xfff3f3f4),
-                        
-                                
-                          
-                          )
-                        )
+                                        Icon(
+                                          Icons.feed,
+                                          size: screenHeight * 0.09,
+                                          color: Color(0xff322C40),
+                                        ),
+
+                                        SizedBox(height: 10),
+                                        Text('Updates')
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                MarketPrices()));
+                                  },
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    elevation: 4,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        // SvgPicture.asset(
+                                        //   'assets/images/stocks.svg',
+                                        //   height: screenHeight * 0.09,
+                                        //   color:Color(0xff322C40)
+                                        // ),
+                                        Icon(
+                                          Icons.sell_outlined,
+                                          size: screenHeight * 0.09,
+                                          color: Color(0xff322C40),
+                                        ),
+
+                                        SizedBox(height: 10),
+                                        Text('Market Prices')
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => MultiForm()));
+                                  },
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    elevation: 4,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        // SvgPicture.asset(
+                                        //   'assets/images/report.svg',
+                                        //   height: 58,
+                                        //     color: Color(0xff322C40)
+                                        // ),
+                                        Icon(
+                                          Icons.summarize_outlined,
+                                          size: screenHeight * 0.09,
+                                          color: Color(0xff322C40),
+                                        ),
+
+                                        SizedBox(height: 10),
+                                        Text('Generate Reports')
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                AnalyticsPage()));
+                                  },
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    elevation: 4,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        // SvgPicture.asset(
+                                        //   'assets/images/oil-market.svg',
+                                        //   height: 58,
+                                        //   color: Color(0xff322C40)
+                                        // ),
+                                        Icon(
+                                          Icons.poll,
+                                          size: screenHeight * 0.09,
+                                          color: Color(0xff322C40),
+                                        ),
+
+                                        SizedBox(height: 10),
+                                        Text('Analysis')
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                // GestureDetector(
+                                //   onTap: () {
+                                //     Navigator.push(
+                                //         context,
+                                //         MaterialPageRoute(
+                                //             builder: (context) => HomePage()));
+                                //   },
+                                //   child: Card(
+                                //     shape: RoundedRectangleBorder(
+                                //         borderRadius: BorderRadius.circular(10)),
+                                //     elevation: 4,
+                                //     child: Column(
+                                //       mainAxisAlignment: MainAxisAlignment.center,
+                                //       children: <Widget>[
+                                //         SvgPicture.asset(
+                                //           'assets/images/about.svg',
+                                //           height: 58,
+                                //             color: Color(0xff322C40)
+                                //         ),
+                                //         SizedBox(height:20),
+                                //         Text('About Us')
+                                //       ],
+                                //     ),
+                                //   ),
+                                // ),
+                                // GestureDetector(
+                                //   onTap: () {
+                                //     Navigator.push(
+                                //         context,
+                                //         MaterialPageRoute(
+                                //             builder: (context) => EditProfile()));
+                                //   },
+                                //   child: Card(
+                                //     shape: RoundedRectangleBorder(
+                                //         borderRadius: BorderRadius.circular(10)),
+                                //     elevation: 4,
+                                //     child: Column(
+                                //       mainAxisAlignment: MainAxisAlignment.center,
+                                //       children: <Widget>[
+                                //         SvgPicture.asset(
+                                //           'assets/images/settings.svg',
+                                //           height: 58,
+                                //             color: Color(0xff322C40)
+                                //         ),
+                                //         SizedBox(height:20),
+                                //         Text('Settings')
+                                //       ],
+                                //     ),
+                                //   ),
+                                // ),
+                              ],
+                              crossAxisCount: 2,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: Center(
-                      child: GridView.count(
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 20,
-                        primary: false,
-                        children: <Widget>[
-
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Upload()));
-                            },
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              elevation: 4,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  // SvgPicture.asset(
-                                  //   'assets/images/update.svg',
-                                  //   height: 58,
-                                  //   color: Color(0xff322C40),
-                                  // ),
-                                 
-                                  Icon(Icons.feed,
-                                  size:screenHeight * 0.09,
-                                  color: Color(0xff322C40),
-                                        
-                                  
-                                  ),
-                                
-                                  SizedBox(height:10),
-                                  Text('Updates')
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MarketPrices()));
-                            },
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              elevation: 4,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  // SvgPicture.asset(
-                                  //   'assets/images/stocks.svg',
-                                  //   height: screenHeight * 0.09,
-                                  //   color:Color(0xff322C40)
-                                  // ),
-                                       Icon(Icons.sell_outlined,
-                                  size:screenHeight * 0.09,
-                                  color: Color(0xff322C40),
-                                        
-                                  
-                                  ),
-                                
-                                  SizedBox(height:10),
-                                  Text('Market Prices')
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MultiForm()));
-                            },
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              elevation: 4,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  // SvgPicture.asset(
-                                  //   'assets/images/report.svg',
-                                  //   height: 58,
-                                  //     color: Color(0xff322C40)
-                                  // ),
-                                    Icon(Icons.summarize_outlined,
-                                  size:screenHeight * 0.09,
-                                  color: Color(0xff322C40),
-                                        
-                                  
-                                  ),
-                                
-                                  SizedBox(height:10),
-                                  Text('Generate Reports')
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AnalyticsPage()));
-                            },
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              elevation: 4,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  // SvgPicture.asset(
-                                  //   'assets/images/oil-market.svg',
-                                  //   height: 58,
-                                  //   color: Color(0xff322C40)
-                                  // ),
-                                    Icon(Icons.poll,
-                                  size:screenHeight * 0.09,
-                                  color: Color(0xff322C40),
-                                        
-                                  
-                                  ),
-                                
-                                  SizedBox(height:10),
-                                  Text('Analysis')
-                                ],
-                              ),
-                            ),
-                          ),
-                          // GestureDetector(
-                          //   onTap: () {
-                          //     Navigator.push(
-                          //         context,
-                          //         MaterialPageRoute(
-                          //             builder: (context) => HomePage()));
-                          //   },
-                          //   child: Card(
-                          //     shape: RoundedRectangleBorder(
-                          //         borderRadius: BorderRadius.circular(10)),
-                          //     elevation: 4,
-                          //     child: Column(
-                          //       mainAxisAlignment: MainAxisAlignment.center,
-                          //       children: <Widget>[
-                          //         SvgPicture.asset(
-                          //           'assets/images/about.svg',
-                          //           height: 58,
-                          //             color: Color(0xff322C40)
-                          //         ),
-                          //         SizedBox(height:20),
-                          //         Text('About Us')
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
-                          // GestureDetector(
-                          //   onTap: () {
-                          //     Navigator.push(
-                          //         context,
-                          //         MaterialPageRoute(
-                          //             builder: (context) => EditProfile()));
-                          //   },
-                          //   child: Card(
-                          //     shape: RoundedRectangleBorder(
-                          //         borderRadius: BorderRadius.circular(10)),
-                          //     elevation: 4,
-                          //     child: Column(
-                          //       mainAxisAlignment: MainAxisAlignment.center,
-                          //       children: <Widget>[
-                          //         SvgPicture.asset(
-                          //           'assets/images/settings.svg',
-                          //           height: 58,
-                          //             color: Color(0xff322C40)
-                          //         ),
-                          //         SizedBox(height:20),
-                          //         Text('Settings')
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
-                        ],
-                        crossAxisCount: 2,
-                        
-                      ),
-                    ),
-                  ),
-                
-                ],
-              ),
-            ),
-          )
-        ],
-      )
-      :Center(
-        child: Container(
-          height: 20,
-          width: 20,
-          child:CircularProgressIndicator(),
-        )
-      ),
+                )
+              ],
+            )
+          : Center(
+              child: Container(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(),
+            )),
     );
   }
 }

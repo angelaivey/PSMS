@@ -11,7 +11,6 @@ class _MarketPricesState extends State<MarketPrices> {
   bool loaded = false;
   String marketPrice;
 
-
   @override
   void initState() {
     super.initState();
@@ -19,15 +18,19 @@ class _MarketPricesState extends State<MarketPrices> {
   }
 
   _getData() async {
-    webScraper = WebScraper('https://www.epra.go.ke/services/petroleum/petroleum-prices/');
-    if(await webScraper.loadWebPage('/')){
-      List<Map<String, dynamic>> results =   webScraper.getElement('div.wpdt-c',        ['title']);
-      List<Map<String, dynamic>> town= webScraper.getElement('tbody',['title']);
-      print(town);
+    final webScraper = WebScraper('https://www.epra.go.ke');
+    if (await webScraper.loadWebPage('/services/petroleum/petroleum-prices')) {
+      // List<Map<String, dynamic>> newresults = webScraper.getElement(address, attribs)
+      ////*[@id="table_1"]
+      List<Map<String, dynamic>> results =
+          webScraper.getElement('div.wpdt-c', ['title']);
+      List<Map<String, dynamic>> town =
+          webScraper.getElement('tr.odd', ['role'], extraAddress: 'tr.even');
+      print(results[0]['title']);
       //print('/n');
       setState(() {
         loaded = true;
-        marketPrice = town[0]['title'];
+        marketPrice = results[0]['title'];
         //marketPrice = town[0]['town'];
       });
     }
@@ -56,26 +59,26 @@ class _MarketPricesState extends State<MarketPrices> {
         // ],
       ),
       body: Container(
-         child:
-            ListTile(
-              title: Text("Retail Petroleum Prices", style: TextStyle(
+        child: ListTile(
+          title: Text(
+            "Retail Petroleum Prices",
+            style: TextStyle(
                 fontSize: 30.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.black
-              ),),
-              subtitle: (loaded)? ListView(
-                children: [
-                  Text(marketPrice,
-                  style: TextStyle(
-                    color: Colors.black,
+                color: Colors.black),
+          ),
+          subtitle: (loaded)
+              ? ListView(children: [
+                  Text(
+                    marketPrice ?? '',
+                    style: TextStyle(
+                      color: Colors.black,
                     ),
                   ),
-                ]
-              )
-                  : CircularProgressIndicator(),
-            ),
+                ])
+              : CircularProgressIndicator(),
         ),
+      ),
     );
   }
 }
-
