@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import '../screens/registration.dart';
 import 'package:random_string/random_string.dart';
@@ -7,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CommentPage extends StatefulWidget {
   final String postId;
-  CommentPage({Key key,@required this.postId}): super(key:key);
+  CommentPage({Key key, @required this.postId}) : super(key: key);
   @override
   _CommentPageState createState() => _CommentPageState(postId: postId);
 }
@@ -33,22 +34,23 @@ class _CommentPageState extends State<CommentPage> {
               minLines: 8,
               maxLines: 10,
               decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter your comment'),
+                  border: OutlineInputBorder(), hintText: 'Enter your comment'),
             ),
-            SizedBox(height: 15.0,),
+            SizedBox(
+              height: 15.0,
+            ),
             FlatButton(
-              color: Color(0xff07239d),
-              height: 40.0,
+                color: Color(0xff07239d),
+                height: 40.0,
                 minWidth: 120.0,
-                child: Text('Post', style:
-                  TextStyle(color: Colors.white),
+                child: Text(
+                  'Post',
+                  style: TextStyle(color: Colors.white),
                 ),
-              onPressed: (){
-                postComment(postId);
-                Navigator.pop(context);
-              }
-            ),
+                onPressed: () {
+                  postComment(postId);
+                  Navigator.pop(context);
+                }),
           ],
         ),
       ),
@@ -60,43 +62,45 @@ class _CommentPageState extends State<CommentPage> {
     return _sp.get("username");
   }
 
-  Future<void> postComment(postId)async {
+  Future<void> postComment(postId) async {
     //create a user with a specific uid
     //create users with auth
     String uid = await getCurrentUser();
-    CollectionReference users = FirebaseFirestore.instance.collection('comments');
+    CollectionReference users =
+        FirebaseFirestore.instance.collection('comments');
     String commentId = randomAlphaNumeric(32);
     String username = await _username();
 
-    return users.doc(commentId)
+    return users
+        .doc(commentId)
         .set({
-      'userId': uid,
-      'username': username,
-      'commentId': commentId,
-      'comment': commentController.text,
-      'time': DateTime.now(),
-      'postId': postId,
-    }).then((value) => print('comment added'))
-        .catchError((error)=> print('failed to add comment: $error'));
+          'userId': uid,
+          'username': username,
+          'commentId': commentId,
+          'comment': commentController.text,
+          'time': DateTime.now(),
+          'postId': postId,
+        })
+        .then((value) => print('comment added'))
+        .catchError((error) => print('failed to add comment: $error'));
   }
 }
 
 class CommentsDisplay extends StatefulWidget {
   final String postId;
 
-  CommentsDisplay({Key key, @required this.postId}) : super (key: key);
+  CommentsDisplay({Key key, @required this.postId}) : super(key: key);
 
   @override
-  _CommentsDisplayState createState() => _CommentsDisplayState(postId: this.postId);
+  _CommentsDisplayState createState() =>
+      _CommentsDisplayState(postId: this.postId);
 }
 
 class _CommentsDisplayState extends State<CommentsDisplay> {
   final String postId;
 
-
   _CommentsDisplayState({
     this.postId,
-
   });
   @override
   Widget build(BuildContext context) {
@@ -106,35 +110,33 @@ class _CommentsDisplayState extends State<CommentsDisplay> {
         title: Text('comments'),
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('comments')
-            .where('postId', isEqualTo: postId)
-            .orderBy('time', descending: true)
-
-            .snapshots(),
-          builder: (context, asyncSnapshot){
-            if(asyncSnapshot.hasError){
+          stream: FirebaseFirestore.instance
+              .collection('comments')
+              .where('postId', isEqualTo: postId)
+              .orderBy('time', descending: true)
+              .snapshots(),
+          builder: (context, asyncSnapshot) {
+            if (asyncSnapshot.hasError) {
               return Center(child: Text("Error!"));
-            }else if(!asyncSnapshot.hasData){
-              return Center(child: CircularProgressIndicator()
-
+            } else if (!asyncSnapshot.hasData) {
+              return SpinKitRotatingCircle(
+                color: Color(0xff322C40),
+                size: 40.0,
               );
-            }
-            else if(asyncSnapshot.data.docs.length<1){
+            } else if (asyncSnapshot.data.docs.length < 1) {
               return Center(child: Text("Nothing to show here"));
-            }
-            else{
+            } else {
               print("DATA CHUNK LENGTH ${asyncSnapshot.data.docs.length}");
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ListView.builder(
                   itemCount: asyncSnapshot.data.docs.length,
                   itemBuilder: (BuildContext context, int index)
-                  //children: snapshot.data.docs.map((document)
-                  {
+                      //children: snapshot.data.docs.map((document)
+                      {
                     return Container(
-                      margin: EdgeInsets.fromLTRB(10,20, 10, 20),
-                      padding: EdgeInsets.fromLTRB(10,20, 10, 20),
+                      margin: EdgeInsets.fromLTRB(10, 20, 10, 20),
+                      padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5.0),
                         border: Border.all(width: 1.0, color: Colors.grey),
@@ -145,28 +147,31 @@ class _CommentsDisplayState extends State<CommentsDisplay> {
                             //crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(asyncSnapshot.data.docs[index]
-                                  .data()["username"]
-                                  .toString(),
+                              Text(
+                                  asyncSnapshot.data.docs[index]
+                                      .data()["username"]
+                                      .toString(),
                                   style: TextStyle(
                                     color: Colors.blue,
                                     fontSize: 13,
                                   )),
-                              Text('${DateFormat().add_MMMEd().add_Hm().format(asyncSnapshot.data.docs[index].data()["time"].toDate())}',
-                                  style:TextStyle(
+                              Text(
+                                  '${DateFormat().add_MMMEd().add_Hm().format(asyncSnapshot.data.docs[index].data()["time"].toDate())}',
+                                  style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: 13,
                                   )),
                             ],
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(top:10.0),
-                            child: Text(asyncSnapshot.data.docs[index]
-                                .data()["comment"]
-                                .toString(),
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: Text(
+                                asyncSnapshot.data.docs[index]
+                                    .data()["comment"]
+                                    .toString(),
                                 textAlign: TextAlign.left,
                                 // overflow: TextOverflow.,
-                                style:TextStyle(
+                                style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
                                 )),
@@ -177,21 +182,20 @@ class _CommentsDisplayState extends State<CommentsDisplay> {
                   },
                 ),
               );
-
             }
-             }
-      ),
+          }),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color(0xff07239d),
-        child: Icon(
-          Icons.add
-        ),
-        onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => CommentPage(postId: postId,)));
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => CommentPage(
+                        postId: postId,
+                      )));
         },
       ),
     );
   }
 }
-
-

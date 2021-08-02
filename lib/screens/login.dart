@@ -304,20 +304,12 @@ class _LoginPageState extends State<LoginPage> {
           SizedBox(
             width: 10,
           ),
-          GestureDetector(
-            onTap: () {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => SignUpPage()),
-                  (route) => false);
-            },
-            child: Text(
-              'Register',
-              style: TextStyle(
-                  color: Color(0xffC6BB72),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600),
-            ),
+          Text(
+            'Register',
+            style: TextStyle(
+                color: Color(0xffC6BB72),
+                fontSize: 13,
+                fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -440,7 +432,12 @@ class _LoginPageState extends State<LoginPage> {
                   _divider(),
                   _facebookButton(),
                   SizedBox(height: height * .055),
-                  _createAccountLabel(),
+                  GestureDetector(
+                    onTap: (){
+                       Navigator.of(context).pushReplacement(
+                       MaterialPageRoute(builder: (context) => HomePage()));
+                    },
+                    child: _createAccountLabel()),
                 ],
               ),
             ),

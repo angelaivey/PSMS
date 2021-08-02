@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -341,11 +342,10 @@ class _EditProfileState extends State<EditProfile> {
         child: Container(
           height: 15,
             width:15,
-          child: CircularProgressIndicator(
-           strokeWidth: 3,
-            backgroundColor: Color(0xff9E2B25),
-
-          )
+          child: SpinKitRotatingCircle(
+        color: Color(0xff322C40),
+        size: 40.0,
+      ),
         )
       ),
     );

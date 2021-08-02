@@ -1616,7 +1616,7 @@ class _AdminState extends State<Admin> {
             .format(sales.date.toDate())
             .toString(), //x-axis
         measureFn: (Sales sales, _) => sales.lube, //y-axis
-        id: 'Lube',
+        id: 'Lube', 
         data: myData,
         labelAccessorFn: (Sales row, _) => "Sales Weekly",
         colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xffE6D517)),

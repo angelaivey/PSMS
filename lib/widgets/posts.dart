@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/user.dart';
 import '../screens/HomePage.dart';
@@ -424,7 +425,10 @@ addVotes(postId,val) async{
   @override
   Widget build(BuildContext context)  {
     return pUsername==''?
-        Center(child:CircularProgressIndicator())
+        SpinKitRotatingCircle(
+        color: Color(0xff322C40),
+        size: 40.0,
+      )
         :inExistence==true?Column(
       mainAxisSize: MainAxisSize.min,
       children: [

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -239,7 +240,7 @@ class _DashBoardState extends State<DashBoard> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => MultiForm()));
+                                            builder: (context) => accType=='Admin #OEAA01A'?ReportManagers():MultiForm()));
                                   },
                                   child: Card(
                                     shape: RoundedRectangleBorder(
@@ -262,7 +263,7 @@ class _DashBoardState extends State<DashBoard> {
                                         ),
 
                                         SizedBox(height: 10),
-                                        Text('Generate Reports')
+                                       accType=='Filling Station Attendant #OEEM02C'? Text('Generate Reports'): Text('Reports')
                                       ],
                                     ),
                                   ),
@@ -363,11 +364,11 @@ class _DashBoardState extends State<DashBoard> {
               ],
             )
           : Center(
-              child: Container(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(),
-            )),
+      child: SpinKitRotatingCircle(
+        color: Color(0xff322C40),
+        size: 40.0,
+      ),
+    ),
     );
   }
 }

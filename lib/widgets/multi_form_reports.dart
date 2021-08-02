@@ -11,6 +11,8 @@ import '../screens/reportGeneration.dart';
 import '../widgets/progress.dart';
 
 class MultiForm extends StatefulWidget {
+  final String locationIdentification;
+  MultiForm({Key key, this.locationIdentification}) : super(key: key);
   @override
   _MultiFormState createState() => _MultiFormState();
 }
@@ -45,7 +47,7 @@ class _MultiFormState extends State<MultiForm> {
     setState(() {
       employeeId = _sp.getString("employeeId");
       userEmail = _sp.getString("email");
-      stationId = _sp.getString("stationId");
+      stationId = widget.locationIdentification ?? _sp.getString("stationId");
       accType = _sp.getString("accType");
     });
     print('----------------------------------------------------------');
@@ -138,18 +140,18 @@ class _MultiFormState extends State<MultiForm> {
                 return null;
               },
             ),
-      floatingActionButton: accType != "Filling Station Attendant #OEEM02C"?
-      SizedBox(
-        height: 0,
-      )
-      :FloatingActionButton(
-        backgroundColor: Color(0xff322C40),
-        child: Icon(Icons.add),
-        onPressed: () {
-          _dialog(update: false);
-        },
-        foregroundColor: Colors.white,
-      ),
+      floatingActionButton: accType != "Filling Station Attendant #OEEM02C"
+          ? SizedBox(
+              height: 0,
+            )
+          : FloatingActionButton(
+              backgroundColor: Color(0xff322C40),
+              child: Icon(Icons.add),
+              onPressed: () {
+                _dialog(update: false);
+              },
+              foregroundColor: Colors.white,
+            ),
     );
   }
 
@@ -171,7 +173,6 @@ class _MultiFormState extends State<MultiForm> {
               elevation: 0,
               backgroundColor: Color(0xff322C40),
               actions: [
-               
                 IconButton(
                   onPressed: () {
                     _dialog(
@@ -195,7 +196,7 @@ class _MultiFormState extends State<MultiForm> {
                   },
                   icon: Icon(Icons.update),
                 ),
-                 IconButton(
+                IconButton(
                   onPressed: () {
                     deleteForm(fuelId);
                   },
@@ -251,7 +252,7 @@ class _MultiFormState extends State<MultiForm> {
                 padding: EdgeInsets.only(
                   left: 20,
                   right: 20,
-                  top:16,
+                  top: 16,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -276,7 +277,8 @@ class _MultiFormState extends State<MultiForm> {
                   ],
                 )),
             Padding(
-                padding: EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 20),
+                padding:
+                    EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -310,29 +312,29 @@ class _MultiFormState extends State<MultiForm> {
               elevation: 0,
               backgroundColor: Color(0xff322C40),
               // actions: [
-                // IconButton(
-                //   onPressed: () {
-                //     _dialog(
-                //         update: true,
-                //         docsId: fuelId,
-                //         petrol: Petrol(
-                //           lubes: lube.toString(),
-                //           fuel: fuel.toString(),
-                //           date: date,
-                //           lpg: lpg.toString(),
-                //         ));
-                //     //create collection and save data
-                //     Map<String, dynamic> data = {
-                //       // 'lpg' : int.parse(controllerLpg.text),
-                //       // 'lube' : int.parse(controllerLube.text),
-                //       // 'fuel' : int.parse(controllerFuel.text),
-                //       // 'date' : pickedDate,
-                //     };
-                //     // FirebaseFirestore.instance.collection('fuels').add(data);
-                //     // Navigator.pop(context);
-                //   },
-                //   icon: Icon(Icons.update),
-                // ),
+              // IconButton(
+              //   onPressed: () {
+              //     _dialog(
+              //         update: true,
+              //         docsId: fuelId,
+              //         petrol: Petrol(
+              //           lubes: lube.toString(),
+              //           fuel: fuel.toString(),
+              //           date: date,
+              //           lpg: lpg.toString(),
+              //         ));
+              //     //create collection and save data
+              //     Map<String, dynamic> data = {
+              //       // 'lpg' : int.parse(controllerLpg.text),
+              //       // 'lube' : int.parse(controllerLube.text),
+              //       // 'fuel' : int.parse(controllerFuel.text),
+              //       // 'date' : pickedDate,
+              //     };
+              //     // FirebaseFirestore.instance.collection('fuels').add(data);
+              //     // Navigator.pop(context);
+              //   },
+              //   icon: Icon(Icons.update),
+              // ),
               //   IconButton(
               //     onPressed: () {
               //       deleteForm(fuelId);
@@ -343,8 +345,7 @@ class _MultiFormState extends State<MultiForm> {
               title: Text(employeeId.toString()),
             ),
             Padding(
-              padding:
-                  EdgeInsets.only(left: 20, right: 20, top: 16),
+              padding: EdgeInsets.only(left: 20, right: 20, top: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -357,21 +358,14 @@ class _MultiFormState extends State<MultiForm> {
                           .format(date.toDate())
                           .toString()),
                   Text('Time Posted : ' +
-                      DateFormat()
-                          .add_Hm()
-                          .format(date.toDate())
-                          .toString()),
+                      DateFormat().add_Hm().format(date.toDate()).toString()),
                 ],
               ),
             ),
             Padding(
-                padding: EdgeInsets.only(
-                  left: 20, right: 20, top: 16
-
-                ),
+                padding: EdgeInsets.only(left: 20, right: 20, top: 16),
                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Lube (lts): '),
                     SizedBox(
@@ -383,8 +377,7 @@ class _MultiFormState extends State<MultiForm> {
             Padding(
                 padding: EdgeInsets.only(left: 20, right: 20, top: 16),
                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('LPG (lts): '),
                     SizedBox(
@@ -394,10 +387,10 @@ class _MultiFormState extends State<MultiForm> {
                   ],
                 )),
             Padding(
-                padding: EdgeInsets.only(left: 20, right: 20,  top: 16, bottom: 20),
+                padding:
+                    EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 20),
                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Fuel (lts): '),
                     SizedBox(
@@ -429,7 +422,7 @@ class _MultiFormState extends State<MultiForm> {
       Fluttertoast.showToast(
           msg: 'Form Deleted',
           toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
+          gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
           backgroundColor: Color(0xff322C40),
           textColor: Colors.white,
@@ -438,7 +431,7 @@ class _MultiFormState extends State<MultiForm> {
       Fluttertoast.showToast(
           msg: "Error: $error",
           toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
+          gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white,
@@ -467,5 +460,132 @@ class _MultiFormState extends State<MultiForm> {
         inExistence = false;
       });
     });
+  }
+}
+// the admin's list should have a list view of managers and locations
+
+class ReportManagers extends StatefulWidget {
+  const ReportManagers({Key key}) : super(key: key);
+
+  @override
+  _ReportManagersState createState() => _ReportManagersState();
+}
+
+class _ReportManagersState extends State<ReportManagers> {
+
+  void fetchLocationId(){
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xff322C40),
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.pop(context);
+        //     }),
+        title: Text('Daily Sales Forms'),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection("users")
+           // .orderBy("date", descending: true)
+            // not limited to the user ID
+            // .where('userId', isEqualTo: uid)
+            .where("accountType", isEqualTo: "Manager #OEEM01A"  )
+            // .where("stationId", isEqualTo: stationId)
+            .snapshots(),
+        builder: (context, asyncSnapshot) {
+          if (asyncSnapshot.hasError) {
+            return Center(child: Text("Error!"));
+          } else if (asyncSnapshot.hasData) {
+            print("DATA CHUNK LENGTH ${asyncSnapshot.data.docs.length}");
+            return ListView.builder(
+              itemCount: asyncSnapshot.data.docs.length,
+              itemBuilder: (BuildContext context, int index) => Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MultiForm(
+                                    locationIdentification: asyncSnapshot
+                                        .data.docs[index]
+                                        .data()["stationId"],
+                                  )));
+                    },
+                    child: reportCard(
+                        context,
+                        asyncSnapshot.data.docs[index].data()["employeeId"],
+                        asyncSnapshot.data.docs[index].data()["stationId"]),
+                  )
+                  // fuelWidgetManager(
+                  //   asyncSnapshot.data.docs[index].data()["date"],
+                  //   asyncSnapshot.data.docs[index].data()["fuel"],
+                  //   asyncSnapshot.data.docs[index].data()["fuelId"],
+                  //   asyncSnapshot.data.docs[index].data()["lpg"],
+                  //   asyncSnapshot.data.docs[index].data()["lube"],
+                  //   asyncSnapshot.data.docs[index].data()["userId"],
+                  //   asyncSnapshot.data.docs[index].data()["stationId"],
+                  //   asyncSnapshot.data.docs[index].data()["employeeId"],
+                  // ),
+                  ),
+            );
+          } else if (asyncSnapshot.hasData &&
+              asyncSnapshot.data.docs.length == 0) {
+            return EmptyState();
+          } else if (!asyncSnapshot.hasData) {
+            return circularProgress();
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget reportCard(context, managerId, locationName) {
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
+    return Material(
+     // color:  Color(0xff322C40),
+      elevation: 1.0,
+      clipBehavior: Clip.antiAlias,
+      borderRadius: BorderRadius.circular(8.0),
+      child: Container(
+        width: width * 0.8,
+        height: height * 0.2,
+      
+        padding: EdgeInsets.only(bottom: height*0.05),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+                Container(
+                  height: height*0.1,
+                  width: width * 1,
+                 // color: Colors.red,
+                   decoration: BoxDecoration(color: Color(0xff322C40)),
+                  child: Center(
+                    child: Text(locationName,
+               style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+                  ),
+                ),
+              SizedBox(height:10),
+              Text("Manager: "+managerId ?? "not registered",
+               style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

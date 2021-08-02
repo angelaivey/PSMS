@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../screens/DashBoard.dart';
@@ -13,6 +14,8 @@ import '../screens/HomeState.dart';
 import '../widgets/bezierContainer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 
 final _formKey = GlobalKey<FormState>();
 FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -135,6 +138,26 @@ class _SignUpPageState extends State<SignUpPage> {
     }).catchError((error) => print('failed to add user: $error'));
   }
 
+  bool managerExistsError = false;
+  void checkIfManagerExistsInStation(stationId) {
+    //  function to check whether manager exists
+    //  if manager does not exist create account. If manager Exists, stop.
+    FirebaseFirestore.instance
+        .collection('users')
+        .where("accountType", isEqualTo: "Manager #OEEM01A")
+        .where("stationId", isEqualTo: stationId)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        setState(() {
+          // this means that a manager exists in the area already
+          managerExistsError = true;
+        });
+      });
+    });
+    ;
+  }
+
   Widget _submitButton() {
     return InkWell(
         onTap: () async {
@@ -145,7 +168,45 @@ class _SignUpPageState extends State<SignUpPage> {
                 employeeIdError == false &&
                 stationIdError == false &&
                 emailError == false) {
-              registerToFb();
+              // check if user is creating a manager or a normal user
+              // if user is creating a manager, and a manager exists, do not allow that
+              // if a user is creating a normal user and manager does not exist, dont allow that
+              // otherwise allow userc to create
+              if (_accType == "Manager #OEEM01A") {
+                checkIfManagerExistsInStation(_stationId);
+                if (managerExistsError == true) {
+                  print("manager Exists");
+                  Fluttertoast.showToast(
+                      msg: 'Manager Already Exists',
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Color(0xff322C40),
+                      textColor: Colors.white,
+                      fontSize: 16.0);
+                  // TODO: add toast
+                  // toast to show that location has a manager already
+
+                } else {
+                  registerToFb();
+                }
+              } else {
+                checkIfManagerExistsInStation(_stationId);
+                if (managerExistsError == true) {
+                  registerToFb();
+                } else {
+                  // TODO: add toast
+                  // toast to show that location has a manager already
+                  Fluttertoast.showToast(
+                      msg: 'Manager Does not Exist in Selected Location',
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Color(0xff322C40),
+                      textColor: Colors.white,
+                      fontSize: 16.0);
+                }
+              }
             }
           }
           //createRecord();
@@ -237,11 +298,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return loading
-        ? Scaffold(
-            backgroundColor: Colors.white,
-            body: Center(
-              child: Text('loading'),
-            ))
+        ? LoadingScreen()
         : Form(
             key: _formKey,
             child: Scaffold(
@@ -1383,7 +1440,7 @@ class _SignUpPageState extends State<SignUpPage> {
           );
   }
 
-  void storedData(acctype, employeeId, stationId, email,uid) async {
+  void storedData(acctype, employeeId, stationId, email, uid) async {
     final SharedPreferences _sp = await SharedPreferences.getInstance();
     _sp.setString("stationId", stationId.toString());
     _sp.setString("employeeId", employeeId.toString());
@@ -1499,4 +1556,15 @@ class UpperCaseTextFormatter extends TextInputFormatter {
       selection: newValue.selection,
     );
   }
+}
+
+Widget LoadingScreen() {
+  return Scaffold(
+    body: Center(
+      child: SpinKitRotatingCircle(
+        color: Color(0xff322C40),
+        size: 40.0,
+      ),
+    ),
+  );
 }
