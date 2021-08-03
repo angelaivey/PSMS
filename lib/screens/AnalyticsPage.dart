@@ -1708,8 +1708,8 @@ class _AdminState extends State<Admin> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.locationSelected.toString());
-    print('-------------------------------------');
+    // print(widget.locationSelected.toString());
+    // print('-------------------------------------');
     return MaterialApp(
       home: DefaultTabController(
         length: 2,
@@ -2882,7 +2882,7 @@ class _AdminState extends State<Admin> {
 
   Widget _buildBody(context, stid) {
     print(stid);
-    print('dnfkjsdfjasdhfdkjhfjsadvfjsdvfsjdvhfj');
+   // print('dnfkjsdfjasdhfdkjhfjsadvfjsdvfsjdvhfj');
     return StreamBuilder<QuerySnapshot>(
       stream: (end != null && start != null)
           ? FirebaseFirestore.instance
