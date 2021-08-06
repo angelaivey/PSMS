@@ -4,14 +4,14 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ola_energy/models/EmptyState.dart';
 
-class Employees extends StatefulWidget {
-  const Employees({Key key}) : super(key: key);
+class SupervisorView extends StatefulWidget {
+  const SupervisorView({Key key}) : super(key: key);
 
   @override
-  _EmployeesState createState() => _EmployeesState();
+  _SupervisorViewState createState() => _SupervisorViewState();
 }
 
-class _EmployeesState extends State<Employees> {
+class _SupervisorViewState extends State<SupervisorView> {
   var myist = [
     "Adungosi   #OE50413",
     "Agenga  #OE40406",
@@ -1025,7 +1025,7 @@ class _LocationWidgetState extends State<LocationWidget> {
   Widget build(BuildContext context) {
     return Container(
       margin:
-          EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.02),
+          EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.02,top: MediaQuery.of(context).size.height * 0.02),
       padding: EdgeInsets.only(
           left: MediaQuery.of(context).size.width * 0.02,
           right: MediaQuery.of(context).size.width * 0.02),
@@ -1127,24 +1127,26 @@ class _ViewEmployeesState extends State<ViewEmployees> {
             return Center(child: Text("Error!"));
           } else if (!asyncSnapshot.hasData) {
             return Center(
-              child: Text('No Employyes registered yet'),
+              child: Text('No Employees registered yet'),
             );
           } else if (asyncSnapshot.hasData) {
             print("DATA CHUNK LENGTH ${asyncSnapshot.data.docs.length}");
-            return asyncSnapshot.data.docs.length>0?ListView.builder(
-              itemCount: asyncSnapshot.data.docs.length,
-              itemBuilder: (BuildContext context, int index) => Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: EmployeeCard(
-                    accType:
-                        asyncSnapshot.data.docs[index].data()["accountType"],
-                    employeeId:
-                        asyncSnapshot.data.docs[index].data()["employeeId"],
-                    docId: asyncSnapshot.data.docs[index].data()["uid"],
-                  )),
-            ):  Center(
-              child: Text('No Employyes registered yet'),
-            );
+            return asyncSnapshot.data.docs.length > 0
+                ? ListView.builder(
+                    itemCount: asyncSnapshot.data.docs.length,
+                    itemBuilder: (BuildContext context, int index) => Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: EmployeeCard(
+                          accType: asyncSnapshot.data.docs[index]
+                              .data()["accountType"],
+                          employeeId: asyncSnapshot.data.docs[index]
+                              .data()["employeeId"],
+                          docId: asyncSnapshot.data.docs[index].data()["uid"],
+                        )),
+                  )
+                : Center(
+                    child: Text('No Employyes registered yet'),
+                  );
           } else if (asyncSnapshot.hasData &&
               asyncSnapshot.data.docs.length == 0) {
             return EmptyState();
@@ -1174,7 +1176,7 @@ class EmployeeCard extends StatefulWidget {
 
 class _EmployeeCardState extends State<EmployeeCard> {
   var numberOfReports = 0;
-  @override
+  
   @override
   void initState() {
     super.initState();
@@ -1295,7 +1297,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
   Widget build(BuildContext context) {
     return Container(
       margin:
-          EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.02),
+          EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.02,top: MediaQuery.of(context).size.height * 0.02),
       padding: EdgeInsets.only(
           left: MediaQuery.of(context).size.width * 0.02,
           right: MediaQuery.of(context).size.width * 0.02),
@@ -1377,3 +1379,289 @@ class _EmployeeCardState extends State<EmployeeCard> {
     );
   }
 }
+
+class ViewAllEmployees extends StatefulWidget {
+  final String location;
+  const ViewAllEmployees({Key key, @required this.location}) : super(key: key);
+
+  @override
+  _ViewAllEmployeesState createState() => _ViewAllEmployeesState();
+}
+
+class _ViewAllEmployeesState extends State<ViewAllEmployees> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.location),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection("users")
+            //.where("date", isEqualTo: )
+            // .where('date', isGreaterThanOrEqualTo: start)
+            // .where('date', isLessThanOrEqualTo: end)
+            // not limited to the user ID
+            // .where('userId', isEqualTo: uid)
+            .where("stationId", isEqualTo: widget.location)
+            .where('accountType', isNotEqualTo: 'Manager #OEEM01A')
+           // .orderBy("accountType", descending: true)
+            .snapshots(),
+        builder: (context, asyncSnapshot) {
+          if (asyncSnapshot.hasError) {
+            return Center(child: Text("Error!"));
+          } else if (!asyncSnapshot.hasData) {
+            return Center(
+              child: Text('No Employees registered yet'),
+            );
+          } else if (asyncSnapshot.hasData) {
+            print("DATA CHUNK LENGTH ${asyncSnapshot.data.docs.length}");
+            return asyncSnapshot.data.docs.length > 0
+                ? ListView.builder(
+                    itemCount: asyncSnapshot.data.docs.length,
+                    itemBuilder: (BuildContext context, int index) => Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: AttendantCard(
+                          accType: asyncSnapshot.data.docs[index]
+                              .data()["accountType"],
+                          employeeId: asyncSnapshot.data.docs[index]
+                              .data()["employeeId"],
+                          docId: asyncSnapshot.data.docs[index].data()["uid"],
+                        )),
+                  )
+                : Center(
+                    child: Text('No Employyes registered yet'),
+                  );
+          } else if (asyncSnapshot.hasData &&
+              asyncSnapshot.data.docs.length == 0) {
+            return EmptyState();
+          } else if (!asyncSnapshot.hasData) {
+            return circularProgress();
+          }
+          return null;
+        },
+      ),
+    );
+  }
+}
+ class AttendantCard extends StatefulWidget {
+     final String employeeId, accType, docId;
+
+  const AttendantCard(
+      {Key key,
+      @required this.employeeId,
+      @required this.accType,
+      @required this.docId})
+      : super(key: key);
+  
+ 
+   @override
+   _AttendantCardState createState() => _AttendantCardState();
+ }
+ 
+ class _AttendantCardState extends State<AttendantCard> {
+   
+  var numberOfReports = 0;
+  @override
+  @override
+  void initState() {
+    super.initState();
+    fetchReportNumber();
+  }
+
+  fetchReportNumber() {
+    var document = FirebaseFirestore.instance
+        .collection('fuels')
+        // .where('date', isGreaterThanOrEqualTo: widget.start)
+        // .where('date', isLessThanOrEqualTo: widget.end)
+        .where('employeeId', isEqualTo: widget.employeeId);
+    document.get().then((value) {
+      if (value.docs.length > 0) {
+        //print(widget.location);
+        setState(() {
+          numberOfReports = value.docs.length;
+        });
+      }
+    });
+  }
+
+  makeManager() {
+    Map<String, dynamic> promote = {
+      // 'fuelId': widget.docsId,
+      'accountType': 'Assistant Manager #OEEM03B'
+    };
+    Map<String, dynamic> demote = {
+      // 'fuelId': widget.docsId,
+      'accountType': 'Filling Station Attendant #OEEM02C'
+    };
+    var document = FirebaseFirestore.instance
+        .collection('users')
+        .where('accountType', isEqualTo: 'Assistant Manager #OEEM03B');
+    document.get().then((value) {
+      // find current manager
+      var currentManager;
+      currentManager = value.docs[0].data()["uid"];
+      // demote the current manager
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentManager)
+          .update(demote)
+          .then((value) {
+        // promote the new manager
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.docId)
+            .update(promote)
+            .then((value) {
+          // show success
+          Fluttertoast.showToast(
+              msg: 'User Promoted',
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Color(0xff322C40),
+              textColor: Colors.white,
+              fontSize: 16.0);
+        });
+      });
+    });
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.05,
+          width: MediaQuery.of(context).size.width * 0.3,
+          //style: ButtonStyle(),
+          child: Center(
+              child: Text(
+            "Cancel",
+            style: TextStyle(color: Colors.blue),
+          )),
+        ));
+    Widget continueButton = GestureDetector(
+        onTap: () {
+          makeManager();
+          Navigator.pop(context);
+        },
+        child: Container(
+          color: Colors.red,
+          height: MediaQuery.of(context).size.height * 0.05,
+          width: MediaQuery.of(context).size.width * 0.3,
+          //style: ButtonStyle(),
+          child: Center(
+              child: Text(
+            "Proceed",
+            style: TextStyle(color: Colors.white),
+          )),
+        ));
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Confirm"),
+      content: Text("Would you like to make " +
+          widget.employeeId +
+          " the assistant manager? This would demote the current assistant manager"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin:
+          EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.02,top: MediaQuery.of(context).size.height * 0.02),
+      padding: EdgeInsets.only(
+          left: MediaQuery.of(context).size.width * 0.02,
+          right: MediaQuery.of(context).size.width * 0.02),
+      child: Material(
+        elevation: 1.0,
+        clipBehavior: Clip.antiAlias,
+        borderRadius: BorderRadius.circular(8.0),
+        child: Container(
+          height: widget.accType == 'Assistant Manager #OEEM03B'
+              ? MediaQuery.of(context).size.height * 0.14
+              : MediaQuery.of(context).size.height * 0.26,
+          child: Column(
+            children: [
+              Container(
+                  height: MediaQuery.of(context).size.height * 0.08,
+                  color: widget.accType == 'Assistant Manager #OEEM03B'
+                      ? Colors.black
+                      : Color(0xff322C40),
+                  child: Center(
+                      child: Text(
+                    widget.employeeId,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ))),
+              Container(
+                height: widget.accType == 'Assistant Manager #OEEM03B'
+                    ? MediaQuery.of(context).size.height * 0.06
+                    : MediaQuery.of(context).size.height * 0.08,
+                padding: EdgeInsets.only(left: 8, right: 8),
+                child: Center(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [Text('account Type'), Text(widget.accType)],
+                    ),
+                    widget.accType == 'Assistant Manager #OEEM03B'
+                        ? SizedBox()
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('No. of Reports:'),
+                              Text(numberOfReports.toString())
+                            ],
+                          ),
+                  ],
+                )),
+              ),
+              widget.accType == 'Assistant Manager #OEEM03B'
+                  ? SizedBox()
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          showAlertDialog(context);
+                        },
+                        child: Container(
+                            height: MediaQuery.of(context).size.height * 0.07,
+                            decoration: BoxDecoration(
+                                color: Color(0xff493548),
+                                borderRadius: BorderRadius.circular(8.0)),
+                            child: Center(
+                                child: Text(
+                              'Make Assistant Manager',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            ))),
+                      ),
+                    ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+ }

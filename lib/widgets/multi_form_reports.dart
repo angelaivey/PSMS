@@ -66,8 +66,8 @@ class _MultiFormState extends State<MultiForm> {
     );
     DateTimeRange newDateRange = await showDateRangePicker(
       context: context,
-      firstDate: DateTime(DateTime.now().year - 8),
-      lastDate: DateTime(DateTime.now().year + 8),
+      firstDate: DateTime(DateTime.now().year, DateTime.now().month - 3),
+      lastDate: DateTime(DateTime.now().year ),
       initialDateRange: initialDateRange,
     );
 
@@ -91,7 +91,7 @@ class _MultiFormState extends State<MultiForm> {
         //     onPressed: () {
         //       Navigator.pop(context);
         //     }),
-        title: Text('Daily Sales Form'),
+        title: Text('Daily Sales Forms'),
         actions: [
           IconButton(
               onPressed: () {
@@ -117,7 +117,7 @@ class _MultiFormState extends State<MultiForm> {
                   return Center(child: Text("Error!"));
                 } else if (asyncSnapshot.hasData) {
                   print("DATA CHUNK LENGTH ${asyncSnapshot.data.docs.length}");
-                  return ListView.builder(
+                  return asyncSnapshot.data.docs.length>0?ListView.builder(
                     itemCount: asyncSnapshot.data.docs.length,
                     itemBuilder: (BuildContext context, int index) => Padding(
                         padding: EdgeInsets.all(8.0),
@@ -145,7 +145,7 @@ class _MultiFormState extends State<MultiForm> {
                         //   //asyncSnapshot.data.docs[index].data()["stationId"],
                         // ),
                         ),
-                  );
+                  ):Center(child: Text("No Records have been posted yet"));
                   
                 } else if (asyncSnapshot.hasData &&
                     asyncSnapshot.data.docs.length == 0) {
@@ -550,7 +550,7 @@ class _ReportManagersState extends State<ReportManagers> {
             return Center(child: Text("Error!"));
           } else if (asyncSnapshot.hasData) {
             print("DATA CHUNK LENGTH ${asyncSnapshot.data.docs.length}");
-            return ListView.builder(
+            return asyncSnapshot.data.docs.length>0?ListView.builder(
               itemCount: asyncSnapshot.data.docs.length,
               itemBuilder: (BuildContext context, int index) => Padding(
                   padding: EdgeInsets.all(8.0),
@@ -586,7 +586,7 @@ class _ReportManagersState extends State<ReportManagers> {
                   //   asyncSnapshot.data.docs[index].data()["employeeId"],
                   // ),
                   ),
-            );
+            ):Center(child: Text("No attendants have been added yet!"));
           } else if (asyncSnapshot.hasData &&
               asyncSnapshot.data.docs.length == 0) {
             return EmptyState();

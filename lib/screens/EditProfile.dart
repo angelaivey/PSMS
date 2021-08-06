@@ -59,6 +59,7 @@ class _EditProfileState extends State<EditProfile> {
   void initState() {
     super.initState();
     storedData();
+    fetchEmployeeAccType();
   }
 
   Future storedData() async {
@@ -72,6 +73,22 @@ class _EditProfileState extends State<EditProfile> {
       _fetchProfilePicture(_sp.getString("employeeId"));
       _fetchstationId(_sp.getString("employeeId"));
       print("Fetched from shared p ${_sp.getString("employeeId")}");
+    });
+  }
+
+  fetchEmployeeAccType() {
+    var document = FirebaseFirestore.instance
+        .collection('users')
+        // .where('date', isGreaterThanOrEqualTo: widget.start)
+        // .where('date', isLessThanOrEqualTo: widget.end)
+        .where('employeeId', isEqualTo: employeeId);
+    document.get().then((value) {
+      if (value.docs.length > 0) {
+        //  print(widget.location);
+        setState(() {
+          accType = value.docs[0].data()['accountType'];
+        });
+      }
     });
   }
 

@@ -13,7 +13,6 @@ import '../screens/registration.dart';
 import '../screens/reportGeneration.dart';
 import '../screens/settings.dart';
 import '../screens/station.dart';
-import '../screens/upload.dart';
 import '../widgets/bezierContainer.dart';
 import '../widgets/multi_form_reports.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,13 +31,11 @@ class _DashBoardState extends State<DashBoard> {
   String employeeId;
   String userEmail, accType;
   String userLocation;
-  String _photoUrl = "";
-
+  String stationId = "";
   @override
   void initState() {
     super.initState();
     _fetchStoredData();
-    print('hellooooooo');
   }
 
   Future _fetchStoredData() async {
@@ -48,13 +45,14 @@ class _DashBoardState extends State<DashBoard> {
       employeeId = _sp.getString("employeeId");
       userEmail = _sp.getString("email");
       accType = _sp.getString("accType");
+      stationId = _sp.getString("stationId");
       //userLocation = _sp.getString("location");
-      _fetchProfilePicture(_sp.getString("employeeId"));
+      //_fetchstationId(_sp.getString("employeeId"));
       print("Fetched from shared p ${_sp.getString("employeeId")}");
     });
   }
 
-  _fetchProfilePicture(employeeId) async {
+  _fetchstationId(employeeId) async {
     //instead of refreshing page when post is deleted, it MAY check if post still exists in firebase
     //and if not the will not be displayed
     await FirebaseFirestore.instance
@@ -64,7 +62,8 @@ class _DashBoardState extends State<DashBoard> {
         .then((value) {
       value.docs.forEach((result) {
         setState(() {
-          _photoUrl = result.data()['photoUrl'];
+          stationId = result.data()['stationId'];
+          //accType = result.
         });
       });
     }).catchError((err) {
@@ -72,6 +71,7 @@ class _DashBoardState extends State<DashBoard> {
     });
   }
 
+  
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size; //to get size
@@ -79,7 +79,7 @@ class _DashBoardState extends State<DashBoard> {
     var screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: _photoUrl != ""
+      body: stationId != ""
           ? Stack(
               children: <Widget>[
                 Positioned(
@@ -241,7 +241,10 @@ class _DashBoardState extends State<DashBoard> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => accType=='Admin #OEAA01A'?ReportManagers():MultiForm()));
+                                            builder: (context) =>
+                                                accType == 'Admin #OEAA01A'
+                                                    ? ReportManagers()
+                                                    : MultiForm()));
                                   },
                                   child: Card(
                                     shape: RoundedRectangleBorder(
@@ -264,7 +267,10 @@ class _DashBoardState extends State<DashBoard> {
                                         ),
 
                                         SizedBox(height: 10),
-                                       accType=='Filling Station Attendant #OEEM02C'? Text('Generate Reports'): Text('Reports')
+                                        accType ==
+                                                'Filling Station Attendant #OEEM02C'
+                                            ? Text('Generate Reports')
+                                            : Text('Reports')
                                       ],
                                     ),
                                   ),
@@ -303,31 +309,43 @@ class _DashBoardState extends State<DashBoard> {
                                     ),
                                   ),
                                 ),
-                                 accType=='Admin #OEAA01A'?GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Employees()));
-                                  },
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10)),
-                                    elevation: 4,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                         Icon(
-                                          Icons.poll,
-                                          size: screenHeight * 0.09,
-                                          color: Color(0xff322C40),
+                                accType != 'Filling Station Attendant #OEEM02C'
+                                    ? GestureDetector(
+                                        onTap: () {
+                                         accType ==
+                                            'Admin #OEAA01A'
+                                            ? Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                       SupervisorView()))
+                                            :Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                       ViewAllEmployees(location: stationId,)));
+                                        },
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          elevation: 4,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.supervisor_account_outlined,
+                                                size: screenHeight * 0.09,
+                                                color: Color(0xff322C40),
+                                              ),
+                                              SizedBox(height: 20),
+                                              Text('Employees')
+                                            ],
+                                          ),
                                         ),
-                                        SizedBox(height:20),
-                                        Text('Employees')
-                                      ],
-                                    ),
-                                  ),
-                                ):SizedBox(),
+                                      )
+                                    : SizedBox(),
                                 // GestureDetector(
                                 //   onTap: () {
                                 //     Navigator.push(
@@ -390,11 +408,11 @@ class _DashBoardState extends State<DashBoard> {
               ],
             )
           : Center(
-      child: SpinKitRotatingCircle(
-        color: Color(0xff322C40),
-        size: 40.0,
-      ),
-    ),
+              child: SpinKitRotatingCircle(
+                color: Color(0xff322C40),
+                size: 40.0,
+              ),
+            ),
     );
   }
 }
