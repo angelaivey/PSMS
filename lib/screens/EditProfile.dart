@@ -46,8 +46,9 @@ class _EditProfileState extends State<EditProfile> {
   bool showPassword = false;
   String employeeId;
   String userEmail;
-  String stationId='';
-  String photoUrl='';
+  String accType;
+  String stationId = '';
+  String photoUrl = '';
 
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -58,19 +59,6 @@ class _EditProfileState extends State<EditProfile> {
   void initState() {
     super.initState();
     storedData();
-
-    //detects when user signed in
-    googleSignIn.onCurrentUserChanged.listen((account) {
-      handleSignIn(account);
-    }, onError: (err) {
-      print('Error signing in: $err');
-    });
-    //Reauthenticate user when app is opened
-    googleSignIn.signInSilently(suppressErrors: false).then((account) {
-      handleSignIn(account);
-    }).catchError((err) {
-      print('Error signing in: $err');
-    });
   }
 
   Future storedData() async {
@@ -79,48 +67,51 @@ class _EditProfileState extends State<EditProfile> {
     setState(() {
       employeeId = _sp.getString("employeeId");
       userEmail = _sp.getString("email");
+      accType = _sp.getString('accType');
       // stationId = _sp.getString("stationId");
       _fetchProfilePicture(_sp.getString("employeeId"));
       _fetchstationId(_sp.getString("employeeId"));
       print("Fetched from shared p ${_sp.getString("employeeId")}");
     });
   }
-  _fetchstationId(employeeId) async{
+
+  _fetchstationId(employeeId) async {
     //instead of refreshing page when post is deleted, it MAY check if post still exists in firebase
     //and if not the will not be displayed
-    await FirebaseFirestore.instance.collection('users')
-        .where('employeeId', isEqualTo:employeeId)
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('employeeId', isEqualTo: employeeId)
         .get()
-        .then((value){
+        .then((value) {
       value.docs.forEach((result) {
         setState(() {
-          stationId=result.data()['stationId'];
+          stationId = result.data()['stationId'];
+          //accType = result.
         });
-
       });
-    }).catchError((err){
+    }).catchError((err) {
       print(err.message);
-
     });
   }
-  _fetchProfilePicture(employeeId) async{
+
+  _fetchProfilePicture(employeeId) async {
     //instead of refreshing page when post is deleted, it MAY check if post still exists in firebase
     //and if not the will not be displayed
-    await FirebaseFirestore.instance.collection('users')
-        .where('employeeId', isEqualTo:employeeId)
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('employeeId', isEqualTo: employeeId)
         .get()
-        .then((value){
+        .then((value) {
       value.docs.forEach((result) {
         setState(() {
-          photoUrl=result.data()['photoUrl'];
+          photoUrl = result.data()['photoUrl'];
         });
-
       });
-    }).catchError((err){
+    }).catchError((err) {
       print(err.message);
-
     });
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -146,18 +137,6 @@ class _EditProfileState extends State<EditProfile> {
 
     String _photoUrl = '';
 
-    Future<String> uploadImage(imageFile) async {
-      UploadTask uploadTask = storageRef
-          .child('profilepics/${_image.path.split("/").last}')
-          .putFile(imageFile);
-      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
-      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-      setState(() {
-        _photoUrl = downloadUrl;
-      });
-      return downloadUrl;
-    }
-
     return Scaffold(
       appBar: AppBar(
         // leading: IconButton(
@@ -166,193 +145,68 @@ class _EditProfileState extends State<EditProfile> {
         //       Navigator.pop(context);
         //     }),
         backgroundColor: Color(0xff322C40),
-        title: Text('Edit Profile'),
+        title: Text('My Profile'),
       ),
-
-      body: photoUrl!=""?
-      Container(
-        padding: EdgeInsets.only(left: 16, top: 25, right: 16),
-        child: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
-          child: ListView(
-            children: [
-              Center(
-                child: Stack(
+      body: photoUrl != ""
+          ? Container(
+              padding: EdgeInsets.only(left: 16, top: 25, right: 16),
+              child: GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                },
+                child: ListView(
                   children: [
-                    Container(
-                      width: 130,
-                      height: 130,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              width: 4,
-                              color: Theme.of(context).scaffoldBackgroundColor),
-                          boxShadow: [
-                            BoxShadow(
-                                spreadRadius: 2,
-                                blurRadius: 10,
-                                color: Colors.black.withOpacity(0.1),
-                                offset: Offset(0, 10))
-                          ],
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: (_image != null)
-                                ? FileImage(
-                                    File(_image.path),
-                                  )
-                                : photoUrl == "" || photoUrl == null
-                                    ? AssetImage('assets/images/user.png')
-                                    : NetworkImage(photoUrl),
-                          )),
+                    buildTextField(
+                        "Employee Id", employeeId, nameController, false),
+                    buildTextField(
+                        "Account Type", accType, nameController, false),
+                    buildTextField(
+                        "Work E-mail", userEmail, emailController, false),
+                    // buildTextField("Password", "********", true),
+                    buildTextField(
+                        "Station", stationId, stationIdController, false),
+                    SizedBox(
+                      height: 20,
                     ),
-                    Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              width: 4,
-                              color: Theme.of(context).scaffoldBackgroundColor,
+                    GestureDetector(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Change Password',
+                              style: TextStyle(fontSize: 17.0),
                             ),
-                            color: Color(0xff322C40),
-                          ),
-                          child: IconButton(
-                            icon: Icon(Icons.edit, color: Colors.white),
-                            onPressed: () {
-                              getImage();
-                            },
-                          ),
-                        )),
+                            Icon(
+                              Icons.chevron_right,
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ChangePassword()));
+                        }),
+                    SizedBox(
+                      height: 35,
+                    ),
                   ],
                 ),
               ),
-              SizedBox(
-                height: 35,
+            )
+          : Center(
+              child: Container(
+              height: 15,
+              width: 15,
+              child: SpinKitRotatingCircle(
+                color: Color(0xff322C40),
+                size: 40.0,
               ),
-              buildTextField("Employee Id", employeeId, nameController, false),
-              buildTextField("work E-mail", userEmail, emailController, false),
-              // buildTextField("Password", "********", true),
-              buildTextField("Station", stationId, stationIdController, false),
-              SizedBox(
-                height: 20,
-              ),
-              GestureDetector(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Change Password',
-                      style: TextStyle(
-                        fontSize: 17.0
-                      ),),
-                      Icon(
-                        Icons.chevron_right,
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ChangePassword()));
-                  }),
-              SizedBox(
-                height: 35,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  OutlineButton(
-                    padding: EdgeInsets.symmetric(horizontal: 50),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text("CANCEL",
-                        style: TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 2.2,
-                            color: Colors.black)),
-                  ),
-                  RaisedButton(
-                    onPressed: () async {
-                      String imageUrl = await uploadImage(_image);
-                      dbRef.doc(firebaseAuth.currentUser.uid).update({
-                        'uid': firebaseAuth.currentUser.uid,
-                        'stationId': stationIdController.text == ''
-                            ? stationId
-                            : stationIdController.text,
-                        'employeeId': nameController.text == ''
-                            ? employeeId
-                            : nameController.text,
-                        'email': emailController.text == ''
-                            ? userEmail
-                            : emailController.text,
-                        'photoUrl': imageUrl,
-                      }).then((value) async {
-                        print('updated');
-                        final SharedPreferences _sp =
-                            await SharedPreferences.getInstance();
-                        _sp.setString("photoUrl", imageUrl);
-                        Fluttertoast.showToast(
-                            msg: 'Profile updated',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.CENTER,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Color(0xff322C40),
-                            textColor: Colors.white,
-                            fontSize: 16.0);
-                      }).catchError((onError) {
-                        Fluttertoast.showToast(
-                            msg: "Error: $onError",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.CENTER,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
-                            textColor: Colors.white,
-                            fontSize: 16.0);
-                        print(onError.toString());
-                      });
-                    },
-                    color: Color(0xff322C40),
-                    padding: EdgeInsets.symmetric(horizontal: 50),
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Text(
-                      "SAVE",
-                      style: TextStyle(
-                          fontSize: 14,
-                          letterSpacing: 2.2,
-                          color: Colors.white),
-                    ),
-                  )
-                ],
-              ),
-             ],
-          ),
-        ),
-      ):
-      Center(
-        child: Container(
-          height: 15,
-            width:15,
-          child: SpinKitRotatingCircle(
-        color: Color(0xff322C40),
-        size: 40.0,
-      ),
-        )
-      ),
+            )),
     );
   }
 
   bool isAuth = false;
-
 
   handleSignIn(GoogleSignInAccount account) {
     if (account != null) {
@@ -382,6 +236,7 @@ class _EditProfileState extends State<EditProfile> {
       child: TextFormField(
         obscureText: isPasswordTextField ? showPassword : false,
         controller: controller,
+        readOnly: true,
         decoration: InputDecoration(
             suffixIcon: isPasswordTextField
                 ? IconButton(

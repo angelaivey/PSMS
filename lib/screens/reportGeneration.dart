@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../models/petrol.dart';
 import '../widgets/multi_form_reports.dart';
 import 'package:random_string/random_string.dart';
@@ -56,9 +57,11 @@ class _ReportGeneratorState extends State<ReportGenerator> {
     } else {
       pickedDate = DateTime.now();
     }
+    checkIfPosted();
   }
 
   String uid, employeeId, userEmail, locationString, stationId;
+  bool exists = false;
   Future<String> _userId() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
     final User user = auth.currentUser;
@@ -67,6 +70,23 @@ class _ReportGeneratorState extends State<ReportGenerator> {
       uid = user.uid;
     });
     return user.uid;
+  }
+
+  checkIfPosted() {
+    var document = FirebaseFirestore.instance
+        .collection('fuels')
+        .where('date', isGreaterThanOrEqualTo: DateTime(
+      DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0))
+      .where('date', isLessThanOrEqualTo: DateTime(DateTime.now().year, DateTime.now().month,
+      DateTime.now().day, 23, 59, 59))
+        .where('employeeId', isEqualTo: employeeId);
+    document.get().then((value) {
+      if (value.docs.length > 0) {
+        setState(() {
+          exists = true;
+        });
+      }
+    });
   }
 
   Future _fetchStoredData() async {
@@ -169,7 +189,7 @@ class _ReportGeneratorState extends State<ReportGenerator> {
                   onSaved: (val) => val.length > 0 ? null : 'Enter valid data',
                   decoration: InputDecoration(
                     labelText: 'FUEL',
-                    hintText: 'eg. 1,000',
+                    hintText: 'eg. 1000',
                     icon: Icon(Icons.local_gas_station),
                     isDense: true,
                   ),
@@ -203,22 +223,26 @@ class _ReportGeneratorState extends State<ReportGenerator> {
                       Navigator.pop(context);
                     } else {
                       //create collection and save data
-                      String randomId = randomAlphaNumeric(32);
-                      Map<String, dynamic> data = {
-                        'fuelId': randomId,
-                        'userId': uid,
-                        'employeeId': employeeId,
-                        'stationId': stationId,
-                                                'lpg': int.parse(controllerLpg.text),
-                        'lube': int.parse(controllerLube.text),
-                        'fuel': int.parse(controllerFuel.text),
-                        'date': pickedDate,
-                      };
-                      FirebaseFirestore.instance
-                          .collection('fuels')
-                          .doc(randomId)
-                          .set(data);
-                      Navigator.pop(context);
+                      checkIfPosted();
+                      exists
+                          ? 
+                           Fluttertoast.showToast(
+                            msg: 'You Already Uploaded The Form For Today. Contact Your Supervisor.',
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                            fontSize: 16.0)
+                          : _uploadData(
+                              uid,
+                              employeeId,
+                              stationId,
+                              controllerLpg,
+                              controllerLube,
+                              controllerFuel,
+                              pickedDate);
+                          Navigator.pop(context); 
                     }
                   },
                 ),
@@ -230,13 +254,31 @@ class _ReportGeneratorState extends State<ReportGenerator> {
     );
   }
 
+  _uploadData(uid, employeeId, stationId, controllerLpg, controllerLube,
+      controllerFuel, pickedDate) {
+    print('hello');
+    String randomId = randomAlphaNumeric(32);
+    Map<String, dynamic> data = {
+      'fuelId': randomId,
+      'userId': uid,
+      'employeeId': employeeId,
+      'stationId': stationId,
+      'lpg': int.parse(controllerLpg.text),
+      'lube': int.parse(controllerLube.text),
+      'fuel': int.parse(controllerFuel.text),
+      'date': pickedDate,
+    };
+    FirebaseFirestore.instance.collection('fuels').doc(randomId).set(data);
+ 
+  }
+
   _pickedDate() async {
     DateTime date = await showDatePicker(
       context: context,
       initialDate: pickedDate,
-      firstDate: DateTime(DateTime.now().year - 8),
-      lastDate: DateTime(DateTime.now().year + 8),
-    );
+      firstDate: DateTime(DateTime.now().year,DateTime.now().month - 1),
+      lastDate: DateTime(DateTime.now().year, DateTime.now().month,
+      DateTime.now().day, 23, 59, 59));
     if (date != null) {
       setState(() {
         //controllerDate = _pickedDate();

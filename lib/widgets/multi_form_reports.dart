@@ -58,7 +58,6 @@ class _MultiFormState extends State<MultiForm> {
   DateTime end = DateTime(DateTime.now().year, DateTime.now().month,
       DateTime.now().day, 23, 59, 59);
   DateTime pickedDate;
-  
 
   Future _pickDateRange(BuildContext context) async {
     final initialDateRange = DateTimeRange(
@@ -92,7 +91,7 @@ class _MultiFormState extends State<MultiForm> {
         //     onPressed: () {
         //       Navigator.pop(context);
         //     }),
-        title: Text('Daily Sales Formst'),
+        title: Text('Daily Sales Form'),
         actions: [
           IconButton(
               onPressed: () {
@@ -120,19 +119,33 @@ class _MultiFormState extends State<MultiForm> {
                   return ListView.builder(
                     itemCount: asyncSnapshot.data.docs.length,
                     itemBuilder: (BuildContext context, int index) => Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: fuelWidgetManager(
-                        asyncSnapshot.data.docs[index].data()["date"],
-                        asyncSnapshot.data.docs[index].data()["fuel"],
-                        asyncSnapshot.data.docs[index].data()["fuelId"],
-                        asyncSnapshot.data.docs[index].data()["lpg"],
-                        asyncSnapshot.data.docs[index].data()["lube"],
-                        asyncSnapshot.data.docs[index].data()["userId"],
-                        asyncSnapshot.data.docs[index].data()["stationId"],
-                        asyncSnapshot.data.docs[index].data()["employeeId"],
-                      ),
-                    ),
+                        padding: EdgeInsets.all(8.0),
+                        child: 
+                        // AttendantWidget(
+                        //   employeeId: asyncSnapshot.data.docs[index]
+                        //       .data()["employeeId"],
+                        //   stationId: asyncSnapshot.data.docs[index]
+                        //       .data()["stationId"],
+                         
+                        // )
+                         fuelWidgetManager(
+                          asyncSnapshot.data.docs[index].data()["date"],
+                          asyncSnapshot.data.docs[index].data()["fuel"],
+                          asyncSnapshot.data.docs[index].data()["fuelId"],
+                          asyncSnapshot.data.docs[index].data()["lpg"],
+                          asyncSnapshot.data.docs[index].data()["lube"],
+                          asyncSnapshot.data.docs[index].data()["userId"],
+                          asyncSnapshot.data.docs[index].data()["stationId"],
+                          asyncSnapshot.data.docs[index].data()["employeeId"],
+                        ),
+                        // AttendantContainer(
+                        //   employeeId: asyncSnapshot.data.docs[index]
+                        //       .data()["employeeId"],
+                        //   //asyncSnapshot.data.docs[index].data()["stationId"],
+                        // ),
+                        ),
                   );
+                  
                 } else if (asyncSnapshot.hasData &&
                     asyncSnapshot.data.docs.length == 0) {
                   return EmptyState();
@@ -192,8 +205,7 @@ class _MultiFormState extends State<MultiForm> {
     );
   }
 
-  fuelWidgetManager(
-      date, fuel, fuelId, lpg, lube, userId, stationId, employeeId) {
+  fuelWidgetManager(date, fuel, fuelId, lpg, lube, userId, stationId, employeeId) {
     return Material(
       elevation: 1.0,
       clipBehavior: Clip.antiAlias,
@@ -212,15 +224,15 @@ class _MultiFormState extends State<MultiForm> {
               actions: [
                 IconButton(
                   onPressed: () {
-                    _dialog(
-                        update: true,
-                        docsId: fuelId,
-                        petrol: Petrol(
-                          lubes: lube.toString(),
-                          fuel: fuel.toString(),
-                          date: date,
-                          lpg: lpg.toString(),
-                        ));
+                    // _dialog(
+                    //     update: true,
+                    //     docsId: fuelId,
+                    //     petrol: Petrol(
+                    //       lubes: lube.toString(),
+                    //       fuel: fuel.toString(),
+                    //       date: 'date',
+                    //       lpg: lpg.toString(),
+                    //     ));
                     //create collection and save data
                     Map<String, dynamic> data = {
                       // 'lpg' : int.parse(controllerLpg.text),
@@ -458,7 +470,7 @@ class _MultiFormState extends State<MultiForm> {
     return fuels.doc(fuelId.toString()).delete().then((value) {
       Fluttertoast.showToast(
           msg: 'Form Deleted',
-          toastLength: Toast.LENGTH_SHORT,
+          toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
           backgroundColor: Color(0xff322C40),
@@ -467,7 +479,7 @@ class _MultiFormState extends State<MultiForm> {
     }).catchError((error) {
       Fluttertoast.showToast(
           msg: "Error: $error",
-          toastLength: Toast.LENGTH_SHORT,
+          toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
@@ -1081,7 +1093,7 @@ class _ViewAttendantsState extends State<ViewAttendants> {
     return fuels.doc(fuelId.toString()).delete().then((value) {
       Fluttertoast.showToast(
           msg: 'Form Deleted',
-          toastLength: Toast.LENGTH_SHORT,
+          toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
           backgroundColor: Color(0xff322C40),
@@ -1090,7 +1102,7 @@ class _ViewAttendantsState extends State<ViewAttendants> {
     }).catchError((error) {
       Fluttertoast.showToast(
           msg: "Error: $error",
-          toastLength: Toast.LENGTH_SHORT,
+          toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
@@ -1280,5 +1292,262 @@ class _AttendantContainerState extends State<AttendantContainer> {
         ),
       ),
     );
+  }
+}
+
+
+class AttendantWidget extends StatefulWidget {
+  final DateTime start, end;
+  final String employeeId, stationId;
+  const AttendantWidget(
+      {Key key, this.start, this.end, this.employeeId, this.stationId})
+      : super(key: key);
+
+  @override
+  _AttendantWidgetState createState() => _AttendantWidgetState();
+}
+
+class _AttendantWidgetState extends State<AttendantWidget> {
+  String timePosted, lubeTotal, lpgTotal, fuelTotal;
+  var datePosted;
+  bool exists = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchDatePosted();
+    fetchTotalFuel();
+    fetchTotalLpg();
+    fetchTotalLube();
+    checkEmployeeFiles();
+    print(widget.employeeId);
+  }
+
+  void checkEmployeeFiles() {
+    var document = FirebaseFirestore.instance
+        .collection('fuels')
+        // .where('date', isGreaterThanOrEqualTo: widget.start)
+        // .where('date', isLessThanOrEqualTo: widget.end)
+        .where('employeeId', isEqualTo: widget.employeeId);
+    document.get().then((value) {
+      if (value.docs.length > 0) {
+        setState(() {
+          exists = true;
+        });
+      }
+    });
+  }
+
+  void fetchDatePosted() {
+    var date;
+    var document = FirebaseFirestore.instance
+        .collection('fuels')
+        .where('date', isGreaterThanOrEqualTo: widget.start)
+        .where('date', isLessThanOrEqualTo: widget.end)
+        .where('employeeId', isEqualTo: widget.employeeId);
+    document.get().then((value) {
+      // for (var i = 0; i < value.docs.length; i++) {
+      date = value.docs[value.docs.length - 1].data()['date'];
+      // print(value.docs[i].data()['fuel']);
+      print('meeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+      setState(() {
+        datePosted = date;
+      });
+    });
+  }
+
+  void fetchTotalLube() {
+    var total = 0;
+    var document = FirebaseFirestore.instance
+        .collection('fuels')
+        .where('date', isGreaterThanOrEqualTo: widget.start)
+        .where('date', isLessThanOrEqualTo: widget.end)
+        .where('employeeId', isEqualTo: widget.employeeId);
+    document.get().then((value) {
+      for (var i = 0; i < value.docs.length; i++) {
+        total += value.docs[i].data()['lube'];
+        // print(value.docs[i].data()['fuel']);
+      }
+      setState(() {
+        lubeTotal = total.toString();
+      });
+    });
+  }
+
+  void fetchTotalLpg() {
+    var total = 0;
+    var document = FirebaseFirestore.instance
+        .collection('fuels')
+        .where('date', isGreaterThanOrEqualTo: widget.start)
+        .where('date', isLessThanOrEqualTo: widget.end)
+        .where('employeeId', isEqualTo: widget.employeeId);
+    document.get().then((value) {
+      for (var i = 0; i < value.docs.length; i++) {
+        total += value.docs[i].data()['lpg'];
+        // print(value.docs[i].data()['fuel']);
+      }
+      setState(() {
+        lpgTotal = total.toString();
+      });
+    });
+  }
+
+  void fetchTotalFuel() {
+    var total = 0;
+    var document = FirebaseFirestore.instance
+        .collection('fuels')
+        .where('date', isGreaterThanOrEqualTo: widget.start)
+        .where('date', isLessThanOrEqualTo: widget.end)
+        .where('employeeId', isEqualTo: widget.employeeId);
+    document.get().then((value) {
+      for (var i = 0; i < value.docs.length; i++) {
+        total += value.docs[i].data()['fuel'];
+        // print(value.docs[i].data()['fuel']);
+      }
+      setState(() {
+        fuelTotal = total.toString();
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return true
+        ? Material(
+            elevation: 1.0,
+            clipBehavior: Clip.antiAlias,
+            borderRadius: BorderRadius.circular(8.0),
+            child: Form(
+              //  key: form,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppBar(
+                    leading: Icon(Icons.local_gas_station),
+                    elevation: 0,
+                    backgroundColor: Color(0xff322C40),
+                    // actions: [
+                    //   IconButton(
+                    //     onPressed: () {
+
+                    //       //create collection and save data
+                    //       Map<String, dynamic> data = {
+                    //         // 'lpg' : int.parse(controllerLpg.text),
+                    //         // 'lube' : int.parse(controllerLube.text),
+                    //         // 'fuel' : int.parse(controllerFuel.text),
+                    //         // 'date' : pickedDate,
+                    //       };
+                    //       // FirebaseFirestore.instance.collection('fuels').add(data);
+                    //       // Navigator.pop(context);
+                    //     },
+                    //     icon: Icon(Icons.update),
+                    //   ),
+                    //   IconButton(
+                    //     onPressed: () {
+                    //       deleteForm(fuelId);
+                    //     },
+                    //     icon: Icon(Icons.delete),
+                    //   ),
+                    // ],
+                    title: Text(widget.employeeId),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: 20, right: 20, top: 16, bottom: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // IconButton(icon: Icon(Icons.keyboard_arrow_down),
+                        //   onPressed: _pickedDate,
+                        // ),
+                        Text('Last Date Posted : '
+                            //  +
+                            //     DateFormat()
+                            //         .add_yMMMEd()
+                            //         .format(datePosted.toDate())
+                            //         .toString()
+                            ),
+                        Text('Last Time Posted : '
+                            // +
+                            //     DateFormat()
+                            //         .add_Hm()
+                            //         .format(datePosted.toDate())
+                            //         .toString()
+                            ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                      padding: EdgeInsets.only(left: 20, right: 20, top: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Posted At: '),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                          Text(widget.stationId),
+                        ],
+                      )),
+                  Padding(
+                      padding: EdgeInsets.only(left: 20, right: 20, top: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Posted By:'),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                          Text(widget.employeeId),
+                        ],
+                      )),
+                  Padding(
+                      padding: EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        top: 16,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Lube (lts): '),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                          Text(lubeTotal.toString()),
+                        ],
+                      )),
+                  Padding(
+                      padding: EdgeInsets.only(left: 20, right: 20, top: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('LPG (lts): '),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                          Text(lpgTotal.toString()),
+                        ],
+                      )),
+                  Padding(
+                      padding: EdgeInsets.only(
+                          left: 20, right: 20, top: 16, bottom: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Fuel (lts): '),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                          Text(fuelTotal.toString()),
+                        ],
+                      )),
+                ],
+              ),
+            ),
+          )
+        : Container();
   }
 }
