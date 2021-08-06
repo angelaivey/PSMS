@@ -6,6 +6,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:ola_energy/screens/employees.dart';
 import '../models/EmptyState.dart';
 import '../screens/EditProfile.dart';
 import '../screens/registration.dart';
@@ -99,7 +100,7 @@ class _DashBoardState extends State<DashBoard> {
                           decoration: BoxDecoration(
                               color: Color(0xff322C40),
                               borderRadius: BorderRadius.circular(10)),
-                          margin: EdgeInsets.only(bottom: 20),
+                          margin: EdgeInsets.only(bottom: 10),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -302,6 +303,31 @@ class _DashBoardState extends State<DashBoard> {
                                     ),
                                   ),
                                 ),
+                                 accType=='Admin #OEAA01A'?GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Employees()));
+                                  },
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10)),
+                                    elevation: 4,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                         Icon(
+                                          Icons.poll,
+                                          size: screenHeight * 0.09,
+                                          color: Color(0xff322C40),
+                                        ),
+                                        SizedBox(height:20),
+                                        Text('Employees')
+                                      ],
+                                    ),
+                                  ),
+                                ):SizedBox(),
                                 // GestureDetector(
                                 //   onTap: () {
                                 //     Navigator.push(

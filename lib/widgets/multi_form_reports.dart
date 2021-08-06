@@ -101,7 +101,8 @@ class _MultiFormState extends State<MultiForm> {
         ],
       ),
       body: accType != "Filling Station Attendant #OEEM02C"
-          ? StreamBuilder<QuerySnapshot>(
+          ? 
+          StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection("fuels")
                   //.where("date", isEqualTo: )
