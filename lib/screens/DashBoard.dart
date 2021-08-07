@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ola_energy/screens/employees.dart';
+import 'package:ola_energy/screens/sales.dart';
 import '../models/EmptyState.dart';
 import '../screens/EditProfile.dart';
 import '../screens/registration.dart';
@@ -346,56 +347,45 @@ class _DashBoardState extends State<DashBoard> {
                                         ),
                                       )
                                     : SizedBox(),
-                                // GestureDetector(
-                                //   onTap: () {
-                                //     Navigator.push(
-                                //         context,
-                                //         MaterialPageRoute(
-                                //             builder: (context) => HomePage()));
-                                //   },
-                                //   child: Card(
-                                //     shape: RoundedRectangleBorder(
-                                //         borderRadius: BorderRadius.circular(10)),
-                                //     elevation: 4,
-                                //     child: Column(
-                                //       mainAxisAlignment: MainAxisAlignment.center,
-                                //       children: <Widget>[
-                                //         SvgPicture.asset(
-                                //           'assets/images/about.svg',
-                                //           height: 58,
-                                //             color: Color(0xff322C40)
-                                //         ),
-                                //         SizedBox(height:20),
-                                //         Text('About Us')
-                                //       ],
-                                //     ),
-                                //   ),
-                                // ),
-                                // GestureDetector(
-                                //   onTap: () {
-                                //     Navigator.push(
-                                //         context,
-                                //         MaterialPageRoute(
-                                //             builder: (context) => EditProfile()));
-                                //   },
-                                //   child: Card(
-                                //     shape: RoundedRectangleBorder(
-                                //         borderRadius: BorderRadius.circular(10)),
-                                //     elevation: 4,
-                                //     child: Column(
-                                //       mainAxisAlignment: MainAxisAlignment.center,
-                                //       children: <Widget>[
-                                //         SvgPicture.asset(
-                                //           'assets/images/settings.svg',
-                                //           height: 58,
-                                //             color: Color(0xff322C40)
-                                //         ),
-                                //         SizedBox(height:20),
-                                //         Text('Settings')
-                                //       ],
-                                //     ),
-                                //   ),
-                                // ),
+                               accType != 'Filling Station Attendant #OEEM02C'
+                                    ? GestureDetector(
+                                        onTap: () {
+                                        //  accType ==
+                                        //     'Admin #OEAA01A'
+                                        //     ? 
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                       LocationSales()))
+                                            // :Navigator.push(
+                                            //   context,
+                                            //   MaterialPageRoute(
+                                            //       builder: (context) =>
+                                            //            ViewAllEmployees(location: stationId,)))
+                                            ;
+                                        },
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          elevation: 4,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.receipt_long_outlined,
+                                                size: screenHeight * 0.09,
+                                                color: Color(0xff322C40),
+                                              ),
+                                              SizedBox(height: 20),
+                                              Text('Sales')
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    : SizedBox(),
                               ],
                               crossAxisCount: 2,
                             ),
