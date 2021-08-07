@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ola_energy/screens/login.dart';
-import 'package:ola_energy/screens/registration.dart';
-import 'package:ola_energy/widgets/bezierContainer.dart';
+import '../screens/login.dart';
+import '../screens/registration.dart';
+import '../widgets/bezierContainer.dart';
 
 
 class WelcomePage extends StatefulWidget {

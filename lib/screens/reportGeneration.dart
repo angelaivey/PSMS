@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ola_energy/models/petrol.dart';
-import 'package:ola_energy/widgets/multi_form_reports.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import '../models/petrol.dart';
+import '../widgets/multi_form_reports.dart';
 import 'package:random_string/random_string.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -47,7 +48,7 @@ class _ReportGeneratorState extends State<ReportGenerator> {
   void initState() {
     super.initState();
     _userId();
-
+    _fetchStoredData();
     if (widget.update) {
       controllerFuel.text = widget.petrol.fuel;
       controllerLpg.text = widget.petrol.lpg;
@@ -56,22 +57,57 @@ class _ReportGeneratorState extends State<ReportGenerator> {
     } else {
       pickedDate = DateTime.now();
     }
+    checkIfPosted();
   }
-  String uid;
+
+  String uid, employeeId, userEmail, locationString, stationId;
+  bool exists = false;
   Future<String> _userId() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
-      final User user = auth.currentUser;
+    final User user = auth.currentUser;
 
     setState(() {
-      uid= user.uid;
+      uid = user.uid;
     });
-    return  user.uid;
+    return user.uid;
+  }
+
+  checkIfPosted() {
+    var document = FirebaseFirestore.instance
+        .collection('fuels')
+        .where('date', isGreaterThanOrEqualTo: DateTime(
+      DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0))
+      .where('date', isLessThanOrEqualTo: DateTime(DateTime.now().year, DateTime.now().month,
+      DateTime.now().day, 23, 59, 59))
+        .where('employeeId', isEqualTo: employeeId);
+    document.get().then((value) {
+      if (value.docs.length > 0) {
+        setState(() {
+          exists = true;
+        });
+      }
+    });
+  }
+
+  Future _fetchStoredData() async {
+    final SharedPreferences _sp = await SharedPreferences.getInstance();
+    // print("Fetched from shared p ${_sp.getString("employeeId")}");
+    setState(() {
+      employeeId = _sp.getString("employeeId");
+      userEmail = _sp.getString("email");
+      stationId = _sp.getString("stationId");
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(16.0),
+    return Container(
+      //height: 30,
+      padding: EdgeInsets.fromLTRB(
+          10,
+          MediaQuery.of(context).size.height * 0.22,
+          10,
+          MediaQuery.of(context).size.height * 0.22),
       child: Material(
         elevation: 1.0,
         clipBehavior: Clip.antiAlias,
@@ -89,7 +125,7 @@ class _ReportGeneratorState extends State<ReportGenerator> {
                 backgroundColor: Color(0xff322C40),
                 actions: [
                   IconButton(
-                      icon: Icon(Icons.delete),
+                      icon: Icon(Icons.close),
                       onPressed: () {
                         onDelete();
                         Navigator.pop(context);
@@ -107,7 +143,7 @@ class _ReportGeneratorState extends State<ReportGenerator> {
                       onPressed: _pickedDate,
                     ),
                     Text(
-                        'Date Today : ${pickedDate.year}, ${pickedDate.month}, ${pickedDate.day}'),
+                        'Date  : ${pickedDate.year}/ ${pickedDate.month}/ ${pickedDate.day}'),
                   ],
                 ),
               ),
@@ -117,11 +153,12 @@ class _ReportGeneratorState extends State<ReportGenerator> {
                   right: 16,
                 ),
                 child: TextFormField(
+                  keyboardType: TextInputType.number,
                   controller: controllerLube,
                   //initialValue: widget.petrol.lubes,
                   decoration: InputDecoration(
                     labelText: 'LUBE',
-                    hintText: 'Enter lube amount sold',
+                    hintText: 'eg. 80',
                     icon: Icon(Icons.local_gas_station),
                     isDense: true,
                   ),
@@ -131,12 +168,13 @@ class _ReportGeneratorState extends State<ReportGenerator> {
               Padding(
                 padding: EdgeInsets.only(left: 16, right: 16, top: 16),
                 child: TextFormField(
+                  keyboardType: TextInputType.number,
                   controller: controllerLpg,
                   //initialValue: widget.petrol.lpg,
                   onSaved: (val) => val.length > 0 ? null : 'Enter valid data',
                   decoration: InputDecoration(
                     labelText: 'LPG',
-                    hintText: 'Enter LPG amount sold',
+                    hintText: 'eg. 150',
                     icon: Icon(Icons.local_gas_station),
                     isDense: true,
                   ),
@@ -146,51 +184,68 @@ class _ReportGeneratorState extends State<ReportGenerator> {
                 padding: EdgeInsets.only(left: 16, right: 16, top: 16),
                 child: TextFormField(
                   controller: controllerFuel,
+                  keyboardType: TextInputType.number,
                   // initialValue: widget.petrol.fuel,
                   onSaved: (val) => val.length > 0 ? null : 'Enter valid data',
                   decoration: InputDecoration(
                     labelText: 'FUEL',
-                    hintText: 'Enter fuel amount sold',
+                    hintText: 'eg. 1000',
                     icon: Icon(Icons.local_gas_station),
                     isDense: true,
                   ),
                 ),
               ),
-              FlatButton(
-                child: Text(
-                  widget.update ? 'Update' : 'Save',
-                  style: TextStyle(color: Colors.black, fontSize: 20.0),
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 30, 0, 20),
+                height: MediaQuery.of(context).size.height * 0.065,
+                width: MediaQuery.of(context).size.width * 0.88,
+                color: Color(0xff322C40),
+                child: TextButton(
+                  child: Center(
+                    child: Text(
+                      widget.update ? 'Update' : 'Save',
+                      style: TextStyle(color: Colors.white, fontSize: 20.0),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (widget.update) {
+                      Map<String, dynamic> data = {
+                        // 'fuelId': widget.docsId,
+                        'lpg': int.parse(controllerLpg.text),
+                        'lube': int.parse(controllerLube.text),
+                        'fuel': int.parse(controllerFuel.text),
+                        'date': pickedDate,
+                      };
+                      FirebaseFirestore.instance
+                          .collection('fuels')
+                          .doc(widget.docsId)
+                          .update(data);
+                      Navigator.pop(context);
+                    } else {
+                      //create collection and save data
+                      checkIfPosted();
+                      exists
+                          ? 
+                           Fluttertoast.showToast(
+                            msg: 'You Already Uploaded The Form For Today. Contact Your Supervisor.',
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                            fontSize: 16.0)
+                          : _uploadData(
+                              uid,
+                              employeeId,
+                              stationId,
+                              controllerLpg,
+                              controllerLube,
+                              controllerFuel,
+                              pickedDate);
+                          Navigator.pop(context); 
+                    }
+                  },
                 ),
-                onPressed: () {
-                  if (widget.update) {
-                    Map<String, dynamic> data = {
-                      // 'fuelId': widget.docsId,
-                      'lpg': int.parse(controllerLpg.text),
-                      'lube': int.parse(controllerLube.text),
-                      'fuel': int.parse(controllerFuel.text),
-                      'date': pickedDate,
-                    };
-                    FirebaseFirestore.instance
-                        .collection('fuels')
-                        .doc(widget.docsId)
-                        .update(data);
-                    Navigator.pop(context);
-                  }
-                  else {
-                    //create collection and save data
-                    String randomId=randomAlphaNumeric(32);
-                    Map<String, dynamic> data = {
-                      'fuelId':randomId,
-                      'userId': uid,
-                      'lpg': int.parse(controllerLpg.text),
-                      'lube': int.parse(controllerLube.text),
-                      'fuel': int.parse(controllerFuel.text),
-                      'date': pickedDate,
-                    };
-                    FirebaseFirestore.instance.collection('fuels').doc(randomId).set(data);
-                     Navigator.pop(context);
-                  }
-                },
               ),
             ],
           ),
@@ -199,13 +254,31 @@ class _ReportGeneratorState extends State<ReportGenerator> {
     );
   }
 
+  _uploadData(uid, employeeId, stationId, controllerLpg, controllerLube,
+      controllerFuel, pickedDate) {
+    print('hello');
+    String randomId = randomAlphaNumeric(32);
+    Map<String, dynamic> data = {
+      'fuelId': randomId,
+      'userId': uid,
+      'employeeId': employeeId,
+      'stationId': stationId,
+      'lpg': int.parse(controllerLpg.text),
+      'lube': int.parse(controllerLube.text),
+      'fuel': int.parse(controllerFuel.text),
+      'date': pickedDate,
+    };
+    FirebaseFirestore.instance.collection('fuels').doc(randomId).set(data);
+ 
+  }
+
   _pickedDate() async {
     DateTime date = await showDatePicker(
       context: context,
       initialDate: pickedDate,
-      firstDate: DateTime(DateTime.now().year - 8),
-      lastDate: DateTime(DateTime.now().year + 8),
-    );
+      firstDate: DateTime(DateTime.now().year,DateTime.now().month - 1),
+      lastDate: DateTime(DateTime.now().year, DateTime.now().month,
+      DateTime.now().day, 23, 59, 59));
     if (date != null) {
       setState(() {
         //controllerDate = _pickedDate();

@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "178603756584",
+    "firebase_url": "https://ola-energy-6e327-default-rtdb.firebaseio.com",
     "project_id": "ola-energy-6e327",
     "storage_bucket": "ola-energy-6e327.appspot.com"
   },
@@ -19,6 +20,50 @@
           "android_info": {
             "package_name": "com.angelaivey.ola_energy",
             "certificate_hash": "3e622e846b60900eb5e018706de91d85d9c755db"
+          }
+        },
+        {
+          "client_id": "178603756584-9g9l2rb6ofkfikg4m462qkbmh277aq2r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAD0cVkROBPeeFAAI5ftSi4_thW2rhMLkE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "178603756584-9g9l2rb6ofkfikg4m462qkbmh277aq2r.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "178603756584-cs0e6k326jn05mqi53qo4ca8aoab623u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.angelaivy.olaenergy"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178603756584:android:c4254a4d45dace6e01b91d",
+        "android_client_info": {
+          "package_name": "com.example.psms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "178603756584-475b72udtulkt0619qrrgh3h6qs4mb21.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.psms",
+            "certificate_hash": "dd92c32c036b4e9f2588913b4798708608ed9af8"
           }
         },
         {

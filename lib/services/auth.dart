@@ -1,11 +1,11 @@
 // import 'package:flutter/animation.dart';
 // import 'package:flutter/foundation.dart';
 // import 'package:flutter/material.dart';
-// import 'package:ola_energy/utils/background_painter.dart';
-// import 'package:ola_energy/widgets/palette.dart';
-// import 'package:ola_energy/screens/register.dart';
-// import 'package:ola_energy/screens/signIn.dart';
-// import 'package:ola_energy/screens/DashBoard.dart';
+// import '../utils/background_painter.dart';
+// import '../widgets/palette.dart';
+// import '../screens/register.dart';
+// import '../screens/signIn.dart';
+// import '../screens/DashBoard.dart';
 // import 'package:lit_firebase_auth/lit_firebase_auth.dart';
 //
 // class AuthScreen extends StatefulWidget {
