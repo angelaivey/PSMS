@@ -116,7 +116,7 @@ class _DashBoardState extends State<DashBoard> {
                                   },
                                   child: GestureDetector(
                                       child: Icon(
-                                    Icons.badge_outlined,
+                                    Icons.badge,
                                     size: screenHeight * 0.04,
                                     color: Color(0xfff3f3f4),
                                   ))),
@@ -155,7 +155,7 @@ class _DashBoardState extends State<DashBoard> {
                                     });
                                   },
                                   child: Icon(
-                                    Icons.logout_outlined,
+                                    Icons.logout,
                                     size: screenHeight * 0.04,
                                     color: Color(0xfff3f3f4),
                                   ))
@@ -192,7 +192,7 @@ class _DashBoardState extends State<DashBoard> {
                                         // ),
 
                                         Icon(
-                                          Icons.feed,
+                                          Icons.feedback,
                                           size: screenHeight * 0.09,
                                           color: Color(0xff322C40),
                                         ),
@@ -226,7 +226,7 @@ class _DashBoardState extends State<DashBoard> {
                                         //   color:Color(0xff322C40)
                                         // ),
                                         Icon(
-                                          Icons.sell_outlined,
+                                          Icons.money,
                                           size: screenHeight * 0.09,
                                           color: Color(0xff322C40),
                                         ),

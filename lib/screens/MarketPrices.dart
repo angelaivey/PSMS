@@ -221,8 +221,8 @@ class _MarketPricesState extends State<MarketPrices> {
       ////*[@id="table_1"]
       List<Map<String, dynamic>> results =
           webScraper.getElement('div.wpdt-c', ['title']);
-      List<Map<String, dynamic>> town =
-          webScraper.getElement('tr.odd', ['role'], extraAddress: 'tr.even');
+      // List<Map<String, dynamic>> town =
+      //     webScraper.getElement('tr.odd', ['role'], extraAddress: 'tr.even');
       // print(results[1]['title']);
       //print('/n');
       // writeToFile(results.length);
